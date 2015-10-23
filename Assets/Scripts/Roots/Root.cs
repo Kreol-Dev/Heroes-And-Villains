@@ -6,9 +6,10 @@ using System;
 
 public abstract class Root : MonoBehaviour, IDependency
 {
-	public Signal Fulfill { get; internal set; }
+	Signal fullfill = new Signal();
+	public Signal Fulfill { get { return fullfill; } }
 	Dependencies deps;
-	void Awake()
+	void Start()
 	{
 		SetupDependecies();
 		
@@ -34,9 +35,11 @@ public abstract class Root : MonoBehaviour, IDependency
 
 	void Setup()
 	{
+		Debug.Log("Setup: " + gameObject.name);
 		CustomSetup();
 	}
 
+	protected virtual void PreSetup() {}
 	protected abstract void CustomSetup() ;
 }
 

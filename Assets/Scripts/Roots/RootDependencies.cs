@@ -7,9 +7,17 @@ using System;
 public class RootDependencies : Attribute
 {
 	public IDependency[] NeededRoots;
-	public RootDependencies(params Root[] roots)
+	public RootDependencies(params Type[] roots)
 	{
-		NeededRoots = roots;
+		Type root = typeof(Root);
+		List<IDependency> deps = new List<IDependency>();
+		foreach ( var rootType in roots)
+		{
+			if (!rootType.IsSubclassOf(root))
+				continue;
+			deps.Add(Find.Root(rootType) as IDependency);
+		}
+		NeededRoots = deps.ToArray();
 	}
 }
 

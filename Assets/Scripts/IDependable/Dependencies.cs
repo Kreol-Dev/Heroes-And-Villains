@@ -6,12 +6,13 @@ using Signals;
 
 public class Dependencies : IDependency
 {
-	public Signal Fulfill { get; internal set; }
+	Signal fullfill = new Signal();
+	public Signal Fulfill { get { return fullfill; } }
 	int dependenciesCount; 
 	public Dependencies (params IDependency[] dependencies)
 	{
 		foreach ( var dependency in dependencies )
-			dependency.Fulfill.AddOnce(DependencyFulfilled);
+			dependency.Fulfill.AddOnce(DependencyFulfilled);			
 		dependenciesCount = dependencies.Length;
 	}
 	void DependencyFulfilled()

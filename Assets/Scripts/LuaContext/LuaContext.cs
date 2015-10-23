@@ -4,17 +4,24 @@ using System.Collections.Generic;
 using UniLua;
 using LuaTableEntries;
 
-public class LuaContext
+public class LuaContext : Root
 {
-	Scribe scribe = new Scribe("LuaContextLog.txt");
+	Scribe scribe;
 	ILuaState luaVM;
-	Dictionary<string, Table> tables = new Dictionary<string, Table>();
-	
-	public LuaContext ()
+	Dictionary<string, Table> tables;
+
+	protected override void PreSetup ()
 	{
+		base.PreSetup ();
 		luaVM = LuaAPI.NewState();
+		scribe = Scribes.Register("LuaContext");
+		tables = new Dictionary<string, Table>();
 	}
 
+	protected override void CustomSetup ()
+	{
+		Fulfill.Dispatch();
+	}
 	
 	public void DeclareGlobalFunction(string name, CSharpFunctionDelegate function)
 	{

@@ -15,10 +15,24 @@ public static class Find
 			scribe.Log ("Couldn't find root: " + typeof(T).ToString());
 		return root as T;
 	}
+	public static Root Root(Type rootType)
+	{
+		Root root = null;
+		roots.TryGetValue(rootType, out root);
+		if (root == null)
+			scribe.Log ("Couldn't find root: " + rootType.ToString());
+		return root;
+	}
 
 	public static void Register<T>() where T : Root
 	{
-		GameObject go = new GameObject("Root GO: " + typeof(T).ToString());
+		Type rootType = typeof(T);
+		if (roots.ContainsKey(rootType))
+		{
+			scribe.Log ("Duplicate root: " + rootType.ToString());
+			return;
+		}
+		GameObject go = new GameObject("Root GO: " + rootType.ToString());
 		roots.Add(typeof(T), go.AddComponent<T>());
 	}
 

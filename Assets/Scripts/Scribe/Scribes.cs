@@ -25,15 +25,16 @@ public static class Scribes
 		scribe.Save();
 	}
 
-	public static void Register(string scribeName)
+	public static Scribe Register(string scribeName)
 	{
 		if (scribes.ContainsKey(scribeName))
 		{
 			scribe.Log("Duplicate scribe: " + scribeName);
-			return;
+			return scribes[scribeName];
 		}
 		Scribe newScribe = new Scribe("Logs\\" + scribeName + ".txt");
 		scribes.Add(scribeName, newScribe);
+		return newScribe;
 	}
 }
 
