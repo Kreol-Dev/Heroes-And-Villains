@@ -16,6 +16,7 @@ public class RootDependencies : Attribute
 			if (!rootType.IsSubclassOf(root))
 				continue;
 			deps.Add(Find.Root(rootType) as IDependency);
+//			Debug.Log(rootType);
 		}
 		NeededRoots = deps.ToArray();
 	}

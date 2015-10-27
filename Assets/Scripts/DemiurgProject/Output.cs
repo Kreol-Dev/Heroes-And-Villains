@@ -10,6 +10,15 @@ namespace Demiurg
 
 
 	}
+
+	public class Output<T> : Output
+	{
+		public T Content;
+		public static implicit operator T(Output<T> output)
+		{
+			return output.Content;
+		}
+	}
 }
 
 

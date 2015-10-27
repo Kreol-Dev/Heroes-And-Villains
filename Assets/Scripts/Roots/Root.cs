@@ -9,28 +9,29 @@ public abstract class Root : MonoBehaviour, IDependency
 	Signal fullfill = new Signal();
 	public Signal Fulfill { get { return fullfill; } }
 	Dependencies deps;
+	void Awake()
+	{
+		PreSetup();
+	}
 	void Start()
 	{
 		SetupDependecies();
-		
+		StartCoroutine(DelayedSetup());
 	}
 
 	void SetupDependecies ()
 	{
+		Debug.Log("Setup deps: " + gameObject.name);
 		var type = this.GetType(); 
-		if (!Attribute.IsDefined(type, typeof(RootDependencies)))
+		if (Attribute.IsDefined(type, typeof(RootDependencies)))
 		{
-			Setup ();
-			return;
+			var attribDeps = Attribute.GetCustomAttribute(type, typeof(RootDependencies)) as RootDependencies;
+			if (attribDeps.NeededRoots.Length != 0)
+			{
+				deps = new Dependencies(attribDeps.NeededRoots);
+				deps.Fulfill.AddOnce(Setup);
+			}
 		}
-		var attribDeps = Attribute.GetCustomAttribute(type, typeof(RootDependencies)) as RootDependencies;
-		if (attribDeps.NeededRoots.Length == 0)
-		{
-			Setup ();
-			return;
-		}
-		deps = new Dependencies(attribDeps.NeededRoots);
-		deps.Fulfill.AddOnce(Setup);
 	}
 
 	void Setup()
@@ -41,5 +42,12 @@ public abstract class Root : MonoBehaviour, IDependency
 
 	protected virtual void PreSetup() {}
 	protected abstract void CustomSetup() ;
+
+	IEnumerator DelayedSetup()
+	{
+		yield return null;
+		if (deps == null)
+			Setup();
+	}
 }
 

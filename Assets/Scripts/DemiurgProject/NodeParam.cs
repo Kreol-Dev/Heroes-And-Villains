@@ -3,10 +3,10 @@ using UnityEngine;
 using System.Collections;
 using System.Collections.Generic;
 
-public class GenerationLayer //: ILuaTabled
+public class NodeParam
 {
 
-	public GenerationLayer ()
+	public NodeParam (string name)
 	{
 
 	}

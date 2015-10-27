@@ -2,6 +2,7 @@
 using UnityEngine;
 using System.Collections;
 using System.Collections.Generic;
+using System;
 
 [RootDependencies(typeof(LuaContext))]
 public class ModsManager : Root
@@ -48,6 +49,11 @@ public class ModsManager : Root
 	public List<string> GetFiles(string templatePath)
 	{
 		return new List<string>();
+	}
+
+	public Type ResolveType(string typeID)
+	{
+		return Type.GetType(typeID);
 	}
 
 }

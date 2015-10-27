@@ -29,10 +29,11 @@ public class LuaContext : Root
 		luaVM.SetGlobal(name);
 	}
 	
-	public void DeclareLibrary(string name, NameFuncPair[] functions)
+	public void DeclareLibrary(string name, params NameFuncPair[] functions)
 	{
 		luaVM.L_RequireF(name, x => { x.L_NewLib(functions); return 1; }, true);
 	}
+
 	
 	bool LoadFile(ILuaState targetVM, string path, string environment)
 	{
@@ -46,6 +47,7 @@ public class LuaContext : Root
 		}
 		catch
 		{
+			scribe.LogFormat("Error opening: {0}", path);
 			targetVM.Pop(1);
 			return false;
 		}
@@ -55,11 +57,14 @@ public class LuaContext : Root
 	{
 		for (int i = 0; i < paths.Count; i++)
 			LoadScript(paths[i], tableName);
+		if (paths.Count == 0)
+			if (!tables.ContainsKey(tableName))
+					tables.Add(tableName, new Table());
 	}
 	public void LoadScript(string path, string tableName)
 	{
 		Table table = null;
-		if (!tables.ContainsKey(tableName))
+		if (tables.ContainsKey(tableName))
 		{
 			table = tables[tableName];
 			

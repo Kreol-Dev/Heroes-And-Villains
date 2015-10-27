@@ -1,6 +1,7 @@
 ﻿using UnityEngine;
 using System.Collections;
 using System.Collections.Generic;
+using Demiurg;
 
 public class FrameworkRoots : MonoBehaviour 
 {
@@ -9,6 +10,7 @@ public class FrameworkRoots : MonoBehaviour
 		Find.Register<PlanetsGenerator>();
 		Find.Register<ModsManager>();
 		Find.Register<LuaContext>();
+		Find.Register<ObjectsCreator>();
 	}
     
 }

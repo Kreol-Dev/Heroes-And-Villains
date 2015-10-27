@@ -2,11 +2,12 @@
 using UnityEngine;
 using System.Collections;
 using System.Collections.Generic;
+using System.Reflection;
 
-public class GenerationLayer //: ILuaTabled
+public class Mod
 {
-
-	public GenerationLayer ()
+	//public Assembly ModAssembly = 
+	public Mod ()
 	{
 
 	}

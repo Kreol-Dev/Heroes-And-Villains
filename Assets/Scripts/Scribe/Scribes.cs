@@ -12,7 +12,10 @@ public static class Scribes
 		Scribe scribe = null;
 		scribes.TryGetValue(scribeName, out scribe);
 		if (scribe == null)
+		{
 			Debug.Log ("Couldn't find scribe: " + scribeName);
+			scribe = Register(scribeName);
+		}
 		return scribe;
 	}
 
