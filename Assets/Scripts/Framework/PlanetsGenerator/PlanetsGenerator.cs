@@ -26,6 +26,7 @@ public class PlanetsGenerator : Root
 		modsManager = Find.Root<ModsManager>();
 		luaContext.LoadScripts (modsManager.GetFiles("Demiurg\\" + WiringTable), WiringTable);
 
+		Dictionary<string, Type> nodes = FindNodeTypes();
 
 
 		//creator.InitWiring(luaContext.GetTable(WiringTable), modules);
@@ -33,6 +34,10 @@ public class PlanetsGenerator : Root
 		Fulfill.Dispatch();
 	}
 
+	Dictionary<string, Type> FindNodeTypes ()
+	{
+		throw new NotImplementedException ();
+	}
 
 
 	int Outputs(ILuaState luaVM)

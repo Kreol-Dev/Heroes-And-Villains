@@ -19,6 +19,10 @@ namespace Demiurg
 	{
 		public T Content;
 		public NodeParam (string name) : base(name){}
+		public static implicit operator T(NodeParam<T> param)
+		{
+			return param.Content;
+		}
 
 	}
 }

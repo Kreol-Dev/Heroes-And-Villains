@@ -19,7 +19,7 @@ distinctor_module =
 		{ level = 1, val = 1}
 	},
 	inputs = {
-		MainInput = base_module.outputs.MainOutput
+		main = base_module.outputs.MainOutput
 	}
 }
 
@@ -28,10 +28,39 @@ continents_module =
 	module_type = "CoreMod.ContinuousChunksModule",
 	outputs = Outputs("continents_module", module_type),
 	params = {
-		chunks = { 1 },
+		chunks = { { value = 1 }, {value = 0} }, --1 is land, 0 is sea
 		planet_connectivity = "full"
 	},
 	inputs = {
-		MainInput = continents_module.outputs.MainOutput
+		main = continents_module.outputs.MainOutput
+	}
+}
+
+base_visual = 
+{
+	module_type = "CoreMod.FloatArrayVisualizer",
+	params = 
+	{
+		{ level = 0, red = 1, green = 1, blue = 1},
+		{ level = 1, red = 0, green = 0, blue = 0}
+		
+	},
+	inputs =
+	{
+		main = base_module.outputs.main
+	}
+}
+
+distinct_visual = 
+{
+	module_type = "CoreMod.IntArrayVisualizer",
+	params = 
+	{
+		{ level = 0, red = 0.3, green = 0.3, blue = 0.8},
+		{ level = 1, red = 0.3, green = 0.8, blue = 0.3}
+	},
+	inputs =
+	{
+		main = base_module.outputs.main
 	}
 }
