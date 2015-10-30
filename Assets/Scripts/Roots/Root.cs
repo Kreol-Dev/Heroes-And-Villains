@@ -11,6 +11,7 @@ public abstract class Root : MonoBehaviour, IDependency
 	Dependencies deps;
 	void Awake()
 	{
+		fullfill.AddOnce(() => {Debug.Log("Setup finished: " + gameObject.name);});
 		PreSetup();
 	}
 	void Start()

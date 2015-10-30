@@ -4,9 +4,7 @@ base_module =
 	params =
 	{
 		planet_width = 256,
-		planet_height = 128,
-		connectivity = 4,
-		planet_connectivity = "full"
+		planet_height = 128
 	},
 	outputs = Outputs("base_module", module_type)
 }
@@ -30,7 +28,8 @@ continents_module =
 	module_type = "CoreMod.ContinuousChunksModule",
 	outputs = Outputs("continents_module", module_type),
 	params = {
-		chunks = { 1 }
+		chunks = { 1 },
+		planet_connectivity = "full"
 	},
 	inputs = {
 		MainInput = continents_module.outputs.MainOutput

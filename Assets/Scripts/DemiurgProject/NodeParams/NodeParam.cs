@@ -1,0 +1,29 @@
+
+using UnityEngine;
+using System.Collections;
+using System.Collections.Generic;
+using LuaTableEntries;
+namespace Demiurg 
+{
+	public abstract class NodeParam
+	{
+		protected string Name;
+		public NodeParam (string name)
+		{
+			Name = name;
+		}
+		
+		public abstract void GetItself(Table table);
+	}
+	public abstract class NodeParam<T> : NodeParam
+	{
+		public T Content;
+		public NodeParam (string name) : base(name){}
+
+	}
+}
+
+
+
+
+
