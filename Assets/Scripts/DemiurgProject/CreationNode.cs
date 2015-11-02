@@ -59,6 +59,7 @@ namespace Demiurg
 		{
 			counter = new InputsCounter(Work);
 			Name = name;
+			Debug.Log(Name + " creation node initialized");
 			LoadParams(paramsTable);
 		}
 		protected void LoadParams(Table paramsTable)

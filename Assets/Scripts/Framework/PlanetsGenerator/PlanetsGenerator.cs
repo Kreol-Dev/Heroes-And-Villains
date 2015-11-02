@@ -11,10 +11,9 @@ using UniLua;
 [RootDependencies(typeof(LuaContext), typeof(ModsManager), typeof(ObjectsCreator))]
 public class PlanetsGenerator : Root
 {
-	public const string WiringTable = "Wiring";
+	public const string WiringTable = "wiring";
 	LuaContext luaContext;
 	ModsManager modsManager;
-	Dictionary<string, Type> modules;
 	protected override void CustomSetup ()
 	{
 		WorldCreator creator = new WorldCreator();
@@ -24,19 +23,26 @@ public class PlanetsGenerator : Root
 		luaContext = Find.Root<LuaContext>();
 		luaContext.DeclareLibrary("Demiurg", new NameFuncPair[]{new NameFuncPair( "module_outputs", Outputs)});
 		modsManager = Find.Root<ModsManager>();
-		luaContext.LoadScripts (modsManager.GetFiles("Demiurg\\" + WiringTable), WiringTable);
-
+		//luaContext.LoadScripts (modsManager.GetFiles("Demiurg\\" + WiringTable + ".lua"), WiringTable);
+		luaContext.LoadScript("Mods\\CoreMod\\Demiurg\\Wiring\\Wiring.lua", WiringTable);
 		Dictionary<string, Type> nodes = FindNodeTypes();
 
 
-		//creator.InitWiring(luaContext.GetTable(WiringTable), modules);
+		creator.InitWiring(luaContext.GetTable(WiringTable), nodes);
 
 		Fulfill.Dispatch();
 	}
 
 	Dictionary<string, Type> FindNodeTypes ()
 	{
-		throw new NotImplementedException ();
+		Dictionary<string, Type> nodes = new Dictionary<string, Type>();
+		Assembly asm = Assembly.GetExecutingAssembly();
+		foreach ( var type in asm.GetTypes())
+		{
+			if (type.IsSubclassOf(typeof(CreationNode)) && !type.IsAbstract && !type.IsGenericType)
+				nodes.Add(type.FullName, type);
+		}
+		return nodes;
 	}
 
 

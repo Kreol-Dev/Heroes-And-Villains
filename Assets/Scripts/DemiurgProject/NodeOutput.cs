@@ -11,8 +11,15 @@ namespace Demiurg
 		public NodeOutput(string name)
 		{
 			Name = name;
+			finishSignal.AddOnce(x => {Debug.Log("Finished output: "  + name);});
 		}
-		
+
+		public void Finish(T content)
+		{
+			Content = content;
+			finishSignal.Dispatch(Content);
+		}
+
 		public void Finish()
 		{
 			finishSignal.Dispatch(Content);

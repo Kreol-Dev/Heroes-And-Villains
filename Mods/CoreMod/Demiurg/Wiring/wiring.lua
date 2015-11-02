@@ -19,7 +19,7 @@ distinctor_module =
 		{ level = 1, val = 1}
 	},
 	inputs = {
-		main = base_module.outputs.MainOutput
+		main = base_module.outputs.main
 	}
 }
 
@@ -32,7 +32,7 @@ continents_module =
 		planet_connectivity = "full"
 	},
 	inputs = {
-		main = continents_module.outputs.MainOutput
+		main = continents_module.outputs.main
 	}
 }
 

@@ -42,6 +42,7 @@ public class LuaContext : Root
 		luaVM.SetUpvalue(2, 1);
 		try
 		{
+			scribe.LogFormat("Opening: {0}", path);
 			targetVM.Call(0, 0);
 			return true;
 		}

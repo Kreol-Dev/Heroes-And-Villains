@@ -13,6 +13,7 @@ namespace Demiurg
 		Dictionary<string, CreationNode> nodes;
 		public void InitWiring(Table wiring, Dictionary<string, Type> nodeTypes)
 		{
+			Debug.Log(wiring.Serialize());
 			Dictionary<string, Entry> entries = wiring.GetNamedEntries();
 			nodes = CreateNodes(entries, nodeTypes);
 			InitNodes(nodes, entries);
