@@ -38,17 +38,18 @@ public class LuaContext : Root
 	bool LoadFile(ILuaState targetVM, string path, string environment)
 	{
 		targetVM.L_LoadFile(path);
-		luaVM.GetGlobal(environment);
-		luaVM.SetUpvalue(2, 1);
+        //targetVM.GetGlobal(environment);
+        //targetVM.SetUpvalue(2, 1);
 		try
 		{
 			scribe.LogFormat("Opening: {0}", path);
 			targetVM.Call(0, 0);
+            //targetVM.PCall(0, 0, 0);
 			return true;
 		}
-		catch
+		catch (UniLua.LuaRuntimeException e)
 		{
-			scribe.LogFormat("Error opening: {0}", path);
+            scribe.LogFormat("Error opening: {0} {1}", path, e.ErrCode);
 			targetVM.Pop(1);
 			return false;
 		}

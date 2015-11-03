@@ -5,34 +5,31 @@ base_module =
 	{
 		planet_width = 256,
 		planet_height = 128
-	},
-	outputs = Outputs("base_module", module_type)
+	}
 }
 
 distinctor_module = 
 {
 	module_type = "CoreMod.DistinctorModule",
-	outputs = Outputs("distinctor_module", module_type),
 	params =
 	{
 		{ level = 0.6, val = 0},
 		{ level = 1, val = 1}
 	},
 	inputs = {
-		main = base_module.outputs.main
+		main = { "base_module", "main" }
 	}
 }
 
 continents_module = 
 {
 	module_type = "CoreMod.ContinuousChunksModule",
-	outputs = Outputs("continents_module", module_type),
 	params = {
 		chunks = { { value = 1 }, {value = 0} }, --1 is land, 0 is sea
 		planet_connectivity = "full"
 	},
 	inputs = {
-		main = continents_module.outputs.main
+		main = { "distinctor_module", "main" }
 	}
 }
 
@@ -47,7 +44,7 @@ base_visual =
 	},
 	inputs =
 	{
-		main = base_module.outputs.main
+		main = { "base_module", "main" }
 	}
 }
 
@@ -61,6 +58,6 @@ distinct_visual =
 	},
 	inputs =
 	{
-		main = base_module.outputs.main
+		main = { "distinctor_module", "main" }
 	}
 }
