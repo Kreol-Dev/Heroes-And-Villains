@@ -7,13 +7,14 @@ namespace Demiurg
 {
     public abstract class NodeParam
     {
-        protected string Name;
+        public string Name;
         public NodeParam (string name)
         {
             Name = name;
         }
 		
         public abstract void GetItself (Table table);
+        public abstract void GetItselfFrom (object o);
     }
     public abstract class NodeParam<T> : NodeParam
     {

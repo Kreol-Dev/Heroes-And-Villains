@@ -12,7 +12,11 @@ namespace Demiurg
         }
         public override void GetItself (Table table)
         {
-            Content = (float)table [Name];
+            Content = (float)(double)table [Name];
+        }
+        public override void GetItselfFrom (object o)
+        {
+            Content = (float)(double)o;
         }
     }
 }

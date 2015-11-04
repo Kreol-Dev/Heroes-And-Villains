@@ -24,10 +24,10 @@ namespace CoreMod
         }
         Color FindColor (int value)
         {
-            for (int i = 0; i < levels.Length - 1; i++)
+            for (int i = 0; i < levels.Length; i++)
             {
-                if (levels [i + 1].Level >= value && levels [i].Level <= value)
-                    return Color.Lerp (levels [i].Color, levels [i + 1].Color, Mathf.InverseLerp (levels [i].Level, levels [i + 1].Level, value));
+                if (levels [i].Level == value)
+                    return levels [i].Color;
             }
             return Color.clear;
         }

@@ -14,6 +14,10 @@ namespace Demiurg
         {
             Content = (bool)table [Name];
         }
+        public override void GetItselfFrom (object o)
+        {
+            Content = (bool)o;
+        }
     }
 }
 

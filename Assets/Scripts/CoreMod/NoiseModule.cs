@@ -1,7 +1,6 @@
 using System;
 using Demiurg;
 using UnityEngine;
-
 namespace CoreMod
 {
     public class NoiseModule : CreationNode
@@ -19,11 +18,13 @@ namespace CoreMod
         }
 
         protected override void Work ()
-        {
-            DiamondSquare ds = new DiamondSquare (sizeX, sizeY, sizeX / 8, 0, false);
+        { 
+            DiamondSquare ds = new DiamondSquare (sizeX, sizeY, sizeX / 8, 0, true);
             float[,] values = ds.GetNormalValues ();
             main.Finish (values);
+
         }
+       
         class DiamondSquare
         {
             double[] values;
@@ -39,14 +40,24 @@ namespace CoreMod
                 this.width = width;
                 this.featuresize = featuresize;
 				
-                for (int y = 0; y < height; y += 1)
-                    for (int x = 0; x < width; x += 1)
-                    {
-                        if (x != 0 && x != width - 1 && y != 0 && y != height - 1 || !nullEdges)
+                if (nullEdges)
+                {
+                    for (int y = 0; y < height; y += 1)
+                        for (int x = 0; x < width; x += 1)
+                        {
+                            if (x == 0 || y == 0 || x == width - 1 || y == height - 1)
+                                SetSample (x, y, -1.0);
+                            else
+                                SetSample (x, y, (rand.NextDouble () * 2.0 - 1.0));
+                        }
+                }
+                else
+                {
+                    for (int y = 0; y < height; y += 1)
+                        for (int x = 0; x < width; x += 1)
                             SetSample (x, y, (rand.NextDouble () * 2.0 - 1.0));
-                        else
-                            SetSample (x, y, -1.0);
-                    }
+                }
+               
 				
 				
                 int samplesize = featuresize;

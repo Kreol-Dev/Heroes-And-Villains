@@ -2,6 +2,7 @@
 using System.Collections;
 using System.Collections.Generic;
 using Demiurg;
+using UnityEngine;
 
 
 namespace CoreMod
@@ -33,8 +34,14 @@ namespace CoreMod
             for (int i = 0; i < pairs.Length - 1; i++)
             {
                 if (pairs [i + 1].Level >= value && pairs [i].Level <= value)
-                    return pairs [i].Value;
+                {
+                    //Debug.LogFormat ("{2} <= {1} <= {0} ----> {3}", pairs [i + 1].Level, value, pairs [i].Level, pairs [i + 1].Value);
+                    return pairs [i + 1].Value;
+                }
+                    
             }
+            if (value > pairs [pairs.Length - 1].Level)
+                return pairs [pairs.Length - 1].Value;
             return pairs [0].Value;
         }
 

@@ -26,6 +26,7 @@ namespace CoreMod
         {
             for (int i = 0; i < levels.Length - 1; i++)
             {
+                //Debug.LogFormat ("{0} {1} {2}", levels [i + 1].Level, value, levels [i].Level);
                 if (levels [i + 1].Level >= value && levels [i].Level <= value)
                     return Color.Lerp (levels [i].Color, levels [i + 1].Color, Mathf.InverseLerp (levels [i].Level, levels [i + 1].Level, value));
             }

@@ -14,7 +14,10 @@ namespace Demiurg
         {
             Content = (string)table [Name];
         }
-		
+        public override void GetItselfFrom (object o)
+        {
+            Content = (string)o;
+        }
     }
 }
 

@@ -30,7 +30,11 @@ namespace Demiurg
             {
                 counter--;
                 if (counter == 0)
+                {
                     action ();
+                    action = () => {};
+                }
+                    
             }
         }
         protected T Config<T> (string name) where T : NodeParam
@@ -62,6 +66,7 @@ namespace Demiurg
         }
         protected void LoadParams (Table paramsTable)
         {
+            Debug.Log (paramsTable);
             for (int i = 0; i < parameters.Count; i++)
                 parameters [i].GetItself (paramsTable);
         }
