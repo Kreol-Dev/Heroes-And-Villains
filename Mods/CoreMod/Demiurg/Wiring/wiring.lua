@@ -3,8 +3,8 @@ base_module =
 	module_type = "CoreMod.NoiseModule",
 	params =
 	{
-		planet_width = 16,
-		planet_height = 8
+		planet_width = 512,
+		planet_height = 256
 	}
 }
 
