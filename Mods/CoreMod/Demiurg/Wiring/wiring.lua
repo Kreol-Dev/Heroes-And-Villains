@@ -25,7 +25,6 @@ continents_module =
 {
 	module_type = "CoreMod.ContinuousChunksModule",
 	params = {
-		chunks = { { value = 1 }, {value = 0} }, --1 is land, 0 is sea
 		planet_connectivity = "full"
 	},
 	inputs = {
@@ -38,6 +37,7 @@ base_visual =
 	module_type = "CoreMod.FloatArrayVisualizer",
 	params = 
 	{
+		random = false,
 		{ level = 0, red = 0, green = 0, blue = 0},
 		{ level = 1, red = 1, green = 1, blue = 1}
 		
@@ -59,5 +59,18 @@ distinct_visual =
 	inputs =
 	{
 		main = { "distinctor_module", "main" }
+	}
+}
+
+chunks_visual = 
+{
+	module_type = "CoreMod.IntArrayVisualizer",
+	params = 
+	{
+		random = true
+	},
+	inputs =
+	{
+		main = { "continents_module", "assignments" }
 	}
 }

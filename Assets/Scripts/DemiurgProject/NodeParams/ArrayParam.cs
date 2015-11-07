@@ -48,20 +48,26 @@ namespace Demiurg
         {
             Debug.Log ("Get array param " + Name);
             var list = new List<DynValue> (table.Values);
-            Content = new T[list.Count];
+            List<T> contentList = new List<T> ();
             Debug.Log (list.Count);
             for (int i = 0; i < list.Count; i++)
             {
-                Content [i] = new T ();
+
                 var element = list [i];
+                if (element.Type != DataType.Table)
+                    continue;
+                T entry = new T ();
                 Debug.Log (nodeParams.Count);
                 foreach (var param in nodeParams)
                 {
-                    Debug.Log (((NodeParam)param.GetValue (Content [i])).Name);
-                    ((NodeParam)param.GetValue (Content [i])).GetItself (element.Table);
+                    Debug.Log (((NodeParam)param.GetValue (entry)).Name);
+                    ((NodeParam)param.GetValue (entry)).GetItself (element.Table);
                 }
+                contentList.Add (entry);
                     
             }
+            Content = contentList.ToArray ();
+
 
         }
         public override void GetItselfFrom (object o)

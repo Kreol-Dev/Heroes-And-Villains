@@ -7,7 +7,7 @@ namespace Demiurg
 {
     public abstract class NodeParam
     {
-        public string Name;
+        public string Name { get; internal set; }
         public NodeParam (string name)
         {
             Name = name;

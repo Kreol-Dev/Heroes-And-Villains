@@ -17,10 +17,12 @@ namespace CoreMod
             public Color Color;
         }
         LevelPair[] levels;
+        BoolParam random;
         protected override void SetupIOP ()
         {
             base.SetupIOP ();
             main = Input<int[,]> ("main");
+            random = Config<BoolParam> ("random");
         }
         Color FindColor (int value)
         {
@@ -33,22 +35,40 @@ namespace CoreMod
         }
         protected override Sprite CreateSprite ()
         {
-            levels = new LevelPair[Levels.Content.Length];
-            for (int i = 0; i < Levels.Content.Length; i++)
-            {
-                levels [i].Level = (int)Levels.Content [i].Level.Content;
-                levels [i].Color = new Color (
-					Levels.Content [i].Red,
-					Levels.Content [i].Green,
-					Levels.Content [i].Blue);
-				
-            }
             Texture2D texture = new Texture2D (main.Content.GetLength (0), main.Content.GetLength (1));
-            for (int i = 0; i < main.Content.GetLength(0); i++)
-                for (int j = 0; j < main.Content.GetLength(1); j++)
+            if (!random.Content)
+            {
+                levels = new LevelPair[Levels.Content.Length];
+                for (int i = 0; i < Levels.Content.Length; i++)
                 {
-                    texture.SetPixel (i, j, FindColor (main.Content [i, j]));
+                    levels [i].Level = (int)Levels.Content [i].Level.Content;
+                    levels [i].Color = new Color (
+                        Levels.Content [i].Red,
+                        Levels.Content [i].Green,
+                        Levels.Content [i].Blue);
+                    
                 }
+                for (int i = 0; i < main.Content.GetLength(0); i++)
+                    for (int j = 0; j < main.Content.GetLength(1); j++)
+                    {
+                        texture.SetPixel (i, j, FindColor (main.Content [i, j]));
+                    }
+            }
+            else
+            {
+                Dictionary<int, Color> colors = new Dictionary<int, Color> ();
+                for (int i = 0; i < main.Content.GetLength(0); i++)
+                    for (int j = 0; j < main.Content.GetLength(1); j++)
+                    {
+                        Color color = Color.white;
+                        if (!colors.TryGetValue (main.Content [i, j], out color))
+                        {
+                            color = new Color (Random.Range (0, 1f), Random.Range (0, 1f), Random.Range (0, 1f));
+                            colors.Add (main.Content [i, j], color);
+                        }
+                        texture.SetPixel (i, j, color);
+                    }
+            }
             texture.Apply ();
             return Sprite.Create (texture, Rect.MinMaxRect (0, 0, main.Content.GetLength (0), main.Content.GetLength (1)), Vector2.zero);
         }

@@ -12,11 +12,16 @@ namespace Demiurg
         }
         public override void GetItself (Table table)
         {
-            Content = (bool)table [Name];
+            object o = table [Name];
+            if (o != null)
+                GetItselfFrom (o);
         }
         public override void GetItselfFrom (object o)
         {
-            Content = (bool)o;
+            if (o is bool)
+                Content = (bool)o;
+            else
+                Content = false;
         }
     }
 }
