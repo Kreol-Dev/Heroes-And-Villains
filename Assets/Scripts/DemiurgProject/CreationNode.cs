@@ -7,6 +7,7 @@ namespace Demiurg
 {
     public abstract class CreationNode
     {
+        protected System.Random Random;
         Scribe scribe = Scribes.Find ("NodesScribe");
         public string Name { get; internal set; }
         Dictionary<string, object> inputs = new Dictionary<string, object> ();
@@ -102,6 +103,7 @@ namespace Demiurg
 
         public void PrepareNode ()
         {
+            Random = new System.Random (0);
             counter = new InputsCounter (Start);
             SetupIOP ();
         }

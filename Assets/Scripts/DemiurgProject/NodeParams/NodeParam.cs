@@ -7,10 +7,12 @@ namespace Demiurg
 {
     public abstract class NodeParam
     {
+        public bool Undefined { get; internal set; }
         public string Name { get; internal set; }
         public NodeParam (string name)
         {
             Name = name;
+            Undefined = false;
         }
 		
         public abstract void GetItself (Table table);

@@ -13,7 +13,7 @@ namespace CoreMod
             public bool Active { get; internal set; }
             public List<int> Tiles = new List<int> ();
             public List<int> Frontier = new List<int> ();
-            int surface;
+            public int Surface { get; internal set; }
             public int ID { get; internal set; }
             AgentEnvironment env;
             public ChunkAgent (int id, int tile, AgentEnvironment env)
@@ -22,7 +22,7 @@ namespace CoreMod
                 ID = id;
                 this.env = env;
                 env.AssignID (tile, this);
-                surface = env.Surface (tile);
+                Surface = env.Surface (tile);
                 Frontier.Add (tile);
             }
 
@@ -63,14 +63,14 @@ namespace CoreMod
                 if (nextTileAssignment == -1)
                 {
                     //Debug.LogFormat ("{0} {1}", nextTileSurface, surface);
-                    if (nextTileSurface == surface)
+                    if (nextTileSurface == Surface)
                         return nextTile;
                     env.NewAgent (nextTile);
                 }
                 else
                 if (nextTileAssignment != this.ID)
                 {
-                    if (nextTileSurface == surface)
+                    if (nextTileSurface == Surface)
                         env.MergeAgents (nextTileAssignment, this);
                 }
                 return -1;

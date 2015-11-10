@@ -11,6 +11,7 @@ namespace CoreMod
     {
 
         NodeInput<int[,]> main;
+        NodeOutput<Texture2D> mainO;
         struct LevelPair
         {
             public int Level;
@@ -22,6 +23,7 @@ namespace CoreMod
         {
             base.SetupIOP ();
             main = Input<int[,]> ("main");
+            mainO = Output<Texture2D> ("main");
             random = Config<BoolParam> ("random");
         }
         Color FindColor (int value)
@@ -63,13 +65,14 @@ namespace CoreMod
                         Color color = Color.white;
                         if (!colors.TryGetValue (main.Content [i, j], out color))
                         {
-                            color = new Color (Random.Range (0, 1f), Random.Range (0, 1f), Random.Range (0, 1f));
+                            color = new Color ((float)Random.NextDouble (), (float)Random.NextDouble (), (float)Random.NextDouble ());
                             colors.Add (main.Content [i, j], color);
                         }
                         texture.SetPixel (i, j, color);
                     }
             }
             texture.Apply ();
+            mainO.Finish (texture);
             return Sprite.Create (texture, Rect.MinMaxRect (0, 0, main.Content.GetLength (0), main.Content.GetLength (1)), Vector2.zero);
         }
     }

@@ -12,13 +12,15 @@ namespace Demiurg
         }
         public override void GetItself (Table table)
         {
-
-            Content = (int)(double)table [Name];
-            Debug.LogFormat ("{0} {1} {2}", Content, (double)table [Name], table [Name]);
+            object o = table [Name];
+            GetItselfFrom (o);
         }
         public override void GetItselfFrom (object o)
         {
-            Content = (int)(double)o;
+            if (o == null)
+                Undefined = true;
+            else
+                Content = (int)(double)o;
         }
     }
 }

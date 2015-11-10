@@ -37,7 +37,6 @@ base_visual =
 	module_type = "CoreMod.FloatArrayVisualizer",
 	params = 
 	{
-		random = false,
 		{ level = 0, red = 0, green = 0, blue = 0},
 		{ level = 1, red = 1, green = 1, blue = 1}
 		
@@ -72,5 +71,52 @@ chunks_visual =
 	inputs =
 	{
 		main = { "continents_module", "assignments" }
+	}
+}
+
+
+surface_extractor =
+{
+
+
+	module_type = "CoreMod.ExtractSurfaceFromChunks",
+	params =
+	{
+		target_surface = 1
+	},
+	inputs =
+	{
+		main = { "continents_module", "chunks"}
+	}
+}
+
+random_points = 
+{
+
+	module_type = "CoreMod.RandomPointsOnTiles",
+	params =
+	{
+		density = 1000
+	},
+	inputs = 
+	{
+		main = { "surface_extractor", "main" }
+	}
+}
+
+points_visualizer =
+{
+
+	module_type = "CoreMod.PointsVisualizer",
+	params =
+	{
+		tile_red = 1,
+		tile_green = 1,
+		tile_blue = 1
+	},
+	inputs = 
+	{
+		base_texture = { "chunks_visual", "main" },
+		tiles = { "random_points", "main" }
 	}
 }

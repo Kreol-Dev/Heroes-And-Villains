@@ -12,13 +12,13 @@ namespace CoreMod
 
         NodeInput<int[,]> mainI;
         NodeOutput<int[,]> assignmentsO;
-        NodeOutput<Dictionary<int, List<int>>> chunksO;
+        NodeOutput<List<GameObject>> chunksO;
         StringParam planetConnectivity;
         protected override void SetupIOP ()
         {
             mainI = Input<int[,]> ("main");
             assignmentsO = Output<int[,]> ("assignments");
-            chunksO = Output<Dictionary<int, List<int>>> ("chunks");
+            chunksO = Output<List<GameObject>> ("chunks");
             planetConnectivity = Config<StringParam> ("planet_connectivity");
         }
         protected override void Work ()
@@ -42,36 +42,22 @@ namespace CoreMod
                 outputAssignments [i % sizeX, i / sizeX] = env.Assigned [i];
             assignmentsO.Finish (outputAssignments);
 
-            chunksO.Content = new Dictionary<int, List<int>> ();
-            var chunks = chunksO.Content;
+            List<GameObject> objects = new List<GameObject> ();
             for (int i = 0; i < env.Agents.Count; i++)
-                chunks.Add (env.Agents [i].ID, env.Agents [i].Tiles);
-            chunksO.Finish (chunks);
+            {
+                ChunkAgent agent = env.Agents [i];
+                GameObject obj = new GameObject ("Chunk GO");
+                ChunkSlot slot = obj.AddComponent<ChunkSlot> ();
+                slot.Tiles = new TileRef[agent.Tiles.Count];
+                for (int j = 0; j < agent.Tiles.Count; j++)
+                    slot.Tiles [j] = new TileRef (){X = agent.Tiles[j] % sizeX, Y = agent.Tiles[j] / sizeX};
+                slot.ID = agent.ID;
+                slot.Surface = agent.Surface;
+                objects.Add (obj);
+            }
+            chunksO.Finish (objects);
         }
-        #region enums
-        enum TilesConnection
-        {
-            Four,
-            Eight
-        }
-        enum EnvConnection
-        {
-            None,
-            Cylinder,
-            Sphere
-        }
-        enum Direction
-        {
-            Left,
-            Right,
-            Top,
-            Down,
-            TopLeft,
-            TopRight,
-            DownLeft,
-            DownRight
-        }
-        #endregion
+       
     }
 
    
