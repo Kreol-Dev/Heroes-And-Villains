@@ -19,7 +19,7 @@ namespace CoreMod
 
         protected override void Work ()
         { 
-            DiamondSquare ds = new DiamondSquare (sizeX, sizeY, sizeX / 8, 0, true);
+            DiamondSquare ds = new DiamondSquare (sizeX, sizeY, sizeX / 8, Random.Next (), true);
             float[,] values = ds.GetNormalValues ();
             main.Finish (values);
 

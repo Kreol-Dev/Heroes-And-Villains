@@ -82,7 +82,8 @@ surface_extractor =
 	module_type = "CoreMod.ExtractSurfaceFromChunks",
 	params =
 	{
-		target_surface = 1
+		target_surface = 1,
+		filter_less = 10
 	},
 	inputs =
 	{

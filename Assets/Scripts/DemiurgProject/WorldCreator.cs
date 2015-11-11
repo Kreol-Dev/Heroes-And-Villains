@@ -41,11 +41,12 @@ namespace Demiurg
 
         void InitNodes (Dictionary<string, CreationNode> nodes, Dictionary<string, Table> entries)
         {
+            System.Random random = new System.Random ();
             foreach (var element in entries)
             {
                 Table elementTable = element.Value as Table;
                 CreationNode node = nodes [element.Key];
-                node.PrepareNode ();
+                node.PrepareNode (random.Next ());
                 node.Init (element.Key, elementTable ["params"] as Table);
             }
         }

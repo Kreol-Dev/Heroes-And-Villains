@@ -101,9 +101,9 @@ namespace Demiurg
             return input as NodeInput;
         }
 
-        public void PrepareNode ()
+        public void PrepareNode (int seed)
         {
-            Random = new System.Random (0);
+            Random = new System.Random (seed);
             counter = new InputsCounter (Start);
             SetupIOP ();
         }
