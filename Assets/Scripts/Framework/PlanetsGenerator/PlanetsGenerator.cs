@@ -28,18 +28,26 @@ public class PlanetsGenerator : Root
         //luaContext.LoadScript ("Mods\\CoreMod\\Demiurg\\Wiring\\Wiring.lua", WiringTable);
         Dictionary<string, Type> nodes = FindNodeTypes ();
         Script script = new Script ();
-        
-        Table context = new Table (script);
+
+        script.Globals ["wiring"] = new Table (script);
+        script.Globals ["tags"] = new Table (script);
+        script.Globals ["tag_expressions"] = new Table (script);
         script.Options.ScriptLoader = new FileSystemScriptLoader ();
-        script.DoFile ("Mods\\CoreMod\\Demiurg\\Wiring\\Wiring.lua", context);
+        script.DoFile ("Mods\\CoreMod\\Demiurg\\TagExpressions\\Expressions.lua", script.Globals ["tag_expressions"] as Table);
+        
+        (script.Globals ["tags"] as Table) ["tag_expressions"] = script.Globals ["tag_expressions"];
+        script.DoFile ("Mods\\CoreMod\\Demiurg\\Tags\\Tags.lua", script.Globals ["tags"] as Table);
+        script.DoFile ("Mods\\CoreMod\\Demiurg\\Wiring\\Wiring.lua", script.Globals ["wiring"] as Table);
+
+
         //script.Globals.Values
         Dictionary<string, Table> tables = new Dictionary<string, Table> ();
-        foreach (var pair in context.Pairs)
+        foreach (var pair in ((Table)script.Globals ["wiring"]).Pairs)
         {
             Debug.Log (pair.Key.CastToString ());
             tables.Add (pair.Key.CastToString (), pair.Value.Table);
         }
-
+        creator.SetupTags (FormTags (script.Globals ["tags"] as Table));
         creator.InitWiring (tables, nodes);
 
         Fulfill.Dispatch ();
@@ -57,6 +65,18 @@ public class PlanetsGenerator : Root
         return nodes;
     }
 
+    public Dictionary<string, Tag> FormTags (Table tagsTable)
+    {
+        Dictionary<string, Tag> tags = new Dictionary<string, Tag> ();
+        foreach (var entry in tagsTable.Pairs)
+        {
+            if (entry.Value.Table ["expression"] == null)
+                continue;
+            Tag tag = new Tag (entry.Key.ToPrintString (), tags.Count, entry.Value.Table ["expression"] as Closure, entry.Value.Table ["criteria"] as Table);
+            tags.Add (entry.Key.ToPrintString (), tag);
+        }
+        return tags;
+    }
  
 }
 

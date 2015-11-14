@@ -7,8 +7,9 @@ namespace Demiurg
 {
     public abstract class CreationNode
     {
+        public WorldCreator Creator;
         protected System.Random Random;
-        Scribe scribe = Scribes.Find ("NodesScribe");
+        protected Scribe Scribe = Scribes.Find ("NodesScribe");
         public string Name { get; internal set; }
         Dictionary<string, object> inputs = new Dictionary<string, object> ();
         Dictionary<string, object> outputs = new Dictionary<string, object> ();
@@ -78,12 +79,12 @@ namespace Demiurg
             outputs.TryGetValue (name, out protoOutput);
             if (protoOutput == null)
             {
-                scribe.LogFormat ("Can't find output {0} in {1} ({2})", name, Name, this.GetType ());
+                Scribe.LogFormat ("Can't find output {0} in {1} ({2})", name, Name, this.GetType ());
             }
             NodeOutput<T> output = protoOutput as NodeOutput<T>;
             if (output == null)
             {
-                scribe.LogFormat ("Can't cast output {0} in {1} ({2}) to type {3}", name, Name, this.GetType (), typeof(NodeOutput<T>));
+                Scribe.LogFormat ("Can't cast output {0} in {1} ({2}) to type {3}", name, Name, this.GetType (), typeof(NodeOutput<T>));
             }
             return output;
         }
@@ -94,7 +95,7 @@ namespace Demiurg
             inputs.TryGetValue (name, out input);
             if (input == null)
             {
-                scribe.LogFormat ("Can't find input {0} in {1} ({2})", name, Name, this.GetType ());
+                Scribe.LogFormat ("Can't find input {0} in {1} ({2})", name, Name, this.GetType ());
                 foreach (var inp in inputs)
                     Debug.LogFormat ("{0} {1} {2}", inp.Key == name, inp.Key, name);
             }

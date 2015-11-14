@@ -1,28 +1,47 @@
 using UnityEngine;
 using System.Collections;
 using System.Collections.Generic;
-
+using MoonSharp.Interpreter;
+[System.Serializable]
 public class Tag
 {
-    public string Name { get; internal set; }
+    [SerializeField]
+    string
+        name;
+    public string Name { get { return name; } }
     public int ID { get; internal set; }
-    public Tag (string name, int id)
+    Table criteria;
+    Closure checkFunction;
+    public Tag (string name, int id, Closure checkFunction, Table criteria)
     {
-        Name = name;
+        this.name = name;
         ID = id;
+        this.checkFunction = checkFunction;
+        this.criteria = criteria;
+    }
+
+    public bool CheckSlot (GameObject go)
+    {
+        return checkFunction.Call (criteria).CastToBool ();
     }
 }
 
-
+[System.Serializable]
 public class TagsCollection
 {
     public delegate void TagDelegate (Tag tag);
     public event TagDelegate TagAdded;
     public event TagDelegate TagRemoved;
-    List<Tag> assignedTags;
-    void Awake ()
+    [SerializeField]
+    List<Tag>
+        assignedTags;
+
+
+    public TagsCollection ()
     {
         assignedTags = new List<Tag> ();
+        TagAdded += x => {};
+        TagRemoved += x => {};
     }
     public void AddTag (Tag tag)
     {
@@ -39,6 +58,13 @@ public class TagsCollection
                 assignedTags.Insert (0, tag);
             }
             else
+            if (assignedTags [0].ID < tag.ID && assignedTags.Count == 1)
+            {
+                TagAdded (tag);
+                assignedTags.Insert (0, tag);
+            }
+            else
+            {
                 for (int i = 1; i < assignedTags.Count; i++)
                     if (assignedTags [i].ID > tag.ID)
                     {
@@ -47,9 +73,12 @@ public class TagsCollection
                             TagAdded (tag);
                             assignedTags.Insert (i, tag);
                         }
-                        
-                        break;
+                    
+                        return;
                     }
+                assignedTags.Add (tag);
+            }
+                
         }
     }
     

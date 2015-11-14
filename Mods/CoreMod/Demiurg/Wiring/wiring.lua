@@ -4,7 +4,8 @@ base_module =
 	params =
 	{
 		planet_width = 512,
-		planet_height = 256
+		planet_height = 256,
+		scale = 3
 	}
 }
 
@@ -49,7 +50,7 @@ base_visual =
 
 distinct_visual = 
 {
-	module_type = "CoreMod.IntArrayVisualizer",
+	module_type = "CoreMod.DistinctArrayVisualizer",
 	params = 
 	{
 		{ level = 0, red = 0.3, green = 0.3, blue = 0.8},
@@ -63,7 +64,7 @@ distinct_visual =
 
 chunks_visual = 
 {
-	module_type = "CoreMod.IntArrayVisualizer",
+	module_type = "CoreMod.DistinctArrayVisualizer",
 	params = 
 	{
 		random = true
@@ -119,5 +120,174 @@ points_visualizer =
 	{
 		base_texture = { "chunks_visual", "main" },
 		tiles = { "random_points", "main" }
+	}
+}
+
+latitude_temp_module =
+{
+	module_type = "CoreMod.LatitudeModule",
+	params =
+	{
+		north_value = -50,
+		central_value = 40,
+		width = 512,
+		height = 256
+	}
+
+}
+
+
+temperature_noise = 
+{
+	module_type = "CoreMod.NoiseModule",
+	params =
+	{
+		planet_width = 512,
+		planet_height = 256,
+		scale = 2
+	}
+}
+
+array_temperature_noise =
+{
+	module_type = "CoreMod.FloatToIntArray",
+	params = {
+		max_value = 50,
+		min_value = -50
+	},
+	inputs = 
+	{
+		main = { "temperature_noise", "main" }
+	}
+}
+
+temperature_blend =
+{
+	module_type = "CoreMod.ArrayBlendModule",
+	params =
+	{
+		weight = 0.8
+	},
+	inputs = 
+	{
+		first = { "latitude_temp_module", "main" },
+		second = { "array_temperature_noise", "main" }
+	}
+}
+lat_visual = 
+{
+	module_type = "CoreMod.IntArrayVisualizer",
+	params = 
+	{
+		{ level = -50, red = 0, green = 0, blue = 1},
+		{ level = 50, red = 1, green = 0, blue = 0}
+	},
+	inputs =
+	{
+		main = { "latitude_temp_module", "main" }
+	}
+}
+temp_noise_visual = 
+{
+	module_type = "CoreMod.IntArrayVisualizer",
+	params = 
+	{
+		{ level = -50, red = 0, green = 0, blue = 1},
+		{ level = 50, red = 1, green = 0, blue = 0}
+	},
+	inputs =
+	{
+		main = { "array_temperature_noise", "main" }
+	}
+}
+temperature_visual = 
+{
+	module_type = "CoreMod.IntArrayVisualizer",
+	params = 
+	{
+		{ level = -50, red = 0, green = 0, blue = 1},
+		{ level = 50, red = 1, green = 0, blue = 0}
+	},
+	inputs =
+	{
+		main = { "temperature_blend", "main" }
+	}
+}
+
+height_noise = 
+{
+	module_type = "CoreMod.NoiseModule",
+	params =
+	{
+		planet_width = 512,
+		planet_height = 256,
+		scale = 3
+	}
+}
+
+array_height_noise =
+{
+	module_type = "CoreMod.FloatToIntArray",
+	params = {
+		max_value = 8000,
+		min_value = -4000
+	},
+	inputs = 
+	{
+		main = { "height_noise", "main" }
+	}
+}
+
+height_visual = 
+{
+	module_type = "CoreMod.IntArrayVisualizer",
+	params = 
+	{
+		{ level = -4000, red = 0, green = 0, blue = 1},
+		{ level = 0, red = 0, green = 1, blue = 1},
+		{ level = 4000, red = 0.8, green = 0.8, blue = 0},
+		{ level = 8000, red = 1, green = 1, blue = 1}
+	},
+	inputs =
+	{
+		main = { "array_height_noise", "main" }
+	}
+}
+
+cities_placer =
+{
+	module_type = "CoreMod.SlotsPlacer",
+	inputs = 
+	{
+		points = {"random_points", "main"}
+	}	
+}
+climate_gatherer =
+{
+	module_type = "CoreMod.ClimateDataGatherer",
+	inputs = 
+	{
+		main = { "cities_placer", "slots" },
+		temperature_map = { "temperature_blend", "main"},
+		height_map = { "array_height_noise", "main" },
+		inlandness_map = { "base_module", "main"}
+	}
+}
+
+climate_tags_assigner =
+{
+	module_type = "CoreMod.TagsAssigner",
+	params =
+	{
+		tags = {
+		{ tag_name = "climate_desert" },
+		{ tag_name = "climate_mountains" },
+		{ tag_name = "climate_plains" }
+
+		}
+	},
+	inputs =
+	{
+		main = { "climate_gatherer", "main" }
 	}
 }

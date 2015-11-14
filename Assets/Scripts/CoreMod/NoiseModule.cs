@@ -9,17 +9,18 @@ namespace CoreMod
 
         IntParam sizeX;
         IntParam sizeY;
-
+        IntParam scale;
         protected override void SetupIOP ()
         {
             main = Output<float[,]> ("main");
             sizeX = Config<IntParam> ("planet_width");
             sizeY = Config<IntParam> ("planet_height");
+            scale = Config<IntParam> ("scale");
         }
 
         protected override void Work ()
         { 
-            DiamondSquare ds = new DiamondSquare (sizeX, sizeY, sizeX / 8, Random.Next (), true);
+            DiamondSquare ds = new DiamondSquare (sizeX, sizeY, sizeX / (int)Mathf.Pow (2, scale), Random.Next (), true);
             float[,] values = ds.GetNormalValues ();
             main.Finish (values);
 

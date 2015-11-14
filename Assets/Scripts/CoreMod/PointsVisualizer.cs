@@ -20,7 +20,7 @@ namespace CoreMod
         }
         protected override void Work ()
         {
-            Color tileColor = new Color (red, green, blue);
+            Color tileColor = new Color (red, green, blue, 0.5f);
             Texture2D texture = Object.Instantiate<Texture2D> (baseTextureI.Content);
             for (int i = 0; i < tiles.Content.Length; i++)
                 texture.SetPixel (tiles.Content [i].X, tiles.Content [i].Y, tileColor);

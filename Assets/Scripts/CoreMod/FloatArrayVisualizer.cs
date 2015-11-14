@@ -41,7 +41,8 @@ namespace CoreMod
                 levels [i].Color = new Color (
 					Levels.Content [i].Red,
 					Levels.Content [i].Green,
-					Levels.Content [i].Blue);
+                    Levels.Content [i].Blue,
+                    0.5f);
 				
             }
             Texture2D texture = new Texture2D (main.Content.GetLength (0), main.Content.GetLength (1));

@@ -11,6 +11,17 @@ namespace Demiurg
     {
         Scribe scribe = Scribes.Find ("WorldCreator");
         Dictionary<string, CreationNode> nodes;
+        Dictionary<string, Tag> tags;
+        public Tag FindTag (string tagID)
+        {
+            Tag tag = null;
+            tags.TryGetValue (tagID, out tag);
+            return tag;
+        }
+        public void SetupTags (Dictionary<string, Tag> tags)
+        {
+            this.tags = tags;
+        }
 
         public void InitWiring (Dictionary<string, Table> nodesTables, Dictionary<string, Type> nodesTypes)
         {
@@ -28,12 +39,20 @@ namespace Demiurg
             {
                 string moduleTypeName = (string)pair.Value ["module_type"];
                 if (moduleTypeName == null)
+                {
+                    scribe.LogFormatWarning ("Can't find module_type field for {0}", pair.Key);
                     continue;
+                }
+                    
                 Type moduleType = null;
                 nodesTypes.TryGetValue (moduleTypeName, out moduleType);
                 if (moduleType == null)
+                {
+                    scribe.LogFormatWarning ("Can't find module_type for {0}", pair.Key);
                     continue;
+                }
                 CreationNode node = Activator.CreateInstance (moduleType) as CreationNode;
+                node.Creator = this;
                 nodes.Add (pair.Key, node);
             }
             return nodes;
@@ -45,7 +64,13 @@ namespace Demiurg
             foreach (var element in entries)
             {
                 Table elementTable = element.Value as Table;
-                CreationNode node = nodes [element.Key];
+                CreationNode node = null;
+                nodes.TryGetValue (element.Key, out node);
+                if (node == null)
+                {
+                    scribe.LogFormatWarning ("Can't find node {0}", element.Key);
+                    continue;
+                }
                 node.PrepareNode (random.Next ());
                 node.Init (element.Key, elementTable ["params"] as Table);
             }
@@ -58,36 +83,42 @@ namespace Demiurg
                 Table inputs = element.Value ["inputs"] as Table;
                 if (inputs == null)
                 {
-                    scribe.LogFormat ("No inputs specified for {0}", element.Key);
+                    scribe.LogFormatWarning ("No inputs specified for {0}", element.Key);
                     continue;
                 }
-                CreationNode node = nodes [element.Key];
+                CreationNode node = null;
+                nodes.TryGetValue (element.Key, out node);
+                if (node == null)
+                {
+                    scribe.LogFormatWarning ("Can't find node {0}", element.Key);
+                    continue;
+                }
                 foreach (var input in inputs.Pairs)
                 {
                     //node.GetInput(input.Key).ConnectTo()
                     NodeInput nodeInput = node.GetInput (input.Key.CastToString ());
                     if (nodeInput == null)
                     {
-                        scribe.LogFormat ("Can't find input {1} in {0}", element.Key, input.Key);
+                        scribe.LogFormatWarning ("Can't find input {1} in {0}", element.Key, input.Key);
                         continue;
                     }
                     CreationNode targetNode = null;
                     string targetNodeName = (string)input.Value.Table [1];
                     if (targetNodeName == null)
                     {
-                        scribe.LogFormat ("Can't parse output reference as table (target node name) {1} in {0}", element.Key, input.Key);
+                        scribe.LogFormatWarning ("Can't parse output reference as table (target node name) {1} in {0}", element.Key, input.Key);
                         continue;
                     }
                     nodes.TryGetValue (targetNodeName, out targetNode);
                     if (targetNode == null)
                     {
-                        scribe.LogFormat ("Can't find node {0} to connect with {1}", targetNodeName, element.Key);
+                        scribe.LogFormatWarning ("Can't find node {0} to connect with {1}", targetNodeName, element.Key);
                         continue;
                     }
                     string outputName = (string)input.Value.Table [2];
                     if (outputName == null)
                     {
-                        scribe.LogFormat ("Can't parse output reference as table (target output name) {1} in {0}", element.Key, input.Key);
+                        scribe.LogFormatWarning ("Can't parse output reference as table (target output name) {1} in {0}", element.Key, input.Key);
                         continue;
                     }
                     Debug.LogFormat ("{0} {1} {2} {3}", node.Name, input.Key.CastToString (), targetNodeName, outputName);
