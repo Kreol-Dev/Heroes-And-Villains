@@ -25,12 +25,15 @@ namespace CoreMod
             for (int i = 0; i < tiles.Content.Length; i++)
                 texture.SetPixel (tiles.Content [i].X, tiles.Content [i].Y, tileColor);
             texture.Apply ();
-            GameObject visGO = new GameObject (this.GetType ().ToString () + ": " + Name);
-            visGO.AddComponent<SpriteRenderer> ().sprite = 
-                Sprite.Create (
-                    texture, 
-                    Rect.MinMaxRect (0, 0, texture.width, texture.height),
-                    Vector2.zero);
+            GameObject go = new GameObject (Name);
+            Map map = go.AddComponent<Map> ();
+            map.Name = this.Name;
+            map.Sprite = Sprite.Create (
+                texture, 
+                Rect.MinMaxRect (0, 0, texture.width, texture.height),
+                Vector2.zero, 1f);
+            map.Setup ();
+                
 
         }
     }

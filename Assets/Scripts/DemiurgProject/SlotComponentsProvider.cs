@@ -6,7 +6,6 @@ using System.Collections.Generic;
 using System.Runtime.CompilerServices;
 using System;
 using System.Linq;
-using UnityEditor;
 using MoonSharp.Interpreter.Interop;
 
 

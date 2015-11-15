@@ -22,7 +22,17 @@ namespace Demiurg
         {
             this.tags = tags;
         }
-
+        Dictionary<string, GameObject> GObjects;
+        public GameObject FindReplacer (string replacerID)
+        {
+            GameObject go = null;
+            GObjects.TryGetValue (replacerID, out go);
+            return go;
+        }
+        public void SetupReplacers (Dictionary<string, GameObject> gos)
+        {
+            GObjects = gos;
+        }
         public void InitWiring (Dictionary<string, Table> nodesTables, Dictionary<string, Type> nodesTypes)
         {
             nodes = CreateNodes (nodesTables, nodesTypes);

@@ -10,6 +10,7 @@ namespace Demiurg
     [MoonSharpUserData]
     public class Slot : SlotComponent
     {
+        public GameObject Replacer;
         [SerializeField]
         TagsCollection
             tags;
@@ -18,11 +19,16 @@ namespace Demiurg
         {
             Tags = new TagsCollection ();
             tags = Tags;
+            gameObject.AddComponent<CoreMod.TagsVisual> ();
         }
     }
     [MoonSharpUserData]
     public class SlotComponent : MonoBehaviour
     {
+        public virtual void FillComponent (GameObject go)
+        {
+
+        }
     }
 
 }

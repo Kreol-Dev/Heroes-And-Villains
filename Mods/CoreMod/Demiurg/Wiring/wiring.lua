@@ -3,8 +3,8 @@ base_module =
 	module_type = "CoreMod.NoiseModule",
 	params =
 	{
-		planet_width = 512,
-		planet_height = 256,
+		planet_width = 64,
+		planet_height = 32,
 		scale = 3
 	}
 }
@@ -130,8 +130,8 @@ latitude_temp_module =
 	{
 		north_value = -50,
 		central_value = 40,
-		width = 512,
-		height = 256
+		width = base_module.params.planet_width,
+		height = base_module.params.planet_height
 	}
 
 }
@@ -142,8 +142,8 @@ temperature_noise =
 	module_type = "CoreMod.NoiseModule",
 	params =
 	{
-		planet_width = 512,
-		planet_height = 256,
+		planet_width = base_module.params.planet_width,
+		planet_height = base_module.params.planet_height,
 		scale = 2
 	}
 }
@@ -219,8 +219,8 @@ height_noise =
 	module_type = "CoreMod.NoiseModule",
 	params =
 	{
-		planet_width = 512,
-		planet_height = 256,
+		planet_width = base_module.params.planet_width,
+		planet_height = base_module.params.planet_height,
 		scale = 3
 	}
 }
@@ -289,5 +289,30 @@ climate_tags_assigner =
 	inputs =
 	{
 		main = { "climate_gatherer", "main" }
+	}
+}
+
+
+cities_creator = 
+{
+	module_type = "CoreMod.SlotsReplacer",
+	params =
+	{
+		{ 
+			replacer = "desert_city",
+			tags = { { tag_name = "climate_desert", weight = 1 },  { tag_name = "climate_mountains", weight = -1 }, { tag_name = "climate_plains", weight = -1 } }
+		},
+		{ 
+			replacer = "plains_city",
+			tags = { { tag_name = "climate_desert", weight = -1 },  { tag_name = "climate_mountains", weight = -1 }, { tag_name = "climate_plains", weight = 1 } }
+		},
+		{ 
+			replacer = "mountains_city",
+			tags = { { tag_name = "climate_desert", weight = -1 },  { tag_name = "climate_mountains", weight = 1 }, { tag_name = "climate_plains", weight = -1 } }
+		}
+	},
+	inputs = 
+	{
+		main = { "climate_tags_assigner", "main" }
 	}
 }

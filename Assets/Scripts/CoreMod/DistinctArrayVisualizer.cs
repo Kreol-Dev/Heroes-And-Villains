@@ -73,7 +73,7 @@ namespace CoreMod
             }
             texture.Apply ();
             mainO.Finish (texture);
-            return Sprite.Create (texture, Rect.MinMaxRect (0, 0, main.Content.GetLength (0), main.Content.GetLength (1)), Vector2.zero);
+            return Sprite.Create (texture, Rect.MinMaxRect (0, 0, main.Content.GetLength (0), main.Content.GetLength (1)), Vector2.zero, 1f);
         }
     }
 

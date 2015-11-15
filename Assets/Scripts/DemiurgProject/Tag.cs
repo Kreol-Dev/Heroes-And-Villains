@@ -150,6 +150,32 @@ namespace Demiurg
             return similarity;
         }
 
+        public int ComputeSimilarity (TagsCollection collection, Dictionary<Tag, int> weights)
+        {
+            int similarity = 0;
+            IEnumerable<Tag> otherTags = collection.Tags () as IEnumerable<Tag>;
+            int tagIndex = 0;
+            foreach (var tag in otherTags)
+            {
+                for (int t = tagIndex; t < assignedTags.Count; t++)
+                    if (assignedTags [t].ID == tag.ID)
+                    {
+                        tagIndex = t;
+                        int weight = 0;
+                        weights.TryGetValue (tag, out weight);
+                        similarity += weight;
+                        break;
+                    }
+                    else
+                    if (assignedTags [t].ID > tag.ID)
+                    {
+                        tagIndex = t;
+                        break;
+                    }
+            }
+            return similarity;
+        }
+
         class Comparator : Comparer<Tag>
         {
             public static Comparator Instance = new Comparator ();

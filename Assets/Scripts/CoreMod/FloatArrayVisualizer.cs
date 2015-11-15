@@ -52,7 +52,7 @@ namespace CoreMod
                     texture.SetPixel (i, j, FindColor (main.Content [i, j]));
                 }
             texture.Apply ();
-            return Sprite.Create (texture, Rect.MinMaxRect (0, 0, main.Content.GetLength (0), main.Content.GetLength (1)), Vector2.zero);
+            return Sprite.Create (texture, Rect.MinMaxRect (0, 0, main.Content.GetLength (0), main.Content.GetLength (1)), Vector2.zero, 1f);
         }
     }
 }

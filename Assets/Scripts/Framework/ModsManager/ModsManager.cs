@@ -7,54 +7,54 @@ using System;
 [RootDependencies(typeof(LuaContext))]
 public class ModsManager : Root
 {
-	protected override void PreSetup ()
-	{
-		base.PreSetup ();
-		SearchForMods();
-		DetermineActiveMods();
-		ReadActiveMods();
-		DetermineOrder();
-		InitMods();
-	}
+    protected override void PreSetup ()
+    {
+        base.PreSetup ();
+        SearchForMods ();
+        DetermineActiveMods ();
+        ReadActiveMods ();
+        DetermineOrder ();
+        InitMods ();
+    }
 
-	protected override void CustomSetup ()
-	{
-		Fulfill.Dispatch();
-	}
-	void SearchForMods ()
-	{
+    protected override void CustomSetup ()
+    {
+        Fulfill.Dispatch ();
+    }
+    void SearchForMods ()
+    {
 
-	}
+    }
 
-	void DetermineActiveMods ()
-	{
+    void DetermineActiveMods ()
+    {
 
-	}
+    }
 
-	void ReadActiveMods ()
-	{
+    void ReadActiveMods ()
+    {
 
-	}
+    }
 
-	void DetermineOrder ()
-	{
+    void DetermineOrder ()
+    {
 
-	}
+    }
 
-	void InitMods ()
-	{
+    void InitMods ()
+    {
 
-	}
+    }
 
-	public List<string> GetFiles(string templatePath)
-	{
-		return new List<string>();
-	}
+    public List<string> GetFiles (string templatePath)
+    {
+        return new List<string> ();
+    }
 
-	public Type ResolveType(string typeID)
-	{
-		return Type.GetType(typeID);
-	}
+    public Type ResolveType (string typeID)
+    {
+        return Type.GetType (typeID);
+    }
 
 }
 

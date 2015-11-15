@@ -32,6 +32,7 @@ namespace CoreMod
                         slot.Tags.AddTag (tags [i]);
                     }
             }
+            OutputObjects.Finish (InputObjects.Content);
         }
         
         

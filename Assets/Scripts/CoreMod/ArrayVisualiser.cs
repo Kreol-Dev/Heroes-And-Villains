@@ -23,8 +23,10 @@ namespace CoreMod
         protected sealed override void Work ()
         {
             GameObject go = new GameObject (Name);
-            go.AddComponent<SpriteRenderer> ().sprite = CreateSprite ();
-
+            Map map = go.AddComponent<Map> ();
+            map.Name = this.Name;
+            map.Sprite = CreateSprite ();
+            map.Setup ();
         }
         protected abstract Sprite CreateSprite ();
     }

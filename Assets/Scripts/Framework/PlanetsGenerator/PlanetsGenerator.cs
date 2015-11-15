@@ -8,7 +8,7 @@ using System.Reflection;
 using MoonSharp.Interpreter;
 using MoonSharp.Interpreter.Loaders;
 
-[RootDependencies(typeof(LuaContext), typeof(ModsManager), typeof(ObjectsCreator))]
+[RootDependencies(typeof(LuaContext), typeof(ModsManager), typeof(ObjectsCreator), typeof(Sprites))]
 public class PlanetsGenerator : Root
 {
     public const string WiringTable = "wiring";
@@ -31,12 +31,13 @@ public class PlanetsGenerator : Root
         Script script = new Script ();
         RegisterSlotComponents (script);
         script.Globals ["wiring"] = new Table (script);
+        script.Globals ["replacers"] = new Table (script);
         script.Globals ["tags"] = new Table (script);
         script.Globals ["tag_expressions"] = new Table (script);
         (script.Globals ["tag_expressions"] as Table) ["component"] = script.Globals ["component"];
         script.Options.ScriptLoader = new FileSystemScriptLoader ();
         script.DoFile ("Mods\\CoreMod\\Demiurg\\TagExpressions\\Expressions.lua", script.Globals ["tag_expressions"] as Table);
-        
+        script.DoFile ("Mods\\CoreMod\\Demiurg\\Replacers\\Replacers.lua", script.Globals ["replacers"] as Table);
         (script.Globals ["tags"] as Table) ["tag_expressions"] = script.Globals ["tag_expressions"];
         script.DoFile ("Mods\\CoreMod\\Demiurg\\Tags\\Tags.lua", script.Globals ["tags"] as Table);
         script.DoFile ("Mods\\CoreMod\\Demiurg\\Wiring\\Wiring.lua", script.Globals ["wiring"] as Table);
@@ -49,6 +50,7 @@ public class PlanetsGenerator : Root
             Debug.Log (pair.Key.CastToString ());
             tables.Add (pair.Key.CastToString (), pair.Value.Table);
         }
+        creator.SetupReplacers (FormReplacers (script.Globals ["replacers"] as Table));
         creator.SetupTags (FormTags (script.Globals ["tags"] as Table));
         creator.InitWiring (tables, nodes);
 
@@ -75,9 +77,31 @@ public class PlanetsGenerator : Root
             if (entry.Value.Table ["expression"] == null)
                 continue;
             Tag tag = new Tag (entry.Key.ToPrintString (), tags.Count, entry.Value.Table ["expression"] as Closure, entry.Value.Table ["criteria"] as Table);
+            Debug.LogWarning (entry.Key.ToPrintString ());
             tags.Add (entry.Key.ToPrintString (), tag);
         }
         return tags;
+    }
+
+    public Dictionary<string, GameObject> FormReplacers (Table replacersTable)
+    {
+        Dictionary<string, GameObject> gos = new Dictionary<string, GameObject> ();
+        foreach (var entry in replacersTable.Pairs)
+        {
+            GameObject go = new GameObject ("prototype replacer " + entry.Key.ToPrintString ());
+            go.SetActive (false);
+            foreach (var compEntry in entry.Value.Table.Pairs)
+            {
+                string compName = compEntry.Key.ToPrintString ();
+                if (compName == "graphics")
+                    go.AddComponent<CoreMod.EntityGraphics> ().LoadFromTable (entry.Value.Table);
+                else
+                if (compName == "settlement")
+                    go.AddComponent<CoreMod.Settlement> ().LoadFromTable (entry.Value.Table);
+            }
+            gos.Add (entry.Key.ToPrintString (), go);
+        }
+        return gos;
     }
  
     void RegisterSlotComponents (Script script)
