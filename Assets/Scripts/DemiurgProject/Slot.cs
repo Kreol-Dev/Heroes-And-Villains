@@ -2,17 +2,28 @@ using UnityEngine;
 using System.Collections;
 using System.Collections.Generic;
 using System;
+using MoonSharp.Interpreter;
 
-public class Slot : MonoBehaviour
+
+namespace Demiurg
 {
-    [SerializeField]
-    TagsCollection
-        tags;
-    public TagsCollection Tags { get; internal set; }
-    void Awake ()
+    [MoonSharpUserData]
+    public class Slot : SlotComponent
     {
-        Tags = new TagsCollection ();
-        tags = Tags;
+        [SerializeField]
+        TagsCollection
+            tags;
+        public TagsCollection Tags { get; internal set; }
+        void Awake ()
+        {
+            Tags = new TagsCollection ();
+            tags = Tags;
+        }
     }
+    [MoonSharpUserData]
+    public class SlotComponent : MonoBehaviour
+    {
+    }
+
 }
 

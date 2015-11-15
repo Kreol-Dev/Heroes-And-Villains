@@ -5,7 +5,7 @@ climate_desert =
 		min_temperature = 30,
 		max_temperature = 50
 	},
-	expression = tag_expressions.true_expression
+	expression = tag_expressions.climate_expression
 }
 
 climate_mountains =
@@ -15,7 +15,7 @@ climate_mountains =
 		min_temperature = -50,
 		max_temperature = 0
 	},
-	expression = tag_expressions.true_expression
+	expression = tag_expressions.climate_expression
 }
 
 climate_plains =
@@ -25,5 +25,5 @@ climate_plains =
 		min_temperature = 0,
 		max_temperature = 30
 	},
-	expression = tag_expressions.true_expression
+	expression = tag_expressions.climate_expression
 }

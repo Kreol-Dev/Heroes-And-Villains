@@ -1,8 +1,13 @@
 using UnityEngine;
 using System.Collections;
+using Demiurg;
+using MoonSharp.Interpreter;
+
+
 namespace CoreMod
 {
-    public class SlotClimate : MonoBehaviour
+    [MoonSharpUserData]
+    public class SlotClimate : SlotComponent
     {
         public int Height;
         public int Temperature;

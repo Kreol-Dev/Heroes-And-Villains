@@ -27,11 +27,13 @@ public class PlanetsGenerator : Root
         //luaContext.LoadScripts (modsManager.GetFiles("Demiurg\\" + WiringTable + ".lua"), WiringTable);
         //luaContext.LoadScript ("Mods\\CoreMod\\Demiurg\\Wiring\\Wiring.lua", WiringTable);
         Dictionary<string, Type> nodes = FindNodeTypes ();
-        Script script = new Script ();
 
+        Script script = new Script ();
+        RegisterSlotComponents (script);
         script.Globals ["wiring"] = new Table (script);
         script.Globals ["tags"] = new Table (script);
         script.Globals ["tag_expressions"] = new Table (script);
+        (script.Globals ["tag_expressions"] as Table) ["component"] = script.Globals ["component"];
         script.Options.ScriptLoader = new FileSystemScriptLoader ();
         script.DoFile ("Mods\\CoreMod\\Demiurg\\TagExpressions\\Expressions.lua", script.Globals ["tag_expressions"] as Table);
         
@@ -78,6 +80,25 @@ public class PlanetsGenerator : Root
         return tags;
     }
  
+    void RegisterSlotComponents (Script script)
+    {
+        script.Globals ["component"] = new Table (script);
+        Table table = script.Globals ["component"] as Table;
+        Type[] types = Assembly.GetExecutingAssembly ().GetTypes ();
+        List<Type> slotComponents = new List<Type> ();
+        Type slotComponentType = typeof(SlotComponent);
+        UserData.RegisterType (typeof(SlotComponentsProvider));
+        for (int i = 0; i < types.Length; i++)
+            if (types [i].IsSubclassOf (slotComponentType))
+            {
+                UserData.RegisterType (types [i]);
+                table [types [i].Name] = slotComponents.Count;
+                slotComponents.Add (types [i]);
+            }
+                
+        SlotComponentsProvider.Types = slotComponents;
+
+    }
 }
 
 
