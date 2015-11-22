@@ -10,7 +10,7 @@ namespace Demiurg.Core
     public abstract class Avatar
     {
         Scribe scribe = Scribes.Find ("Avatars");
-        public static Avatar Create (Demiurg demiurg, Type type, string name, ITable wiringTable, ITable configs)
+        public static Avatar Create (DemiurgEntity demiurg, Type type, string name, ITable wiringTable, ITable configs)
         {
             Avatar avatar = Activator.CreateInstance (type) as Avatar;
             avatar.SetupIO ();
@@ -19,12 +19,14 @@ namespace Demiurg.Core
         }
         protected List<AvatarInput> Inputs = new List<AvatarInput> ();
         protected Dictionary<string, AvatarOutput> Outputs = new Dictionary<string, AvatarOutput> ();
+        protected List<AvatarConfig> Configs = new List<AvatarConfig> ();
         public abstract void SetupIO ();
 
         public string Name { get; internal set; }
-        protected Demiurg Demiurg { get; set; }
-        public void Configure (Demiurg demiurg, string name, ITable wiringTable, ITable configs)
+        protected DemiurgEntity Demiurg { get; set; }
+        public void Configure (DemiurgEntity demiurg, string name, ITable wiringTable, ITable configs)
         {
+            Demiurg = demiurg;
             Name = name;
             SetupWiring (wiringTable);
             SetupConfigs (configs);
@@ -72,7 +74,12 @@ namespace Demiurg.Core
 
         void SetupConfigs (ITable configs)
         {
-            
+            ConfigLoaders loaders = Demiurg.GetLoaders ();
+            foreach (var config in Configs)
+            {
+                IConfigLoader loader = loaders.FindLoader (config.FieldType ());
+                config.SetValue (loader.Load (configs.Get (config.Name), loaders));
+            }
         }
 
         public abstract void Work ();
@@ -99,17 +106,25 @@ namespace Demiurg.Core
         }
         static IEnumerable<FieldData> inputs;
         static IEnumerable<FieldData> outputs;
+        static IEnumerable<FieldData> configs;
         static Avatar ()
         {
             Type inputAttr = typeof(Input);
             Type outputAttr = typeof(Output);
+            Type configAttr = typeof(Config);
             Type type = MethodBase.GetCurrentMethod ().DeclaringType;
             var fields = type.GetFields ();
             inputs = from field in fields where field.IsDefined (inputAttr, false) select new FieldData (field, ((Input)Attribute.GetCustomAttribute (field, inputAttr)).Name);
-            outputs = from field in fields where field.IsDefined (outputAttr, false) select new FieldData (field, ((Input)Attribute.GetCustomAttribute (field, inputAttr)).Name);
+            outputs = from field in fields where field.IsDefined (outputAttr, false) select new FieldData (field, ((Output)Attribute.GetCustomAttribute (field, outputAttr)).Name);
+            configs = from field in fields where field.IsDefined (configAttr, false) select new FieldData (field, ((Config)Attribute.GetCustomAttribute (field, configAttr)).Name);
         }
         public sealed override void SetupIO ()
         {
+            foreach (var con in configs)
+            {
+                AvatarConfig config = new AvatarConfig (con.ID, con.Field, this);
+                Configs.Add (config);
+            }
             foreach (var inp in inputs)
             {
                 AvatarInput input = new AvatarInput (inp.ID, inp.Field, this);

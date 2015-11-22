@@ -7,6 +7,7 @@ namespace DemiurgBinding
 {
     public class BindingTable : Table, ITable
     {
+        public string Name { get; set; }
         public BindingTable (Script script):base(script)
         {
 
@@ -20,9 +21,14 @@ namespace DemiurgBinding
         {
             return this [id];
         }
-
-
-
+        void ITable.Set (string id, object o)
+        {
+            this [id] = o;
+        }
+        void ITable.Set (int id, object o)
+        {
+            this [id] = o;
+        }
     }
 
 }

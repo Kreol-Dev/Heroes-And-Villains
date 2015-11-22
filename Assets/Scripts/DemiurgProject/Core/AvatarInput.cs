@@ -27,7 +27,7 @@ namespace Demiurg.Core
                 }
                 output.OnFinish (() => {
                     Scribe.LogFormat ("IO OUTPUT->INPUT Input {0} {1} and Output {2} {3}", Avatar.Name, Name, output.AvatarName, output.Name);
-                    this.Field.SetValue (Avatar, converter.Convert (output.FieldValue ()));
+                    this.Field.SetValue (Avatar, converter.Convert (output.FieldValue (), converters));
                     base.Finish ();});
                 return;
             }    

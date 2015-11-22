@@ -2,11 +2,12 @@
 using UnityEngine;
 using System.Collections;
 using System.Collections.Generic;
-using Demiurg;
+using Demiurg.Core;
 using System;
 using System.Reflection;
 using MoonSharp.Interpreter;
 using MoonSharp.Interpreter.Loaders;
+using DemiurgBinding;
 
 [RootDependencies(typeof(LuaContext), typeof(ModsManager), typeof(ObjectsCreator), typeof(Sprites))]
 public class PlanetsGenerator : Root
@@ -14,10 +15,10 @@ public class PlanetsGenerator : Root
     public const string WiringTable = "wiring";
     LuaContext luaContext;
     ModsManager modsManager;
-    WorldCreator creator;
+    //WorldCreator creator;
     protected override void CustomSetup ()
     {
-        creator = new WorldCreator ();
+        /*creator = new WorldCreator ();
 
 		
 
@@ -52,12 +53,31 @@ public class PlanetsGenerator : Root
         }
         creator.SetupReplacers (FormReplacers (script.Globals ["replacers"] as Table));
         creator.SetupTags (FormTags (script.Globals ["tags"] as Table));
-        creator.InitWiring (tables, nodes);
+        creator.InitWiring (tables, nodes);*/
 
+        //DemiurgEntity dem = new DemiurgEntity ();
+        Script script = new Script ();
+        TablesConfig config = new TablesConfig (script);
+        
+        RegisterSlotComponents (config.ConfigureTable ("component"));
+        config.ConfigureTable ("tag_expressions", "component");
+        config.ConfigureTable ("tags", "tag_expressions");
+        config.ConfigureTable ("replacers");
+        config.ConfigureTable ("wiring", "tags");
+        config.AddPathsToTable ("tag_expressions", "Mods\\CoreMod\\Demiurg\\TagExpressions\\Expressions.lua");
+        config.AddPathsToTable ("tags", "Mods\\CoreMod\\Demiurg\\Tags\\Tags.lua");
+        config.AddPathsToTable ("replacers", "Mods\\CoreMod\\Demiurg\\Replacers\\Replacers.lua");
+        config.AddPathsToTable ("wiring", "Mods\\CoreMod\\Demiurg\\Wiring\\Wiring.lua");
+        config.Load ();
+        /*config.LoadToTable("");
+        config.LoadToTable();
+        config.LoadToTable();
+        config.LoadToTable();
+        config.LoadToTable();*/
         Fulfill.Dispatch ();
     }
 
-    Dictionary<string, Type> FindNodeTypes ()
+    /*Dictionary<string, Type> FindNodeTypes ()
     {
         Dictionary<string, Type> nodes = new Dictionary<string, Type> ();
         Assembly asm = Assembly.GetExecutingAssembly ();
@@ -102,11 +122,11 @@ public class PlanetsGenerator : Root
             gos.Add (entry.Key.ToPrintString (), go);
         }
         return gos;
-    }
+    }*/
  
-    void RegisterSlotComponents (Script script)
+    void RegisterSlotComponents (BindingTable table)
     {
-        script.Globals ["component"] = new Table (script);
+        /*script.Globals ["component"] = new Table (script);
         Table table = script.Globals ["component"] as Table;
         Type[] types = Assembly.GetExecutingAssembly ().GetTypes ();
         List<Type> slotComponents = new List<Type> ();
@@ -120,7 +140,7 @@ public class PlanetsGenerator : Root
                 slotComponents.Add (types [i]);
             }
                 
-        SlotComponentsProvider.Types = slotComponents;
+        SlotComponentsProvider.Types = slotComponents;*/
 
     }
 }

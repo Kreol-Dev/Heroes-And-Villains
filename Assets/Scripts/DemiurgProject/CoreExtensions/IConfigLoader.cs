@@ -2,14 +2,13 @@ using UnityEngine;
 using System.Collections;
 using System;
 
-
 namespace Demiurg.Core.Extensions
 {
-    public interface IConverter
+    public interface IConfigLoader
     {
         bool IsSpecific ();
-        bool Check (Type from, Type to);
-        object Convert (object target, Converters converters);
+        bool Check (Type targetType);
+        object Load (object fromObject, ConfigLoaders loaders);
     }
 }
 

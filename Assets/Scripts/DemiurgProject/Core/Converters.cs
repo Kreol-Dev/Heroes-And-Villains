@@ -2,14 +2,18 @@ using UnityEngine;
 using System.Collections;
 using System;
 using System.Collections.Generic;
+using Demiurg.Core.Extensions;
 
 
-namespace Demiurg.Core.Extensions
+namespace Demiurg.Core
 {
     public class Converters
     {
         List<IConverter> converters = new List<IConverter> ();
-        
+        public Converters (List<IConverter> converters)
+        {
+            this.converters = converters;
+        }
         public IConverter FindConverter (Type currentType, Type targetType)
         {
             IConverter converter = null;
