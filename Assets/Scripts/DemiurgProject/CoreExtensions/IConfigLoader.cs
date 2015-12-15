@@ -7,8 +7,10 @@ namespace Demiurg.Core.Extensions
     public interface IConfigLoader
     {
         bool IsSpecific ();
+
         bool Check (Type targetType);
-        object Load (object fromObject, ConfigLoaders loaders);
+
+        object Load (object fromObject, Type targetType, ConfigLoaders loaders);
     }
 }
 

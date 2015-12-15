@@ -2,32 +2,43 @@ using UnityEngine;
 using System.Collections;
 using MoonSharp.Interpreter;
 using Demiurg.Core.Extensions;
+using System.Collections.Generic;
 
 namespace DemiurgBinding
 {
-    public class BindingTable : Table, ITable
+    public class BindingTable : ITable
     {
+        public Table Table { get; set; }
+
         public string Name { get; set; }
-        public BindingTable (Script script):base(script)
-        {
 
-        }
-        object ITable.Get (string id)
+        public BindingTable (Table table)
         {
-            return this [id];
+            this.Table = table;
         }
 
-        object ITable.Get (int id)
+        public IEnumerable<object> GetKeys ()
         {
-            return this [id];
+            return (IEnumerable<object>)Table.Keys;
         }
-        void ITable.Set (string id, object o)
+
+        object ITable.Get (object id)
         {
-            this [id] = o;
+            
+            object obj = Table [id];
+            if (obj is Table)
+                return new BindingTable (obj as Table);
+            if (obj is Closure)
+                return new BindingFunction (obj as Closure);
+            return obj;
         }
-        void ITable.Set (int id, object o)
+
+        void ITable.Set (object id, object o)
         {
-            this [id] = o;
+            if (o is BindingTable)
+                Table [id] = ((BindingTable)o).Table;
+            else
+                Table [id] = o;
         }
     }
 

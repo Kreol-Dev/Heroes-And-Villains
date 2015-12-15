@@ -8,6 +8,7 @@ namespace Demiurg.Core.Extensions
     public class Metatable
     {
         Dictionary<string, ITable> tables = new Dictionary<string, ITable> ();
+
         public Metatable ()
         {
 
@@ -51,6 +52,7 @@ namespace Demiurg.Core.Extensions
             tables.TryGetValue (tableName, out table);
             return table;
         }
+
         public void Provide (string what, string to)
         {
             ITable whatTable = null;

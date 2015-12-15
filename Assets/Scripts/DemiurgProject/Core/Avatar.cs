@@ -10,6 +10,7 @@ namespace Demiurg.Core
     public abstract class Avatar
     {
         Scribe scribe = Scribes.Find ("Avatars");
+
         public static Avatar Create (DemiurgEntity demiurg, Type type, string name, ITable wiringTable, ITable configs)
         {
             Avatar avatar = Activator.CreateInstance (type) as Avatar;
@@ -17,13 +18,17 @@ namespace Demiurg.Core
             avatar.Configure (demiurg, name, wiringTable, configs);
             return avatar;
         }
+
         protected List<AvatarInput> Inputs = new List<AvatarInput> ();
         protected Dictionary<string, AvatarOutput> Outputs = new Dictionary<string, AvatarOutput> ();
         protected List<AvatarConfig> Configs = new List<AvatarConfig> ();
+
         public abstract void SetupIO ();
 
         public string Name { get; internal set; }
+
         protected DemiurgEntity Demiurg { get; set; }
+
         public void Configure (DemiurgEntity demiurg, string name, ITable wiringTable, ITable configs)
         {
             Demiurg = demiurg;
@@ -78,11 +83,12 @@ namespace Demiurg.Core
             foreach (var config in Configs)
             {
                 IConfigLoader loader = loaders.FindLoader (config.FieldType ());
-                config.SetValue (loader.Load (configs.Get (config.Name), loaders));
+                config.SetValue (loader.Load (configs.Get (config.Name), config.FieldType (), loaders));
             }
         }
 
         public abstract void Work ();
+
         protected void FinishWork ()
         {
             foreach (var output in Outputs)
@@ -95,7 +101,9 @@ namespace Demiurg.Core
         class FieldData
         {
             public FieldInfo Field { get; internal set; }
+
             public string ID { get; internal set; }
+
             public FieldData (FieldInfo field, string id)
             {
                 Field = field;
@@ -104,9 +112,11 @@ namespace Demiurg.Core
 
 
         }
+
         static IEnumerable<FieldData> inputs;
         static IEnumerable<FieldData> outputs;
         static IEnumerable<FieldData> configs;
+
         static Avatar ()
         {
             Type inputAttr = typeof(Input);
@@ -114,10 +124,17 @@ namespace Demiurg.Core
             Type configAttr = typeof(Config);
             Type type = MethodBase.GetCurrentMethod ().DeclaringType;
             var fields = type.GetFields ();
-            inputs = from field in fields where field.IsDefined (inputAttr, false) select new FieldData (field, ((Input)Attribute.GetCustomAttribute (field, inputAttr)).Name);
-            outputs = from field in fields where field.IsDefined (outputAttr, false) select new FieldData (field, ((Output)Attribute.GetCustomAttribute (field, outputAttr)).Name);
-            configs = from field in fields where field.IsDefined (configAttr, false) select new FieldData (field, ((Config)Attribute.GetCustomAttribute (field, configAttr)).Name);
+            inputs = from field in fields
+                              where field.IsDefined (inputAttr, false)
+                              select new FieldData (field, ((Input)Attribute.GetCustomAttribute (field, inputAttr)).Name);
+            outputs = from field in fields
+                               where field.IsDefined (outputAttr, false)
+                               select new FieldData (field, ((Output)Attribute.GetCustomAttribute (field, outputAttr)).Name);
+            configs = from field in fields
+                               where field.IsDefined (configAttr, false)
+                               select new FieldData (field, ((Config)Attribute.GetCustomAttribute (field, configAttr)).Name);
         }
+
         public sealed override void SetupIO ()
         {
             foreach (var con in configs)

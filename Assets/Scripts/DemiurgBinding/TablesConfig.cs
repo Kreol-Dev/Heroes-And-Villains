@@ -10,12 +10,17 @@ namespace DemiurgBinding
     public class TablesConfig
     {
         Dictionary<string, ConfigEntry> entries = new Dictionary<string, ConfigEntry> ();
+
         class ConfigEntry
         {
             public string TableName { get; internal set; }
+
             public Signal FinishedLoading { get; internal set; }
+
             public List<string> Dependencies { get; internal set; }
+
             public List<string> Paths { get; internal set; }
+
             public ConfigEntry (string tableName)
             {
                 TableName = tableName;
@@ -23,9 +28,13 @@ namespace DemiurgBinding
                 Paths = new List<string> ();
                 Dependencies = new List<string> ();
             }
+
             public delegate void VoidDelegate (string tableName, List<string> paths);
+
             public event VoidDelegate LoadSelf;
+
             int deps = 0;
+
             public void SatisfiedDependency ()
             {
                 deps++;
@@ -33,20 +42,24 @@ namespace DemiurgBinding
                     LoadSelf (TableName, Paths);
             }
         }
+
         Metatable metatable = new Metatable ();
         Script script;
+
         public TablesConfig (Script script)
         {
             this.script = script;
         }
-        
+
         public BindingTable ConfigureTable (string tableName, params string[] dependencies)
         {
             ITable table = metatable.Get (tableName);
             ConfigEntry entry = null;
             if (table == null)
             {
-                table = new BindingTable (script);
+                Debug.LogWarningFormat ("Create new table {0}", tableName);
+                script.Globals [tableName] = new Table (script);
+                table = new BindingTable (script.Globals [tableName] as Table);
                 table.Name = tableName;
                 metatable.Add (table);
                 entry = new ConfigEntry (tableName);
@@ -71,18 +84,21 @@ namespace DemiurgBinding
                 return;
             entry.Paths.AddRange (paths);
         }
+
         public void Load ()
         {
             DetermineOrder ();
         }
+
         void LoadTable (string tableName, List<string> paths)
         {
             BindingTable table = metatable.Get (tableName) as BindingTable;
             foreach (var path in paths)
             {
-                script.DoFile (path, table);
+                script.DoFile (path, table.Table);
             }
         }
+
         List<ConfigEntry> DetermineOrder ()
         {
             List<ConfigEntry> firstEntries = new List<ConfigEntry> ();
@@ -108,6 +124,7 @@ namespace DemiurgBinding
 
             return firstEntries;
         }
+
         public BindingTable GetTable (string table)
         {
             return metatable.Get (table) as BindingTable;
