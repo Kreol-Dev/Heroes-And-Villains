@@ -3,17 +3,17 @@ using UnityEngine;
 using System.Collections;
 using System.Collections.Generic;
 using Demiurg;
+using Demiurg.Core;
+
+
 namespace CoreMod
 {
-    public abstract class SlotsProcessor : CreationNode
+    public abstract class SlotsProcessor : Demiurg.Core.Avatar
     {
-        protected NodeInput<List<GameObject>> InputObjects;
-        protected NodeOutput<List<GameObject>> OutputObjects;
-        protected override void SetupIOP ()
-        {
-            InputObjects = Input<List<GameObject>> ("main");
-            OutputObjects = Output<List<GameObject>> ("main");
-        }
+        [AInput ("main")]
+        protected List<GameObject> InputObjects;
+        [AOutput ("main")]
+        protected List<GameObject> OutputObjects;
 
 
 

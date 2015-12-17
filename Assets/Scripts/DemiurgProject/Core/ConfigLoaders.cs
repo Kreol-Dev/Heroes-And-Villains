@@ -10,16 +10,18 @@ namespace Demiurg.Core
     public class ConfigLoaders
     {
         List<IConfigLoader> loaders = new List<IConfigLoader> ();
+
         public ConfigLoaders (List<IConfigLoader> loaders)
         {
             this.loaders = loaders;
         }
+
         public IConfigLoader FindLoader (Type targetType)
         {
             IConfigLoader loader = null;
             foreach (var load in loaders)
             {
-                if (load == null)
+                if (loader == null)
                 {
                     if (load.Check (targetType))
                     {

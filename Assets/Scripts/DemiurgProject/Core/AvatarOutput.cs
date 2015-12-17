@@ -7,9 +7,10 @@ namespace Demiurg.Core
 {
     public class AvatarOutput : AvatarIO
     {
-        public AvatarOutput (string name, FieldInfo field, Avatar avatar):base(name, field, avatar)
+        public AvatarOutput (object name, FieldInfo field, Avatar avatar) : base (name, field, avatar)
         {
         }
+
         public void Finish ()
         {
             base.Finish ();

@@ -1,11 +1,12 @@
 using UnityEngine;
 using System.Collections;
 using Demiurg;
+
 namespace CoreMod
 {
     public class ClimateDataGatherer : SlotsProcessor
     {
-        NodeInput<float[,]> inlandnessMap;
+        /*NodeInput<float[,]> inlandnessMap;
         NodeInput<int[,]> temperatureMap;
         NodeInput<int[,]> heightMap;
         protected override void SetupIOP ()
@@ -30,8 +31,11 @@ namespace CoreMod
             if (InputObjects == null)
                 Scribe.LogFormatError ("Null GObjects list in {0}", Name);
             OutputObjects.Finish (InputObjects.Content);
+        }*/
+        public override void Work ()
+        {
+            
         }
-
     }
 }
 

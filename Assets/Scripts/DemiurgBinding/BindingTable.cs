@@ -17,9 +17,9 @@ namespace DemiurgBinding
             this.Table = table;
         }
 
-        public IEnumerable<object> GetKeys ()
+        public IEnumerable GetKeys ()
         {
-            return (IEnumerable<object>)Table.Keys;
+            return (IEnumerable)Table.Keys;
         }
 
         object ITable.Get (object id)

@@ -1,21 +1,25 @@
 base_module = 
 {
-	module_type = "CoreMod.NoiseModule",
-	params =
+	avatar_type = "CoreMod.NoiseModule",
+	configs =
 	{
-		planet_width = 64,
-		planet_height = 32,
+		width = 64,
+		height = 32,
 		scale = 3
 	}
 }
 
 distinctor_module = 
 {
-	module_type = "CoreMod.DistinctorModule",
-	params =
+	avatar_type = "CoreMod.DistinctorModule",
+	configs =
 	{
+		levels =
+		{
 		{ level = 0.6, val = 0},
 		{ level = 1, val = 1}
+	}
+		
 	},
 	inputs = {
 		main = { "base_module", "main" }
@@ -24,8 +28,8 @@ distinctor_module =
 
 continents_module = 
 {
-	module_type = "CoreMod.ContinuousChunksModule",
-	params = {
+	avatar_type = "CoreMod.ContinuousChunksModule",
+	configs = {
 		planet_connectivity = "full"
 	},
 	inputs = {
@@ -35,8 +39,8 @@ continents_module =
 
 base_visual = 
 {
-	module_type = "CoreMod.FloatArrayVisualizer",
-	params = 
+	avatar_type = "CoreMod.FloatArrayVisualizer",
+	configs = 
 	{
 		{ level = 0, red = 0, green = 0, blue = 0},
 		{ level = 1, red = 1, green = 1, blue = 1}
@@ -50,8 +54,8 @@ base_visual =
 
 distinct_visual = 
 {
-	module_type = "CoreMod.DistinctArrayVisualizer",
-	params = 
+	avatar_type = "CoreMod.DistinctArrayVisualizer",
+	configs = 
 	{
 		{ level = 0, red = 0.3, green = 0.3, blue = 0.8},
 		{ level = 1, red = 0.3, green = 0.8, blue = 0.3}
@@ -64,8 +68,8 @@ distinct_visual =
 
 chunks_visual = 
 {
-	module_type = "CoreMod.DistinctArrayVisualizer",
-	params = 
+	avatar_type = "CoreMod.DistinctArrayVisualizer",
+	configs = 
 	{
 		random = true
 	},
@@ -80,8 +84,8 @@ surface_extractor =
 {
 
 
-	module_type = "CoreMod.ExtractSurfaceFromChunks",
-	params =
+	avatar_type = "CoreMod.ExtractSurfaceFromChunks",
+	configs =
 	{
 		target_surface = 1,
 		filter_less = 10
@@ -95,8 +99,8 @@ surface_extractor =
 random_points = 
 {
 
-	module_type = "CoreMod.RandomPointsOnTiles",
-	params =
+	avatar_type = "CoreMod.RandomPointsOnTiles",
+	configs =
 	{
 		density = 1000
 	},
@@ -109,8 +113,8 @@ random_points =
 points_visualizer =
 {
 
-	module_type = "CoreMod.PointsVisualizer",
-	params =
+	avatar_type = "CoreMod.PointsVisualizer",
+	configs =
 	{
 		tile_red = 1,
 		tile_green = 1,
@@ -125,13 +129,13 @@ points_visualizer =
 
 latitude_temp_module =
 {
-	module_type = "CoreMod.LatitudeModule",
-	params =
+	avatar_type = "CoreMod.LatitudeModule",
+	configs =
 	{
 		north_value = -50,
 		central_value = 40,
-		width = base_module.params.planet_width,
-		height = base_module.params.planet_height
+		width = base_module.configs.planet_width,
+		height = base_module.configs.planet_height
 	}
 
 }
@@ -139,19 +143,19 @@ latitude_temp_module =
 
 temperature_noise = 
 {
-	module_type = "CoreMod.NoiseModule",
-	params =
+	avatar_type = "CoreMod.NoiseModule",
+	configs =
 	{
-		planet_width = base_module.params.planet_width,
-		planet_height = base_module.params.planet_height,
+		planet_width = base_module.configs.planet_width,
+		planet_height = base_module.configs.planet_height,
 		scale = 2
 	}
 }
 
 array_temperature_noise =
 {
-	module_type = "CoreMod.FloatToIntArray",
-	params = {
+	avatar_type = "CoreMod.FloatToIntArray",
+	configs = {
 		max_value = 50,
 		min_value = -50
 	},
@@ -163,8 +167,8 @@ array_temperature_noise =
 
 temperature_blend =
 {
-	module_type = "CoreMod.ArrayBlendModule",
-	params =
+	avatar_type = "CoreMod.ArrayBlendModule",
+	configs =
 	{
 		weight = 0.8
 	},
@@ -176,8 +180,8 @@ temperature_blend =
 }
 lat_visual = 
 {
-	module_type = "CoreMod.IntArrayVisualizer",
-	params = 
+	avatar_type = "CoreMod.IntArrayVisualizer",
+	configs = 
 	{
 		{ level = -50, red = 0, green = 0, blue = 1},
 		{ level = 50, red = 1, green = 0, blue = 0}
@@ -189,8 +193,8 @@ lat_visual =
 }
 temp_noise_visual = 
 {
-	module_type = "CoreMod.IntArrayVisualizer",
-	params = 
+	avatar_type = "CoreMod.IntArrayVisualizer",
+	configs = 
 	{
 		{ level = -50, red = 0, green = 0, blue = 1},
 		{ level = 50, red = 1, green = 0, blue = 0}
@@ -202,8 +206,8 @@ temp_noise_visual =
 }
 temperature_visual = 
 {
-	module_type = "CoreMod.IntArrayVisualizer",
-	params = 
+	avatar_type = "CoreMod.IntArrayVisualizer",
+	configs = 
 	{
 		{ level = -50, red = 0, green = 0, blue = 1},
 		{ level = 50, red = 1, green = 0, blue = 0}
@@ -216,19 +220,19 @@ temperature_visual =
 
 height_noise = 
 {
-	module_type = "CoreMod.NoiseModule",
-	params =
+	avatar_type = "CoreMod.NoiseModule",
+	configs =
 	{
-		planet_width = base_module.params.planet_width,
-		planet_height = base_module.params.planet_height,
+		planet_width = base_module.configs.planet_width,
+		planet_height = base_module.configs.planet_height,
 		scale = 3
 	}
 }
 
 array_height_noise =
 {
-	module_type = "CoreMod.FloatToIntArray",
-	params = {
+	avatar_type = "CoreMod.FloatToIntArray",
+	configs = {
 		max_value = 8000,
 		min_value = -4000
 	},
@@ -240,8 +244,8 @@ array_height_noise =
 
 height_visual = 
 {
-	module_type = "CoreMod.IntArrayVisualizer",
-	params = 
+	avatar_type = "CoreMod.IntArrayVisualizer",
+	configs = 
 	{
 		{ level = -4000, red = 0, green = 0, blue = 1},
 		{ level = 0, red = 0, green = 1, blue = 1},
@@ -256,7 +260,7 @@ height_visual =
 
 cities_placer =
 {
-	module_type = "CoreMod.SlotsPlacer",
+	avatar_type = "CoreMod.SlotsPlacer",
 	inputs = 
 	{
 		points = {"random_points", "main"}
@@ -264,7 +268,7 @@ cities_placer =
 }
 climate_gatherer =
 {
-	module_type = "CoreMod.ClimateDataGatherer",
+	avatar_type = "CoreMod.ClimateDataGatherer",
 	inputs = 
 	{
 		main = { "cities_placer", "slots" },
@@ -276,8 +280,8 @@ climate_gatherer =
 
 climate_tags_assigner =
 {
-	module_type = "CoreMod.TagsAssigner",
-	params =
+	avatar_type = "CoreMod.TagsAssigner",
+	configs =
 	{
 		tags = {
 		{ tag_name = "climate_desert" },
@@ -295,8 +299,8 @@ climate_tags_assigner =
 
 cities_creator = 
 {
-	module_type = "CoreMod.SlotsReplacer",
-	params =
+	avatar_type = "CoreMod.SlotsReplacer",
+	configs =
 	{
 		{ 
 			replacer = "desert_city",

@@ -57,7 +57,6 @@ namespace DemiurgBinding
             ConfigEntry entry = null;
             if (table == null)
             {
-                Debug.LogWarningFormat ("Create new table {0}", tableName);
                 script.Globals [tableName] = new Table (script);
                 table = new BindingTable (script.Globals [tableName] as Table);
                 table.Name = tableName;
@@ -71,7 +70,6 @@ namespace DemiurgBinding
             foreach (var dep in dependencies)
             {
                 entry.Dependencies.Add (dep);
-                metatable.Provide (dep, tableName);
             }
             return table as BindingTable;
         }
@@ -87,16 +85,34 @@ namespace DemiurgBinding
 
         public void Load ()
         {
-            DetermineOrder ();
+            ProvideExternals ();
+            List<ConfigEntry> entries = DetermineOrder ();
+            foreach (var entry in entries)
+            {
+                LoadTable (entry.TableName, entry.Dependencies);
+            }
+        }
+
+        void ProvideExternals ()
+        {
+            foreach (var entry in entries)
+            {
+                foreach (var dep in entry.Value.Dependencies)
+                    metatable.Provide (dep, entry.Value.TableName);
+            }
         }
 
         void LoadTable (string tableName, List<string> paths)
         {
             BindingTable table = metatable.Get (tableName) as BindingTable;
+
             foreach (var path in paths)
             {
                 script.DoFile (path, table.Table);
             }
+            ConfigEntry entry = entries [tableName];
+            entry.FinishedLoading.Dispatch ();
+
         }
 
         List<ConfigEntry> DetermineOrder ()

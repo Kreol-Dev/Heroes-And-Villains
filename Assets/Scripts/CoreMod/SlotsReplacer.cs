@@ -3,46 +3,56 @@ using System.Collections;
 using Demiurg;
 using System.Collections.Generic;
 using System;
+using Demiurg.Core;
 
 
 namespace CoreMod
 {
     public class SlotsReplacer : SlotsProcessor
     {
+        [AInput ("available_tags")]
+        Dictionary<string, Tag> tags;
+        [AInput ("avaliable_replacers")]
+        Dictionary<string, GameObject> avaliableReplacers;
+
         class Replacer
         {
             public GameObject GO;
             public Dictionary<Tag, int> Weights = new Dictionary<Tag, int> ();
             public TagsCollection Tags = new TagsCollection ();
         }
-        struct TagPair
+
+        class TagPair
         {
             public Tag Tag;
             public int Weight;
         }
+
         class TagRef
         {
-            public StringParam TagName = new StringParam ("tag_name");
-            public IntParam Weight = new IntParam ("weight");
+            [AConfig (1)]
+            public string TagName;
+            [AConfig (2)]
+            public int Weight;
         }
+
         class ReplacerData
         {
-            public StringParam TypeName = new StringParam ("replacer");
-            public ArrayParam<TagRef> Tags = new ArrayParam<TagRef> ("tags");
+            [AConfig ("ref")]
+            public string TypeName;
+            [AConfig ("tags")]
+            public List<TagRef> Tags;
         }
-        GlobalArrayParam<ReplacerData> replacersData;
-        protected override void SetupIOP ()
+
+        [AConfig ("replacers")]
+        List<ReplacerData> replacersData;
+        List<Replacer> replacers;
+
+        public override void Work ()
         {
-            base.SetupIOP ();
-            replacersData = Config<GlobalArrayParam<ReplacerData>> ("replacers");
-        }
-        Replacer[] replacers;
-        protected override void Work ()
-        {
-            Debug.LogWarning ("replacer works: " + Name);
             replacers = FormReplacers ();
-            List<GameObject> gobjects = new List<GameObject> ();
-            foreach (var slotGO in InputObjects.Content)
+            OutputObjects = new List<GameObject> ();
+            foreach (var slotGO in InputObjects)
             {
                 Slot slot = slotGO.GetComponent<Slot> ();
                 slot.Replacer = Replacement (slot);
@@ -50,30 +60,35 @@ namespace CoreMod
                 for (int i = 0; i < components.Length; i++)
                     components [i].FillComponent (slot.Replacer);
                 slot.Replacer.SetActive (true);
+                OutputObjects.Add (slot.Replacer);
             }
+            FinishWork ();
         }
 
-        Replacer[] FormReplacers ()
+        List<Replacer> FormReplacers ()
         {
-            Replacer[] replacers = new Replacer[replacersData.Content.Length];
-            for (int i = 0; i < replacers.Length; i++)
+            List<Replacer> replacers = new List<Replacer> ();
+            foreach (var data in replacersData)
             {
-                replacers [i] = new Replacer ();
-                var replacer = replacers [i];
-                GameObject gameObject = this.Creator.FindReplacer (replacersData.Content [i].TypeName);
-                gameObject.SetActive (false);
-                replacer.GO = gameObject;
-                foreach (var tagRef in replacersData.Content[i].Tags.Content)
+                Replacer rep = new Replacer ();
+                avaliableReplacers.TryGetValue (data.TypeName, out rep.GO);
+                if (rep.GO == null)
                 {
-                    Tag tag = this.Creator.FindTag (tagRef.TagName);
-                    if (tag != null)
-                    {
-                        replacer.Tags.AddTag (tag);
-                        replacer.Weights.Add (tag, tagRef.Weight);
-                    }
+                    continue;
                 }
+                foreach (var tagRef in data.Tags)
+                {
+                    Tag tag = null;
+                    tags.TryGetValue (tagRef.TagName, out tag);
+                    if (tag == null)
+                    {
+                        continue;
+                    }
+                    rep.Tags.AddTag (tag);
+                    rep.Weights.Add (tag, tagRef.Weight);
+                }
+                replacers.Add (rep);
             }
-
             return replacers;
         }
 
@@ -81,7 +96,7 @@ namespace CoreMod
         {
             int maxSimilarity = int.MinValue;
             int maxID = -1;
-            for (int i = 0; i < replacers.Length; i++)
+            for (int i = 0; i < replacers.Count; i++)
             {
                 int sim = slot.Tags.ComputeSimilarity (replacers [i].Tags, replacers [i].Weights);
                 if (sim > maxSimilarity)

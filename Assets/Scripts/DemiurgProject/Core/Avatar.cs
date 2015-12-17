@@ -4,11 +4,15 @@ using System;
 using System.Reflection;
 using Demiurg.Core.Extensions;
 using System.Linq;
+using UnityEngine;
+using UnityEditor;
+using System.Text;
 
 namespace Demiurg.Core
 {
     public abstract class Avatar
     {
+        protected System.Random Random = new System.Random (0);
         Scribe scribe = Scribes.Find ("Avatars");
 
         public static Avatar Create (DemiurgEntity demiurg, Type type, string name, ITable wiringTable, ITable configs)
@@ -23,7 +27,6 @@ namespace Demiurg.Core
         protected Dictionary<string, AvatarOutput> Outputs = new Dictionary<string, AvatarOutput> ();
         protected List<AvatarConfig> Configs = new List<AvatarConfig> ();
 
-        public abstract void SetupIO ();
 
         public string Name { get; internal set; }
 
@@ -46,6 +49,7 @@ namespace Demiurg.Core
 
         void SetupWiring (ITable wiringTable)
         {
+            Debug.LogWarningFormat ("{0} started wiring inputs {1}", Name, Inputs.Count);
             foreach (var input in Inputs)
             {
                 ITable table = wiringTable.Get (input.Name) as ITable;
@@ -83,7 +87,30 @@ namespace Demiurg.Core
             foreach (var config in Configs)
             {
                 IConfigLoader loader = loaders.FindLoader (config.FieldType ());
-                config.SetValue (loader.Load (configs.Get (config.Name), config.FieldType (), loaders));
+
+                object cfg = configs.Get (config.Name);
+                if (cfg == null)
+                {
+                    scribe.LogFormatError ("Config not found {0} {1} {2} {3} {4}", Name, config.Name, config.FieldType (), loader, cfg);
+                    if (configs.Get (config.Name) == null)
+                    {
+                        foreach (var key in configs.GetKeys())
+                            scribe.LogError (key.ToString ());
+                    }
+                    continue;
+                }
+                object value = loader.Load (cfg, config.FieldType (), loaders);
+                if (value == null)
+                {
+                    scribe.LogFormatError ("Value not loaded properly {0} {1} {2} {3} {4}", Name, config.Name, config.FieldType (), loader, cfg);
+                    if (configs.Get (config.Name) == null)
+                    {
+                        foreach (var key in configs.GetKeys())
+                            scribe.LogError (key.ToString ());
+                    }
+                    continue;
+                }
+                config.SetValue (value);
             }
         }
 
@@ -94,17 +121,14 @@ namespace Demiurg.Core
             foreach (var output in Outputs)
                 output.Value.Finish ();
         }
-    }
 
-    public abstract class Avatar<T> : Avatar where T : Avatar
-    {
         class FieldData
         {
             public FieldInfo Field { get; internal set; }
 
-            public string ID { get; internal set; }
+            public object ID { get; internal set; }
 
-            public FieldData (FieldInfo field, string id)
+            public FieldData (FieldInfo field, object id)
             {
                 Field = field;
                 ID = id;
@@ -113,45 +137,78 @@ namespace Demiurg.Core
 
         }
 
-        static IEnumerable<FieldData> inputs;
-        static IEnumerable<FieldData> outputs;
-        static IEnumerable<FieldData> configs;
-
-        static Avatar ()
+        class InheritedClassData
         {
-            Type inputAttr = typeof(Input);
-            Type outputAttr = typeof(Output);
-            Type configAttr = typeof(Config);
-            Type type = MethodBase.GetCurrentMethod ().DeclaringType;
-            var fields = type.GetFields ();
-            inputs = from field in fields
-                              where field.IsDefined (inputAttr, false)
-                              select new FieldData (field, ((Input)Attribute.GetCustomAttribute (field, inputAttr)).Name);
-            outputs = from field in fields
-                               where field.IsDefined (outputAttr, false)
-                               select new FieldData (field, ((Output)Attribute.GetCustomAttribute (field, outputAttr)).Name);
-            configs = from field in fields
-                               where field.IsDefined (configAttr, false)
-                               select new FieldData (field, ((Config)Attribute.GetCustomAttribute (field, configAttr)).Name);
+            public List<FieldData> inputs = new List<FieldData> ();
+            public List<FieldData> outputs = new List<FieldData> ();
+            public List<FieldData> configs = new List<FieldData> ();
         }
 
-        public sealed override void SetupIO ()
+        static Dictionary<Type, InheritedClassData> usedAvatars = new Dictionary<Type, InheritedClassData> ();
+
+        static Type inputAttr = typeof(AInput);
+        static Type outputAttr = typeof(AOutput);
+        static Type configAttr = typeof(AConfig);
+
+        public static void UseAvatarType (Type type)
         {
-            foreach (var con in configs)
+            var fields = type.GetFields (BindingFlags.NonPublic | BindingFlags.Instance);
+
+            InheritedClassData data = new InheritedClassData ();
+            foreach (var field in fields)
+            {
+                
+                if (field.IsDefined (inputAttr, true))
+                    data.inputs.Add (new FieldData (field, ((AInput)Attribute.GetCustomAttribute (field, inputAttr)).Name));
+                else
+                if (field.IsDefined (outputAttr, true))
+                    data.outputs.Add (new FieldData (field, ((AOutput)Attribute.GetCustomAttribute (field, outputAttr)).Name));
+                else
+                if (field.IsDefined (configAttr, true))
+                    data.configs.Add (new FieldData (field, ((AConfig)Attribute.GetCustomAttribute (field, configAttr)).Name));
+            }
+            StringBuilder builder = new StringBuilder (100);
+            builder.Append ("IN: ");
+            foreach (var inp in data.inputs)
+            {
+                builder.Append (inp.ID);
+                builder.Append (' ');
+            }
+            builder.Append ("OUT: ");
+            foreach (var inp in data.outputs)
+            {
+                builder.Append (inp.ID);
+                builder.Append (' ');
+            }
+            builder.Append ("CFG: ");
+            foreach (var inp in data.configs)
+            {
+                builder.Append (inp.ID);
+                builder.Append (' ');
+            }
+            Debug.LogWarningFormat ("{0} : {1} : {2}", type, fields.Length, builder.ToString ());
+            usedAvatars.Add (type, data);
+        }
+
+
+        public void SetupIO ()
+        {
+            var data = usedAvatars [this.GetType ()];
+            foreach (var con in data.configs)
             {
                 AvatarConfig config = new AvatarConfig (con.ID, con.Field, this);
                 Configs.Add (config);
             }
-            foreach (var inp in inputs)
+            foreach (var inp in data.inputs)
             {
                 AvatarInput input = new AvatarInput (inp.ID, inp.Field, this);
                 Inputs.Add (input);
             }
 
-            foreach (var outp in outputs)
+            foreach (var outp in data.outputs)
             {
                 AvatarOutput output = new AvatarOutput (outp.ID, outp.Field, this);
-                Outputs.Add (outp.ID, output);
+                Outputs.Add ((string)outp.ID, output);
             }
         }
     }

@@ -9,13 +9,16 @@ namespace Demiurg.Core
 {
     public class AvatarIO
     {
-        public string Name { get; internal set; }
+        public object Name { get; internal set; }
+
         public string AvatarName { get { return Avatar.Name; } }
+
         protected Scribe Scribe = Scribes.Find ("DemiurgIO");
         Signals.Signal finishSignal = new Signals.Signal ();
         protected FieldInfo Field;
         protected Avatar Avatar;
-        public AvatarIO (string name, FieldInfo field, Avatar avatar)
+
+        public AvatarIO (object name, FieldInfo field, Avatar avatar)
         {
             Field = field;
             Avatar = avatar;

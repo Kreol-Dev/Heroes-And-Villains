@@ -2,30 +2,28 @@ using UnityEngine;
 using System.Collections;
 using Demiurg;
 using System.Collections.Generic;
+using Demiurg.Core;
 
 
 namespace CoreMod
 {
-    public class LatitudeModule : CreationNode
+    public class LatitudeModule : Demiurg.Core.Avatar
     {
-        NodeOutput<int[,]> mainO;
-        IntParam polarValue;
-        IntParam centralValue;
-        IntParam width;
-        IntParam height;
-        protected override void SetupIOP ()
-        {
-            mainO = Output<int[,]> ("main");
-            polarValue = Config<IntParam> ("polar_value");
-            centralValue = Config<IntParam> ("central_value");
-            width = Config<IntParam> ("width");
-            height = Config<IntParam> ("height");
-        }
+        [AOutput ("main")]
+        int[,] mainO;
+        [AConfig ("polar_value")]
+        int polarValue;
+        [AConfig ("central_value")]
+        int centralValue;
+        [AConfig ("width")]
+        int width;
+        [AConfig ("height")]
+        int height;
 
-        protected override void Work ()
+        public override void Work ()
         {
-            float polar = (float)polarValue.Content;
-            float central = (float)centralValue.Content;
+            float polar = (float)polarValue;
+            float central = (float)centralValue;
             int[,] latitudeMap = new int[width, height];
             float halfHeight = height / 2;
             for (int j = 0; j < height; j++)
@@ -35,7 +33,7 @@ namespace CoreMod
                     latitudeMap [i, j] = value;
 
             }
-            mainO.Finish (latitudeMap);
+            FinishWork ();
         }
         
         

@@ -3,64 +3,54 @@ using System.Collections;
 using System.Collections.Generic;
 using Demiurg;
 using UnityEngine;
+using Demiurg.Core;
 
 
 namespace CoreMod
 {
-    public class DistinctorModule : CreationNode
+    public class DistinctorModule  : Demiurg.Core.Avatar
     {
-        class LevelValue
-        {
-            public FloatParam Level = new FloatParam ("level");
-            public IntParam Value = new IntParam ("val");
-        }
-        struct LevelPair
+       
+
+        class LevelPair
         {
             public float Level;
             public int Value;
         }
-        NodeOutput<int[,]> mainO; 
-        NodeInput<float[,]> mainI;
-        protected override void SetupIOP ()
-        {
-            mainO = Output<int[,]> ("main");
-            mainI = Input<float[,]> ("main");
-            levels = Config<GlobalArrayParam<LevelValue>> ("levels");
-        }
-        GlobalArrayParam<LevelValue> levels;
-        LevelPair[] pairs;
+
+        [AOutput ("main")]
+        int[,] mainO;
+        [AInput ("main")]
+        float[,] mainI;
+        [AConfig ("levels")]
+        List<LevelPair> levels;
+
         int FindLevel (float value)
         {
-            for (int i = 0; i < pairs.Length - 1; i++)
+            for (int i = 0; i < levels.Count - 1; i++)
             {
-                if (pairs [i + 1].Level >= value && pairs [i].Level <= value)
+                if (levels [i + 1].Level >= value && levels [i].Level <= value)
                 {
                     //Debug.LogFormat ("{2} <= {1} <= {0} ----> {3}", pairs [i + 1].Level, value, pairs [i].Level, pairs [i + 1].Value);
-                    return pairs [i + 1].Value;
+                    return levels [i + 1].Value;
                 }
                     
             }
-            if (value > pairs [pairs.Length - 1].Level)
-                return pairs [pairs.Length - 1].Value;
-            return pairs [0].Value;
+            if (value > levels [levels.Count - 1].Level)
+                return levels [levels.Count - 1].Value;
+            return levels [0].Value;
         }
 
 
-        protected override void Work ()
+        public override void Work ()
         {
-            pairs = new LevelPair[levels.Content.Length];
-            for (int i = 0; i < levels.Content.Length; i++)
-            {
-                pairs [i].Level = levels.Content [i].Level;
-                pairs [i].Value = levels.Content [i].Value;
-            }
-            var array = new int[mainI.Content.GetLength (0), mainI.Content.GetLength (1)];
-            for (int i = 0; i < array.GetLength(0); i++)
-                for (int j = 0; j < array.GetLength(1); j++)
+            var array = new int[mainI.GetLength (0), mainI.GetLength (1)];
+            for (int i = 0; i < array.GetLength (0); i++)
+                for (int j = 0; j < array.GetLength (1); j++)
                 {
-                    array [i, j] = FindLevel (mainI.Content [i, j]);
+                    array [i, j] = FindLevel (mainI [i, j]);
                 }
-            mainO.Finish (array);
+            FinishWork ();
 
         }
     }

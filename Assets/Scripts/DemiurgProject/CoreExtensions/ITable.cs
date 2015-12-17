@@ -9,7 +9,7 @@ namespace Demiurg.Core.Extensions
     {
         string Name { get; set; }
 
-        IEnumerable<object> GetKeys ();
+        IEnumerable GetKeys ();
 
         object Get (object id);
 

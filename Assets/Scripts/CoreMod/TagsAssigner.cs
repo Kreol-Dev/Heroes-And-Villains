@@ -7,7 +7,11 @@ namespace CoreMod
 {
     public class TagsAssigner : SlotsProcessor
     {
-        class TagRef
+        public override void Work ()
+        {
+            throw new System.NotImplementedException ();
+        }
+        /*class TagRef
         {
             public StringParam TagName = new StringParam ("tag_name");
         }
@@ -53,7 +57,7 @@ namespace CoreMod
             }
             return tags;
                 
-        }
+        }*/
     }
 
 }

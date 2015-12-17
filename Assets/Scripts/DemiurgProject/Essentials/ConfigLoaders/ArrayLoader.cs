@@ -1,4 +1,4 @@
-using UnityEngine;
+﻿using UnityEngine;
 using System.Collections;
 using System.Collections.Generic;
 using Demiurg.Core.Extensions;
@@ -7,9 +7,8 @@ using MoonSharp.Interpreter;
 
 namespace Demiurg.Essentials
 {
-    public class ListLoader : IConfigLoader
+    public class ArrayLoader : IConfigLoader
     {
-        static Type listType = typeof(IList);
 
         #region IConfigLoader implementation
 
@@ -20,27 +19,25 @@ namespace Demiurg.Essentials
 
         public bool Check (Type targetType)
         {
-            return listType.IsAssignableFrom (targetType);
+            return targetType.IsArray;
         }
 
         public object Load (object fromObject, Type targetType, Demiurg.Core.ConfigLoaders loaders)
         {
-            IList objects = Activator.CreateInstance (targetType) as IList;
-            ITable table = fromObject as ITable;
+            List<object> objects = new List<object> ();
+            Table table = fromObject as Table;
             Type containedType = targetType.GetGenericArguments () [0];
             IConfigLoader loader = loaders.FindLoader (containedType);
-            var keys = table.GetKeys ();
+            var keys = table.Keys;
             foreach (var key in keys)
             {
-                objects.Add (loader.Load (table.Get (key), containedType, loaders));
+                objects.Add (loader.Load (table [key], containedType, loaders));
             }
-            return objects;
+            return objects.ToArray ();
 
         }
 
         #endregion
-        
+
     }
 }
-
-
