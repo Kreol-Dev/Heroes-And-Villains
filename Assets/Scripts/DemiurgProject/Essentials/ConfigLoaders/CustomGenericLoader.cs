@@ -44,9 +44,10 @@ namespace Demiurg.Essentials
             templates.TryGetValue (targetType, out template);
             if (template == null)
             {
-                template = CreateTempalte (targetType);
+                template = CreateTemplate (targetType);
                 templates.Add (targetType, template);
             }
+            scribe.LogFormat ("Found values {0} in table {1} for object {2}", template.fields.Count, fromObject, targetType);
             foreach (var field in template.fields)
             {
                 object value = objectTable.Get (field.Key);
@@ -61,6 +62,7 @@ namespace Demiurg.Essentials
                     scribe.LogFormatError ("Can't find loader for a value {0} with type {1} in table {2} for object {3}", field.Key, field.Type, fromObject, targetType);
                     continue;
                 }
+                scribe.LogFormat ("Found value {0} with type {1} in table {2} for object {3}", field.Key, field.Type, fromObject, targetType);
                 value = loader.Load (value, field.Type, loaders);
                 //Call setter on the object with loaded value
                 field.Setter (loadedObject, value);
@@ -69,10 +71,11 @@ namespace Demiurg.Essentials
         }
 
 
-        LoadTemplate CreateTempalte (Type targetType)
+        LoadTemplate CreateTemplate (Type targetType)
         {
             LoadTemplate template = new LoadTemplate ();
-            PropertyInfo[] fields = targetType.GetProperties (BindingFlags.Public);
+            PropertyInfo[] fields = targetType.GetProperties (BindingFlags.Public | BindingFlags.Instance);
+            scribe.LogFormat ("Found fields {0} in type {1}", fields.Length, targetType);
             foreach (var field in fields)
             {
                 var setter = BuildSetAccessor (field.GetSetMethod ());

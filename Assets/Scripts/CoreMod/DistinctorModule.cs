@@ -14,8 +14,11 @@ namespace CoreMod
 
         class LevelPair
         {
-            public float Level;
-            public int Value;
+            [AConfig ("level")]
+            public float Level { get; set; }
+
+            [AConfig ("val")]
+            public int Value { get; set; }
         }
 
         [AOutput ("main")]
@@ -44,11 +47,13 @@ namespace CoreMod
 
         public override void Work ()
         {
-            var array = new int[mainI.GetLength (0), mainI.GetLength (1)];
-            for (int i = 0; i < array.GetLength (0); i++)
-                for (int j = 0; j < array.GetLength (1); j++)
+            foreach (var level in levels)
+                Debug.LogFormat ("[DISTINCTION] {0} {1} {2}", this.GetType (), level.Level, level.Value);
+            mainO = new int[mainI.GetLength (0), mainI.GetLength (1)];
+            for (int i = 0; i < mainO.GetLength (0); i++)
+                for (int j = 0; j < mainO.GetLength (1); j++)
                 {
-                    array [i, j] = FindLevel (mainI [i, j]);
+                    mainO [i, j] = FindLevel (mainI [i, j]);
                 }
             FinishWork ();
 

@@ -3,32 +3,30 @@ using System.Collections;
 using Demiurg;
 using System.Collections.Generic;
 using System;
+using Demiurg.Core;
 
 
 namespace CoreMod
 {
-    public class SlotsPlacer : CreationNode
+    public class SlotsPlacer : Demiurg.Core.Avatar
     {
-        NodeInput<TileRef[]> points;
-        NodeOutput<List<GameObject>> slots;
-        protected override void SetupIOP ()
-        {
-            points = Input<TileRef[]> ("points");
-            slots = Output<List<GameObject>> ("slots");
-        }
+        [AInput ("points")]
+        TileRef[] points;
+        [AOutput ("slots")]
+        List<GameObject> slots;
 
-        protected override void Work ()
+        public override void Work ()
         {
-            slots.Content = new List<GameObject> ();
-            for (int i = 0; i < points.Content.Length; i++)
+            slots = new List<GameObject> ();
+            for (int i = 0; i < points.Length; i++)
             {
                 GameObject go = new GameObject ("slot GO");
                 SlotTile comp = go.AddComponent<SlotTile> ();
-                comp.X = points.Content [i].X;
-                comp.Y = points.Content [i].Y;
-                slots.Content.Add (go);
+                comp.X = points [i].X;
+                comp.Y = points [i].Y;
+                slots.Add (go);
             }
-            slots.Finish ();
+            FinishWork ();
         }
     }
 }

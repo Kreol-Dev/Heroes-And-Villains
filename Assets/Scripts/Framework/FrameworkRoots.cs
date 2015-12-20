@@ -10,7 +10,6 @@ public class FrameworkRoots : MonoBehaviour
         Find.Register<PlanetsGenerator> ();
         Find.Register<ModsManager> ();
         Find.Register<LuaContext> ();
-        Find.Register<ObjectsCreator> ();
         Find.Register<Sprites> ();
     }
     

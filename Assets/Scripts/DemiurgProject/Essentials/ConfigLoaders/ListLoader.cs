@@ -11,8 +11,6 @@ namespace Demiurg.Essentials
     {
         static Type listType = typeof(IList);
 
-        #region IConfigLoader implementation
-
         public bool IsSpecific ()
         {
             return false;
@@ -37,8 +35,6 @@ namespace Demiurg.Essentials
             return objects;
 
         }
-
-        #endregion
         
     }
 }

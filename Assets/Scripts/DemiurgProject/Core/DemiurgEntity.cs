@@ -27,6 +27,15 @@ namespace Demiurg.Core
                     continue;
                 avatars.Add (newAvatar.Name, newAvatar);
             }
+            foreach (var avatar in avatars)
+            {
+                ITable init = avatarsTables [avatar.Key];
+                avatar.Value.Configure (this, (ITable)init.Get ("inputs"), (ITable)init.Get ("configs"));
+            }
+            foreach (var avatar in avatars)
+            {
+                avatar.Value.TryWork ();
+            }
         }
 
         Avatar NewAvatar (string name, ITable init, Dictionary<string, Type> possibleAvatars)
@@ -46,7 +55,7 @@ namespace Demiurg.Core
                 return null;
             }
                 
-            return Avatar.Create (this, type, name, (ITable)init.Get ("inputs"), (ITable)init.Get ("configs"));
+            return Avatar.Create (type, name);
         }
 
         public Avatar FindAvatar (string name)

@@ -37,6 +37,7 @@ namespace CoreMod
                 {
                     array [i, j] = (int)(Mathf.Lerp (minValue, maxValue, Mathf.InverseLerp (minInputValue, maxInputValue, mainI [i, j])));
                 }
+            mainO = array;
             FinishWork ();
             
         }

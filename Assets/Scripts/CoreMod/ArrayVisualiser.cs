@@ -24,6 +24,7 @@ namespace CoreMod
 
         public sealed override void Work ()
         {
+            
             GameObject go = new GameObject (Name);
             Map map = go.AddComponent<Map> ();
             map.Name = this.Name;

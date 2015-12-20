@@ -25,6 +25,7 @@ namespace CoreMod
                 {
                     blendedMap [i, j] = (int)Mathf.Lerp (firstI [i, j], secondI [i, j], 1f - weight);
                 }
+            mainO = blendedMap;
             base.FinishWork ();
         }
 

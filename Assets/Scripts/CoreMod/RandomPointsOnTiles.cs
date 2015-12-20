@@ -33,6 +33,7 @@ namespace CoreMod
                     points [curPoint++] = tiles [Random.Next (j, j + chunkRange)];
                 }
             }
+            mainO = points;
             FinishWork ();
         }
         

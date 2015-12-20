@@ -14,6 +14,7 @@ namespace CoreMod
         public string Name;
         SpriteRenderer spriteRenderer;
         Text text;
+
         public void Setup ()
         {
             Sprite.texture.filterMode = FilterMode.Point;
@@ -54,7 +55,6 @@ namespace CoreMod
                     spriteRenderer.sprite = Sprite;
                     text.text = Name;
                 }
-                Debug.Log (currentID);
             }
 
 

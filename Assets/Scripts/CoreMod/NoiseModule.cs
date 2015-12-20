@@ -20,7 +20,7 @@ namespace CoreMod
         public override void Work ()
         { 
             DiamondSquare ds = new DiamondSquare (sizeX, sizeY, sizeX / (int)Mathf.Pow (2, scale), Random.Next (), true);
-            float[,] values = ds.GetNormalValues ();
+            main = ds.GetNormalValues ();
             FinishWork ();
 
         }

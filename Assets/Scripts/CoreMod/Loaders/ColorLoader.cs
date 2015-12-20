@@ -17,6 +17,9 @@ public class ColorLoader : IConfigLoader
         return targetType == colorType;
     }
 
+    IConfigLoader floatLoader = null;
+    Type floatType = typeof(float);
+
     public object Load (object fromObject, System.Type targetType, Demiurg.Core.ConfigLoaders loaders)
     {
         ITable table = fromObject as ITable;
@@ -31,7 +34,13 @@ public class ColorLoader : IConfigLoader
             green = table.Get ("green");
             blue = table.Get ("blue");
         }
-        return new Color ((float)red, (float)green, (float)blue);
+        if (floatLoader == null)
+            floatLoader = loaders.FindLoader (floatType);
+        Color color = new Color ((float)floatLoader.Load (red, floatType, loaders), 
+                          (float)floatLoader.Load (green, floatType, loaders), 
+                          (float)floatLoader.Load (blue, floatType, loaders));
+        Debug.LogFormat ("COLOR LOADED {0}", color);
+        return color;
     }
 
 

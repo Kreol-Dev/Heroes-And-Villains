@@ -12,14 +12,14 @@ namespace Demiurg.Core
 {
     public abstract class Avatar
     {
-        protected System.Random Random = new System.Random (0);
+        protected System.Random Random = new System.Random (1);
         Scribe scribe = Scribes.Find ("Avatars");
 
-        public static Avatar Create (DemiurgEntity demiurg, Type type, string name, ITable wiringTable, ITable configs)
+        public static Avatar Create (Type type, string name)
         {
             Avatar avatar = Activator.CreateInstance (type) as Avatar;
             avatar.SetupIO ();
-            avatar.Configure (demiurg, name, wiringTable, configs);
+            avatar.ConfigureName (name);
             return avatar;
         }
 
@@ -32,12 +32,27 @@ namespace Demiurg.Core
 
         protected DemiurgEntity Demiurg { get; set; }
 
-        public void Configure (DemiurgEntity demiurg, string name, ITable wiringTable, ITable configs)
+        public void ConfigureName (string name)
+        {
+            Name = name;
+        }
+
+        public void Configure (DemiurgEntity demiurg, ITable wiringTable, ITable configs)
         {
             Demiurg = demiurg;
-            Name = name;
             SetupWiring (wiringTable);
             SetupConfigs (configs);
+                
+        }
+
+        public void TryWork ()
+        {
+
+            if (Inputs.Count == 0)
+            {
+                Debug.LogFormat ("[AVATARS WORKFLOW] {0} started working", this.Name);
+                Work ();
+            }
         }
 
         public AvatarOutput GetOutput (string name)
@@ -118,6 +133,7 @@ namespace Demiurg.Core
 
         protected void FinishWork ()
         {
+            Debug.LogFormat ("[AVATARS WORKFLOW] {0} finished working", this.Name);
             foreach (var output in Outputs)
                 output.Value.Finish ();
         }
@@ -190,6 +206,18 @@ namespace Demiurg.Core
             usedAvatars.Add (type, data);
         }
 
+        int finishedInputs = 0;
+
+        void CountFinishedInputs ()
+        {
+            finishedInputs++;
+            if (finishedInputs >= Inputs.Count)
+            {
+                Debug.LogFormat ("[AVATARS WORKFLOW] {0} started working", this.Name);
+                Work ();
+            }
+                
+        }
 
         public void SetupIO ()
         {
@@ -202,6 +230,7 @@ namespace Demiurg.Core
             foreach (var inp in data.inputs)
             {
                 AvatarInput input = new AvatarInput (inp.ID, inp.Field, this);
+                input.OnFinish (CountFinishedInputs);
                 Inputs.Add (input);
             }
 

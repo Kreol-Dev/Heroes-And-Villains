@@ -33,6 +33,7 @@ namespace CoreMod
                     latitudeMap [i, j] = value;
 
             }
+            mainO = latitudeMap;
             FinishWork ();
         }
         

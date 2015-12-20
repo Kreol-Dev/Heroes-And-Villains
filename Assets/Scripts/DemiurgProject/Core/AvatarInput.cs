@@ -28,16 +28,17 @@ namespace Demiurg.Core
                 }
                 output.OnFinish (() =>
                 {
-                    Scribe.LogFormat ("IO OUTPUT->INPUT Input {0} {1} and Output {2} {3}", Avatar.Name, Name, output.AvatarName, output.Name);
+                    Scribe.LogFormat ("IO OUTPUT->INPUT Input {0} ({4}) {1} and Output {2} ({5}) {3} (CONVERTED)", Avatar.Name, Name, output.AvatarName, output.Name, Avatar.GetType (), output.GetAvatarType ());
                     this.Field.SetValue (Avatar, converter.Convert (output.FieldValue (), converters));
                     base.Finish ();
                 });
                 return;
             }    
-            Scribe.LogFormat ("IO CONNECTION Input {0} {1} {2} and Output {3} {4} {5}", Avatar.Name, Name, inType, output.AvatarName, output.Name, outType);
+            Scribe.LogFormat ("IO CONNECTION Input {0} ({6}) {1} {2} and Output {3} ({7}) {4} {5}", Avatar.Name, Name, inType, output.AvatarName, output.Name, outType, Avatar.GetType (), output.GetAvatarType ());
             output.OnFinish (() =>
             {
-                Scribe.LogFormat ("OUTPUT->INPUT Input {0} {1} and Output {2} {3}", Avatar.Name, Name, output.AvatarName, output.Name);
+                Scribe.LogFormat ("OUTPUT->INPUT Input {0}  ({4}) {1} and Output {2} ({5}) {3}", Avatar.Name, Name, output.AvatarName, output.Name, Avatar.GetType (), output.GetAvatarType ());
+                Scribe.LogFormat ("OUTPUT->INPUT Output value {0}", output.FieldValue ());
                 this.Field.SetValue (Avatar, output.FieldValue ());
                 base.Finish ();
             });

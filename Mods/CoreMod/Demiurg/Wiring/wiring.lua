@@ -3,8 +3,8 @@ base_module =
 	avatar_type = "CoreMod.NoiseModule",
 	configs =
 	{
-		width = 64,
-		height = 32,
+		width = 128,
+		height = 64,
 		scale = 3
 	}
 }
@@ -30,7 +30,7 @@ continents_module =
 {
 	avatar_type = "CoreMod.ContinuousChunksModule",
 	configs = {
-		planet_connectivity = "full"
+		planet_connectivity = "sphere"
 	},
 	inputs = {
 		main = { "distinctor_module", "main" }
@@ -42,8 +42,12 @@ base_visual =
 	avatar_type = "CoreMod.FloatArrayVisualizer",
 	configs = 
 	{
-		{ level = 0, red = 0, green = 0, blue = 0},
-		{ level = 1, red = 1, green = 1, blue = 1}
+		levels =
+		{
+			{ 0, { 0,  0,  0}},
+			{ 1, { 1,  1,  1}}
+		}
+		
 		
 	},
 	inputs =
@@ -57,8 +61,12 @@ distinct_visual =
 	avatar_type = "CoreMod.DistinctArrayVisualizer",
 	configs = 
 	{
-		{ level = 0, red = 0.3, green = 0.3, blue = 0.8},
-		{ level = 1, red = 0.3, green = 0.8, blue = 0.3}
+	levels =
+		{
+			{ 0, { 0.3,  0.3,  0.8}},
+			{ 1, { 0.3,  0.8,  0.3}}
+		},
+	random = false
 	},
 	inputs =
 	{
@@ -71,6 +79,7 @@ chunks_visual =
 	avatar_type = "CoreMod.DistinctArrayVisualizer",
 	configs = 
 	{
+		levels = {},
 		random = true
 	},
 	inputs =
@@ -116,13 +125,11 @@ points_visualizer =
 	avatar_type = "CoreMod.PointsVisualizer",
 	configs =
 	{
-		tile_red = 1,
-		tile_green = 1,
-		tile_blue = 1
+		tile_color = { 1, 1, 1}
 	},
 	inputs = 
 	{
-		base_texture = { "chunks_visual", "main" },
+		texture = { "chunks_visual", "main" },
 		tiles = { "random_points", "main" }
 	}
 }
@@ -132,10 +139,10 @@ latitude_temp_module =
 	avatar_type = "CoreMod.LatitudeModule",
 	configs =
 	{
-		north_value = -50,
+		polar_value = -50,
 		central_value = 40,
-		width = base_module.configs.planet_width,
-		height = base_module.configs.planet_height
+		width = base_module.configs.width,
+		height = base_module.configs.height
 	}
 
 }
@@ -146,8 +153,8 @@ temperature_noise =
 	avatar_type = "CoreMod.NoiseModule",
 	configs =
 	{
-		planet_width = base_module.configs.planet_width,
-		planet_height = base_module.configs.planet_height,
+		width = base_module.configs.width,
+		height = base_module.configs.height,
 		scale = 2
 	}
 }
@@ -183,8 +190,11 @@ lat_visual =
 	avatar_type = "CoreMod.IntArrayVisualizer",
 	configs = 
 	{
-		{ level = -50, red = 0, green = 0, blue = 1},
-		{ level = 50, red = 1, green = 0, blue = 0}
+	levels =
+	{
+		{ -50, {0, 0, 1}},
+		{ 50, {1, 0, 0}}
+	}
 	},
 	inputs =
 	{
@@ -196,8 +206,11 @@ temp_noise_visual =
 	avatar_type = "CoreMod.IntArrayVisualizer",
 	configs = 
 	{
-		{ level = -50, red = 0, green = 0, blue = 1},
-		{ level = 50, red = 1, green = 0, blue = 0}
+	levels =
+	{
+		{ -50, {0, 0, 1}},
+		{ 50, {1, 0, 0}}
+	}
 	},
 	inputs =
 	{
@@ -209,8 +222,11 @@ temperature_visual =
 	avatar_type = "CoreMod.IntArrayVisualizer",
 	configs = 
 	{
-		{ level = -50, red = 0, green = 0, blue = 1},
-		{ level = 50, red = 1, green = 0, blue = 0}
+	levels=
+	{
+		{ -50, {0, 0, 1}},
+		{ 50, {1, 0, 0}}
+	}
 	},
 	inputs =
 	{
@@ -223,8 +239,8 @@ height_noise =
 	avatar_type = "CoreMod.NoiseModule",
 	configs =
 	{
-		planet_width = base_module.configs.planet_width,
-		planet_height = base_module.configs.planet_height,
+		width = base_module.configs.width,
+		height = base_module.configs.height,
 		scale = 3
 	}
 }
@@ -247,10 +263,14 @@ height_visual =
 	avatar_type = "CoreMod.IntArrayVisualizer",
 	configs = 
 	{
-		{ level = -4000, red = 0, green = 0, blue = 1},
-		{ level = 0, red = 0, green = 1, blue = 1},
-		{ level = 4000, red = 0.8, green = 0.8, blue = 0},
-		{ level = 8000, red = 1, green = 1, blue = 1}
+		levels =
+		{
+		{ -4000, {0, 0, 1} },
+		{ 0    , {0, 1, 1} },
+		{ 4000 , {0.8, 0.8, 0} },
+		{ 8000 , {1, 1, 1} }
+	}
+		
 	},
 	inputs =
 	{
@@ -302,21 +322,44 @@ cities_creator =
 	avatar_type = "CoreMod.SlotsReplacer",
 	configs =
 	{
-		{ 
-			replacer = "desert_city",
-			tags = { { tag_name = "climate_desert", weight = 1 },  { tag_name = "climate_mountains", weight = -1 }, { tag_name = "climate_plains", weight = -1 } }
-		},
-		{ 
-			replacer = "plains_city",
-			tags = { { tag_name = "climate_desert", weight = -1 },  { tag_name = "climate_mountains", weight = -1 }, { tag_name = "climate_plains", weight = 1 } }
-		},
-		{ 
-			replacer = "mountains_city",
-			tags = { { tag_name = "climate_desert", weight = -1 },  { tag_name = "climate_mountains", weight = 1 }, { tag_name = "climate_plains", weight = -1 } }
-		}
+		replacers = 
+		{
+			{ 
+				ref = "desert_city",
+				tags = { { "climate_desert", 1 },  { "climate_mountains", -1 }, { "climate_plains", -1 } }
+			},
+			{ 
+				ref = "plains_city",
+				tags = { { "climate_desert", -1 },  { "climate_mountains", -1 }, { "climate_plains", 1 } }
+			},
+			{ 
+				ref = "mountains_city",
+				tags = { { "climate_desert", -1 },  { "climate_mountains", 1 }, {  "climate_plains", -1 } }
+			}
+	}
+		
 	},
 	inputs = 
 	{
 		main = { "climate_tags_assigner", "main" }
+	}
+}
+
+
+tags_collection =
+{
+	avatar_type = "CoreMod.TagsCollectionModule",
+	configs =
+	{
+		directory = "tags"
+	}
+}
+
+replacers_collection =
+{
+	avatar_type = "CoreMod.ReplacersCollectionModule",
+	configs = 
+	{
+		directory = "replacers"
 	}
 }

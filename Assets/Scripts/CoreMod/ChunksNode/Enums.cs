@@ -5,20 +5,23 @@ using Demiurg;
 
 namespace CoreMod
 {
-    public partial class ContinuousChunksModule : CreationNode
+    public partial class ContinuousChunksModule : Demiurg.Core.Avatar
     {
         #region enums
+
         enum TilesConnection
         {
             Four,
             Eight
         }
+
         enum EnvConnection
         {
             None,
             Cylinder,
             Sphere
         }
+
         enum Direction
         {
             Left,
@@ -30,6 +33,7 @@ namespace CoreMod
             DownLeft,
             DownRight
         }
+
         #endregion
     }
 }
