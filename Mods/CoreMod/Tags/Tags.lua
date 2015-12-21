@@ -1,29 +1,30 @@
-climate_desert =
+climate = {}
+climate.desert =
 {
 	criteria = 
 	{
 		min_temperature = 30,
 		max_temperature = 50
 	},
-	expression = tag_expressions.climate_expression
+	expression = expressions.climate_expression
 }
 
-climate_mountains =
+climate.mountains =
 {
 	criteria = 
 	{
 		min_temperature = -50,
 		max_temperature = 0
 	},
-	expression = tag_expressions.climate_expression
+	expression = expressions.climate_expression
 }
 
-climate_plains =
+climate.plains =
 {
 	criteria = 
 	{
 		min_temperature = 0,
 		max_temperature = 30
 	},
-	expression = tag_expressions.climate_expression
+	expression = expressions.climate_expression
 }

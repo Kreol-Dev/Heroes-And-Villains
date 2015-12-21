@@ -6,8 +6,8 @@ namespace CoreMod
 {
     public class ReplacersCollectionModule : Demiurg.Core.Avatar
     {
-        [AConfig ("directory")]
-        string directory;
+        /*[AConfig ("directory")]
+        string directory;*/
 
         public override void Work ()
         {

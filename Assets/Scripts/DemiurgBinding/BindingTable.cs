@@ -19,13 +19,38 @@ namespace DemiurgBinding
 
         public IEnumerable GetKeys ()
         {
-            return (IEnumerable)Table.Keys;
+            List<object> keys = new List<object> ();
+            foreach (var key in Table.Keys)
+                keys.Add (key.ToObject ());
+            return keys;
         }
 
         object ITable.Get (object id)
         {
             
             object obj = Table [id];
+            /*if (obj is DynValue)
+            {
+                DynValue value = obj as DynValue;
+                switch (value.Type)
+                {
+                case DataType.Boolean:
+                    return value.CastToBool ();
+                case DataType.Nil:
+                    return null;
+                case DataType.Function:
+                    return new BindingFunction (value.Function);
+                case DataType.Number:
+                    return value.CastToNumber ();
+                case DataType.String:
+                    return value.CastToString ();
+                case DataType.Table:
+                    return new BindingTable (value.Table);
+                default:
+                    return null;
+                }
+            }*/
+                
             if (obj is Table)
                 return new BindingTable (obj as Table);
             if (obj is Closure)

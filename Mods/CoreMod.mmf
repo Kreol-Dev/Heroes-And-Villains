@@ -1,0 +1,16 @@
+name = "CoreMod"
+
+description = "This is the core mod of the Mythos Cult"
+
+shared_libraries =
+{
+	tags = { dir = "Tags", deps = {"expressions"} },
+	expressions = "Expressions",
+	replacers = "Replacers",
+	wiring = "Wiring"
+}
+
+dependencies =
+{
+	
+}

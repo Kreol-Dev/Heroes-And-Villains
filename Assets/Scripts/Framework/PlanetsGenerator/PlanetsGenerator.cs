@@ -17,7 +17,7 @@ public class PlanetsGenerator : Root
     LuaContext luaContext;
     ModsManager modsManager;
     //WorldCreator creator;
-    Script script = new Script ();
+    ITable wiring;
 
     protected override void CustomSetup ()
     {
@@ -58,20 +58,7 @@ public class PlanetsGenerator : Root
         creator.SetupTags (FormTags (script.Globals ["tags"] as Table));
         creator.InitWiring (tables, nodes);*/
 
-
-        script.Options.ScriptLoader = new FileSystemScriptLoader ();
-        TablesConfig config = new TablesConfig (script);
-        
-        RegisterSlotComponents (config.ConfigureTable ("component"));
-        config.ConfigureTable ("tag_expressions", "component");
-        config.ConfigureTable ("tags", "tag_expressions");
-        config.ConfigureTable ("replacers");
-        config.ConfigureTable ("wiring", "tags");
-        config.AddPathsToTable ("tag_expressions", "Mods\\CoreMod\\Demiurg\\TagExpressions\\Expressions.lua");
-        config.AddPathsToTable ("tags", "Mods\\CoreMod\\Demiurg\\Tags\\Tags.lua");
-        config.AddPathsToTable ("replacers", "Mods\\CoreMod\\Demiurg\\Replacers\\Replacers.lua");
-        config.AddPathsToTable ("wiring", "Mods\\CoreMod\\Demiurg\\Wiring\\Wiring.lua");
-        config.Load ();
+        wiring = Find.Root<ModsManager> ().GetTable ("wiring");
 
 
         DemiurgEntity dem = new DemiurgEntity (FindAvatarTypes (), PrepareAvatarsTables (), LoadConverters (), LoadLoaders ());
@@ -93,14 +80,16 @@ public class PlanetsGenerator : Root
     Dictionary<string, ITable> PrepareAvatarsTables ()
     {
         Dictionary<string, Demiurg.Core.Extensions.ITable> tables = new Dictionary<string, Demiurg.Core.Extensions.ITable> ();
-        Table table = script.Globals ["wiring"] as Table;
-        foreach (var avatarNode in table.Pairs)
+        foreach (var avatarKey in wiring.GetKeys())
         {
-            if (avatarNode.Value.Table != null)
-            if (avatarNode.Value.Table ["external"] == null || ((bool)avatarNode.Value.Table ["external"]) != true)
+            
+            ITable avatarTable = wiring.Get (avatarKey) as ITable;
+            if (avatarTable != null)
+            if (avatarTable.Get ("global") == null || ((bool)avatarTable.Get ("global")) != true)
             {
-                tables.Add (avatarNode.Key.ToPrintString (), new BindingTable (avatarNode.Value.Table));
-                scribe.LogFormat ("{0} {1} has been added ", avatarNode.Key.ToPrintString (), avatarNode.Value.Type);
+                Debug.Log (avatarKey.GetType ());
+                tables.Add ((string)avatarKey, avatarTable);
+                scribe.LogFormat ("{0} has been added ", avatarKey);
             }
                 
         }

@@ -303,15 +303,11 @@ climate_tags_assigner =
 	avatar_type = "CoreMod.TagsAssigner",
 	configs =
 	{
-		tags = {
-		{ tag_name = "climate_desert" },
-		{ tag_name = "climate_mountains" },
-		{ tag_name = "climate_plains" }
-
-		}
+		tags = {"climate"}
 	},
 	inputs =
 	{
+		tags = { "tags_collection", "tags" },
 		main = { "climate_gatherer", "main" }
 	}
 }
@@ -351,7 +347,7 @@ tags_collection =
 	avatar_type = "CoreMod.TagsCollectionModule",
 	configs =
 	{
-		directory = "tags"
+		tags_table = "tags"
 	}
 }
 
@@ -360,6 +356,6 @@ replacers_collection =
 	avatar_type = "CoreMod.ReplacersCollectionModule",
 	configs = 
 	{
-		directory = "replacers"
+		
 	}
 }
