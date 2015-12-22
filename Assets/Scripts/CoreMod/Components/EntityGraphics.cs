@@ -1,22 +1,18 @@
 using UnityEngine;
 using System.Collections;
 using MoonSharp.Interpreter;
+using Demiurg.Core.Extensions;
 
-public class EntityComponent : MonoBehaviour
-{
-    public virtual void LoadFromTable (Table table)
-    {
-    }
-}
 namespace CoreMod
 {
+    [ECompName ("graphics")]
     public class EntityGraphics : EntityComponent
     {
-        public override void LoadFromTable (Table table)
+        public override void LoadFromTable (ITable table)
         {
-            Table spriteTable = ((Table)table ["graphics"]) ["sprite"] as Table;
-            string spriteName = (string)spriteTable [2];
-            string packName = (string)spriteTable [1];
+            ITable spriteTable = ((ITable)table.Get ("graphics")).Get ("sprite") as ITable;
+            string spriteName = (string)spriteTable.Get (2);
+            string packName = (string)spriteTable.Get (1);
             //Debug.LogWarningFormat ("{0} | {1}", packName, spriteName);
             gameObject.AddComponent<SpriteRenderer> ().sprite = Find.Root<Sprites> ().GetSprite (packName, spriteName);
         }

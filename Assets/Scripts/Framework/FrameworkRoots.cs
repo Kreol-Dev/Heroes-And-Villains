@@ -11,6 +11,7 @@ public class FrameworkRoots : MonoBehaviour
         Find.Register<ModsManager> ();
         Find.Register<LuaContext> ();
         Find.Register<Sprites> ();
+        Find.Register<ObjectsCreator> ();
     }
     
 }

@@ -11,9 +11,13 @@ namespace CoreMod
     public class SlotsReplacer : SlotsProcessor
     {
         [AInput ("available_tags")]
-        Dictionary<string, Tag> tags;
-        [AInput ("avaliable_replacers")]
-        Dictionary<string, GameObject> avaliableReplacers;
+        Dictionary<string, List<Tag>> tags;
+        [AInput ("available_replacers")]
+        Dictionary<string, List<GameObject>> avaliableReplacers;
+        [AConfig ("tags_namespace")]
+        string tagsNamespace;
+        [AConfig ("replacers_namespace")]
+        string replacersNamespace;
 
         class Replacer
         {
@@ -69,11 +73,19 @@ namespace CoreMod
 
         List<Replacer> FormReplacers ()
         {
+            
+            Dictionary<string, Tag> tags = new Dictionary<string, Tag> ();
+            foreach (var tag in this.tags[this.tagsNamespace])
+                tags.Add (tag.Name, tag);
+            Dictionary<string, GameObject> replacerGOs = new Dictionary<string, GameObject> ();
+            foreach (var rep in this.avaliableReplacers[this.replacersNamespace])
+                replacerGOs.Add (rep.name, rep);
+
             List<Replacer> replacers = new List<Replacer> ();
             foreach (var data in replacersData)
             {
                 Replacer rep = new Replacer ();
-                avaliableReplacers.TryGetValue (data.TypeName, out rep.GO);
+                replacerGOs.TryGetValue (data.TypeName, out rep.GO);
                 if (rep.GO == null)
                 {
                     continue;

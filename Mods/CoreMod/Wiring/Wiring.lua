@@ -303,7 +303,7 @@ climate_tags_assigner =
 	avatar_type = "CoreMod.TagsAssigner",
 	configs =
 	{
-		tags = {"climate"}
+		tags_namespace = "climate"
 	},
 	inputs =
 	{
@@ -321,23 +321,27 @@ cities_creator =
 		replacers = 
 		{
 			{ 
-				ref = "desert_city",
-				tags = { { "climate_desert", 1 },  { "climate_mountains", -1 }, { "climate_plains", -1 } }
+				ref = "desert",
+				tags = { { "desert", 1 },  { "mountains", -1 }, { "plains", -1 } }
 			},
 			{ 
-				ref = "plains_city",
-				tags = { { "climate_desert", -1 },  { "climate_mountains", -1 }, { "climate_plains", 1 } }
+				ref = "plains",
+				tags = { { "desert", -1 },  { "mountains", -1 }, { "plains", 1 } }
 			},
 			{ 
-				ref = "mountains_city",
-				tags = { { "climate_desert", -1 },  { "climate_mountains", 1 }, {  "climate_plains", -1 } }
+				ref = "mountains",
+				tags = { { "desert", -1 },  { "mountains", 2 }, {  "plains", -1 } }
 			}
-	}
+		},
+		tags_namespace = "climate",
+		replacers_namespace = "cities"
 		
 	},
 	inputs = 
 	{
-		main = { "climate_tags_assigner", "main" }
+		main = { "climate_tags_assigner", "main" },
+		available_tags = { "tags_collection", "tags"},
+		available_replacers = { "replacers_collection", "replacers"}
 	}
 }
 
@@ -356,6 +360,6 @@ replacers_collection =
 	avatar_type = "CoreMod.ReplacersCollectionModule",
 	configs = 
 	{
-		
+		replacers_table = "replacers"
 	}
 }

@@ -21,6 +21,7 @@ namespace CoreMod
             for (int i = 0; i < points.Length; i++)
             {
                 GameObject go = new GameObject ("slot GO");
+                go.AddComponent<Slot> ();
                 SlotTile comp = go.AddComponent<SlotTile> ();
                 comp.X = points [i].X;
                 comp.Y = points [i].Y;

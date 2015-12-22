@@ -8,6 +8,11 @@ namespace CoreMod
     {
         public TagsCollection Tags;
         public GameObject Replacer;
+
+        void Awake ()
+        {
+            Tags = new TagsCollection ();
+        }
     }
 }
 

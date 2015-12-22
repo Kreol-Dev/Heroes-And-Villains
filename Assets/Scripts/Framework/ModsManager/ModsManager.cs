@@ -8,6 +8,7 @@ using MoonSharp.Interpreter;
 using DemiurgBinding;
 using Demiurg.Core.Extensions;
 using MoonSharp.Interpreter.Loaders;
+using System.Reflection;
 
 public class ModsManager : Root
 {
@@ -24,6 +25,11 @@ public class ModsManager : Root
         if (table == null)
             table = new BindingTable (new Table (globalContext));
         return table;
+    }
+
+    public Assembly GetModAssembly (string modName)
+    {
+        return globalMod.ModAssembly;
     }
 
     protected override void PreSetup ()
@@ -83,6 +89,7 @@ public class ModsManager : Root
                 }
             }
         }
+        mod.ModAssembly = Assembly.GetExecutingAssembly ();
         return mod;
     }
 

@@ -10,7 +10,7 @@ using MoonSharp.Interpreter.Loaders;
 using DemiurgBinding;
 using Demiurg.Core.Extensions;
 
-[RootDependencies (typeof(LuaContext), typeof(ModsManager), typeof(Sprites))]
+[RootDependencies (typeof(LuaContext), typeof(ModsManager), typeof(ObjectsCreator), typeof(Sprites))]
 public class PlanetsGenerator : Root
 {
     Scribe scribe = Scribes.Find ("PlanetsGenerator");

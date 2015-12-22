@@ -1,15 +1,19 @@
 using UnityEngine;
 using System.Collections;
 using Demiurg;
+using Demiurg.Core;
 
 namespace CoreMod
 {
     public class ClimateDataGatherer : SlotsProcessor
     {
-        /*NodeInput<float[,]> inlandnessMap;
-        NodeInput<int[,]> temperatureMap;
-        NodeInput<int[,]> heightMap;
-        protected override void SetupIOP ()
+        [AInput ("inlandness_map")]
+        float[,] inlandnessMap;
+        [AInput ("temperature_map")]
+        int[,] temperatureMap;
+        [AInput ("height_map")]
+        int[,] heightMap;
+        /*protected override void SetupIOP ()
         {
             base.SetupIOP ();
             temperatureMap = Input<int[,]> ("temperature_map");
@@ -34,7 +38,8 @@ namespace CoreMod
         }*/
         public override void Work ()
         {
-            
+            OutputObjects = InputObjects;
+            FinishWork ();
         }
     }
 }

@@ -1,4 +1,5 @@
-desert_city =
+cities ={}
+cities.desert =
 {
 	settlement = 
 	{
@@ -11,7 +12,7 @@ desert_city =
 	}
 }
 
-plains_city =
+cities.plains =
 {
 	settlement = 
 	{
@@ -24,7 +25,7 @@ plains_city =
 	}
 }
 
-mountains_city =
+cities.mountains =
 {
 	settlement = 
 	{
