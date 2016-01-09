@@ -21,31 +21,33 @@ namespace CoreMod
         {
             GameObject selectionGO = GameObject.Find ("SelectionPanel");
             GameObject hoverGO = GameObject.Find ("HoverPanel");
-            hoverPanelGO = new GameObject ("GraphicsTileHover");
-            hoverPanelGO.transform.SetParent (hoverGO.transform);
-            selectPanelGO = new GameObject ("GraphicsTileSelect");
-            selectPanelGO.transform.SetParent (selectionGO.transform);
+            hoverPanelGO = Object.Instantiate (Resources.Load ("UI/Panel"), Vector3.zero, Quaternion.identity) as GameObject; 
+            hoverPanelGO.name = "Hover panel";
+            hoverPanelGO.transform.SetParent (hoverGO.transform, false);
+            selectPanelGO = Object.Instantiate (Resources.Load ("UI/VerticalLayoutPanel")) as GameObject; 
+            hoverPanelGO.name = "Selection panel";
+            selectPanelGO.transform.SetParent (selectionGO.transform, false);
 
-            selectPanelGO.AddComponent<GridLayoutGroup> ();
-            RectTransform hoverTransform = hoverPanelGO.transform as RectTransform;
-            RectTransform selectionTransform = selectPanelGO.transform as RectTransform;
-
-
-            GameObject imageGO = new GameObject ("Image");
-            image = imageGO.AddComponent<Image> ();
+            RectTransform hoverTransform = hoverPanelGO.GetComponent<RectTransform> ();
+            hoverTransform.sizeDelta = Vector2.zero;
+            RectTransform selectionTransform = selectPanelGO.GetComponent<RectTransform> ();
+            selectionTransform.sizeDelta = Vector2.zero;
+            GameObject imageGO = Object.Instantiate (Resources.Load ("UI/Image"), Vector3.zero, Quaternion.identity) as GameObject; 
+            imageGO.name = "Image";
+            image = imageGO.GetComponent<Image> ();
             imageGO.transform.SetParent (selectionTransform, false);
             
 
-            GameObject hoverTextGO = new GameObject ("HoverText");
-            hoverTextGO.transform.SetParent (hoverTransform);
-            hoverText = hoverTextGO.AddComponent<Text> ();
+            GameObject hoverTextGO = Object.Instantiate (Resources.Load ("UI/Text"), Vector3.zero, Quaternion.identity) as GameObject; 
+            hoverTextGO.transform.SetParent (hoverTransform, false);
+            hoverText = hoverTextGO.GetComponent<Text> ();
 
-            GameObject selectionTextGO = new GameObject ("SelectionText");
-            selectionTextGO.transform.SetParent (selectionTransform);
-            selectText = selectionTextGO.AddComponent<Text> ();
+            GameObject selectionTextGO = Object.Instantiate (Resources.Load ("UI/Text"), Vector3.zero, Quaternion.identity) as GameObject; 
+            selectionTextGO.transform.SetParent (selectionTransform, false);
+            selectText = selectionTextGO.GetComponent<Text> ();
 
-            selectionGO.SetActive (false);
-            hoverGO.SetActive (false);
+            hoverPanelGO.SetActive (false);
+            selectPanelGO.SetActive (false);
         }
 
 

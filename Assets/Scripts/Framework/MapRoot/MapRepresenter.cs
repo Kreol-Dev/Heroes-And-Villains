@@ -46,7 +46,7 @@ namespace MapRoot
                 Renderer = renderer;
                 state = defaultState;
                 Presenter.Setup (layer, interactor, objectPresenter, state);
-                //Renderer.Set();
+                Renderer.Setup (layer, interactor, state);
             }
         }
 

@@ -28,18 +28,14 @@ namespace MapRoot
         ObjectHit lastHover;
 
         int hoverObjectID = 0;
-        LineRenderer lineRenderer;
 
         protected override void CustomSetup ()
         {
-            lineRenderer = gameObject.AddComponent<LineRenderer> ();
-            lineRenderer.SetColors (Color.red, Color.white);
-            lineRenderer.SetWidth (0.5f, 0.1f);
-            lineRenderer.SetVertexCount (2);
             manager = Find.Root<InputManager> ();
             manager.Hover += OnRawHover;
             manager.LeftClick += OnRawClick;
             manager.WheelScroll += OnRawWheel;
+            manager.RightClick += OnRightClick;
             hitsGetter = new HitsGetter (this);
             map = Find.Root<MapRoot.Map> ();
             var layerNames = map.GetAllLayerNames ();
@@ -51,7 +47,6 @@ namespace MapRoot
         {
             ObjectHover += (obj, pos) =>
             {
-                lineRenderer.SetPosition (1, pos);
             };
             EndObjectHover += (obj, pos) =>
             {
@@ -64,13 +59,11 @@ namespace MapRoot
             };
             ObjectClick += (obj, pos) =>
             {
-                lineRenderer.SetPosition (0, pos);
             };
             EndObjectClick += (obj, pos) =>
             {
             };
         }
-
 
 
 
@@ -111,7 +104,6 @@ namespace MapRoot
                 objectHitsCount = 0;
                 Ray ray = Camera.main.ScreenPointToRay (screenPoint);
                 int collidersCount = Physics.RaycastNonAlloc (ray, hits, 30);
-                Debug.DrawRay (ray.origin, ray.direction * 30, Color.red);
                 if (collidersCount >= hits.Length)
                 {
                     hits = new RaycastHit[collidersCount + 10];
@@ -125,6 +117,7 @@ namespace MapRoot
                         continue;
                     if (interactor.GetLayerState (handle.Layer) == InteractorState.Active)
                     {
+                        
                         objectHits [objectHitsCount++] = new ObjectHit (hits [i].transform, hits [i].point);
                     }
                 }
@@ -143,6 +136,8 @@ namespace MapRoot
             int hoverObjectID = 0;
             if (objectHitsCount == 0)
             {
+                if (currentHover.Transform == null)
+                    return;
                 EndObjectHover (currentHover.Transform, currentHover.Position);
                 lastHover = currentHover;
                 currentHover.Transform = null;
@@ -173,6 +168,8 @@ namespace MapRoot
                 {
 
                     this.hoverObjectID = i;
+                    currentHover.Position = objectHits [i].Position;
+                    Hover (currentHover.Transform, currentHover.Position);
                     return;
                 }
             }
@@ -213,6 +210,16 @@ namespace MapRoot
                     Hover (hitsGetter.ObjectHits [hoverObjectID].Transform, hitsGetter.ObjectHits [hoverObjectID].Position);
                     break;
                 }
+        }
+
+        void OnRightClick (Vector2 point)
+        {
+            if (selectedObject.Transform != null)
+            {
+
+                EndObjectClick (selectedObject.Transform, selectedObject.Position);
+                selectedObject.Transform = null;
+            }
         }
 
         ObjectHit selectedObject;
@@ -316,6 +323,23 @@ namespace MapRoot
                 interactors.Add (layer, binding);
 
             }
+        }
+
+        void OnDrawGizmos ()
+        {
+            Gizmos.color = Color.yellow;
+            for (int i = 0; i < hitsGetter.ObjectHitsCount; i++)
+            {
+                
+                Gizmos.DrawSphere (hitsGetter.ObjectHits [i].Position, 0.2f);
+            }
+
+            Gizmos.color = Color.red;
+            if (selectedObject.Transform != null)
+                Gizmos.DrawSphere (selectedObject.Position, 0.3f);
+            Gizmos.color = Color.blue;
+            if (currentHover.Transform != null)
+                Gizmos.DrawSphere (currentHover.Position, 0.35f);
         }
     }
 

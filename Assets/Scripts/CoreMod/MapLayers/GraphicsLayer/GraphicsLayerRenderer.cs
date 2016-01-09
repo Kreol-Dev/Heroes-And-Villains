@@ -4,8 +4,12 @@ using MapRoot;
 
 namespace CoreMod
 {
-    public class GraphicsLayerRenderer : IMapLayerRenderer
+    public class GraphicsLayerRenderer : SpriteMapRenderer<GraphicsTile, GraphicsTile, MapGraphicsLayer, GraphicsLayerInteractor>
     {
+        protected override Sprite GetSprite (GraphicsTile obj)
+        {
+            return obj.Sprite;
+        }
         
 
     }

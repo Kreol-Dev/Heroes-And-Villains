@@ -21,6 +21,7 @@ namespace CoreMod
             thisID = id++;
             Debug.LogWarningFormat ("{0} {1}", Name, thisID);
             spriteRenderer = GameObject.Find ("Map").GetComponent<SpriteRenderer> ();
+            spriteRenderer.sortingLayerName = "Default";
             //spriteRenderer.gameObject.transform.localScale = new Vector3 (Sprite.texture.width, Sprite.texture.width, 1);
             text = GameObject.Find ("MapName").GetComponent<Text> ();
             if (thisID == currentID)
