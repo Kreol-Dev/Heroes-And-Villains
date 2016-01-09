@@ -27,34 +27,51 @@ namespace DemiurgBinding
 
         object ITable.Get (object id)
         {
-            
-            object obj = Table [id];
-            /*if (obj is DynValue)
+            /*cachedValue = Table.Get (id);
+            if (cachedValue == null)
             {
-                DynValue value = obj as DynValue;
-                switch (value.Type)
-                {
-                case DataType.Boolean:
-                    return value.CastToBool ();
-                case DataType.Nil:
-                    return null;
-                case DataType.Function:
-                    return new BindingFunction (value.Function);
-                case DataType.Number:
-                    return value.CastToNumber ();
-                case DataType.String:
-                    return value.CastToString ();
-                case DataType.Table:
-                    return new BindingTable (value.Table);
-                default:
-                    return null;
-                }
-            }*/
+                Debug.LogFormat ("id {0} returned null", id);
+                return null;
+            }
+            Debug.LogFormat ("id {0} returned value {1} with type {2}", id, cachedValue, cachedValue.Type);
                 
-            if (obj is Table)
-                return new BindingTable (obj as Table);
-            if (obj is Closure)
-                return new BindingFunction (obj as Closure);
+            switch (cachedValue.Type)
+            {
+            case DataType.Boolean:
+                return cachedValue.CastToBool ();
+            case DataType.Nil:
+                return null;
+            case DataType.Function:
+                return new BindingFunction (cachedValue.Function);
+            case DataType.Number:
+                return cachedValue.CastToNumber ();
+            case DataType.String:
+                return cachedValue.CastToString ();
+            case DataType.Table:
+                return new BindingTable (cachedValue.Table);
+            default:
+                return null;
+            }
+            return cachedValue;*/
+            object obj = Table [id];
+            if (obj == null)
+            {
+                Debug.LogFormat ("key {0} value NULL", id);
+                return null;
+
+            }
+            Table table = obj as Table;
+
+            if (table != null)
+                return new BindingTable (table);
+            else
+            {
+                Closure closure = obj as Closure;
+                if (closure != null)
+                    return new BindingFunction (closure);
+            }
+
+            Debug.LogFormat ("key {0} value {1} type {2}", id, obj, obj.GetType ());
             return obj;
         }
 
@@ -62,6 +79,9 @@ namespace DemiurgBinding
         {
             if (o is BindingTable)
                 Table [id] = ((BindingTable)o).Table;
+            else
+            if (o is BindingFunction)
+                Table [id] = ((BindingFunction)o).Closure;
             else
                 Table [id] = o;
         }

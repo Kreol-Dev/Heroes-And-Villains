@@ -6,9 +6,10 @@ using MoonSharp.Interpreter;
 using MoonSharp.Interpreter.Loaders;
 
 public class Sprites : Root
-{ 
+{
     Dictionary<string, Dictionary<string, Sprite>> tree = new Dictionary<string, Dictionary<string, Sprite>> ();
     Sprite error = Sprite.Create (new Texture2D (2, 2), Rect.MinMaxRect (0, 0, 2, 2), Vector2.zero);
+
     public Sprite GetSprite (string packName, string spriteName)
     {
         Dictionary<string, Sprite> pack = null;
@@ -21,6 +22,7 @@ public class Sprites : Root
             return error;
         return sprite;
     }
+
     protected override void PreSetup ()
     {
         string[] paths = Directory.GetFiles ("Mods\\CoreMod\\Sprites");
@@ -49,13 +51,14 @@ public class Sprites : Root
                     int maxX = (int)(double)((Table)spriteTable ["right_bottom_corner"]) [1];
                     int maxY = (int)(double)((Table)spriteTable ["right_bottom_corner"]) [2];
                     Sprite sprite = Sprite.Create (texture, Rect.MinMaxRect (minX, minY, maxX, maxY), Vector2.zero, 32f);
-                    Debug.LogWarningFormat ("{0} {1}", name, pair.Key.ToPrintString ());
+                    Debug.LogFormat ("{0} {1}", name, pair.Key.ToPrintString ());
                     sprites.Add (pair.Key.ToPrintString (), sprite);
                 }
             }
                 
         }
     }
+
     protected override void CustomSetup ()
     {
         Fulfill.Dispatch ();

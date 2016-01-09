@@ -12,6 +12,10 @@ public class FrameworkRoots : MonoBehaviour
         Find.Register<LuaContext> ();
         Find.Register<Sprites> ();
         Find.Register<ObjectsCreator> ();
+        Find.Register<InputManager> ();
+        Find.Register<MapRoot.Map> ();
+        Find.Register<MapRoot.MapInteractor> ();
+        Find.Register<MapRoot.MapRepresenter> ();
     }
     
 }

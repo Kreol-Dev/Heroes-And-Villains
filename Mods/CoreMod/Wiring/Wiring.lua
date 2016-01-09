@@ -3,8 +3,8 @@ base_module =
 	avatar_type = "CoreMod.NoiseModule",
 	configs =
 	{
-		width = 128,
-		height = 64,
+		width = defines.MAP_WIDTH,
+		height = defines.MAP_HEIGHT,
 		scale = 3
 	}
 }

@@ -7,16 +7,16 @@ namespace DemiurgBinding
 {
     public class BindingFunction : ICallback
     {
-        Closure closure;
+        public Closure Closure { get; internal set; }
 
         public BindingFunction (Closure closure)
         {
-            this.closure = closure;
+            this.Closure = closure;
         }
 
         public object Call (params object[] args)
         {
-            DynValue value = closure.Call (args);
+            DynValue value = Closure.Call (args);
             switch (value.Type)
             {
             case DataType.Boolean:

@@ -64,7 +64,7 @@ namespace Demiurg.Core
 
         void SetupWiring (ITable wiringTable)
         {
-            Debug.LogWarningFormat ("{0} started wiring inputs {1}", Name, Inputs.Count);
+            Debug.LogFormat ("{0} started wiring inputs {1}", Name, Inputs.Count);
             foreach (var input in Inputs)
             {
                 ITable table = wiringTable.Get (input.Name) as ITable;
@@ -202,7 +202,7 @@ namespace Demiurg.Core
                 builder.Append (inp.ID);
                 builder.Append (' ');
             }
-            Debug.LogWarningFormat ("{0} : {1} : {2}", type, fields.Length, builder.ToString ());
+            Debug.LogFormat ("{0} : {1} : {2}", type, fields.Length, builder.ToString ());
             usedAvatars.Add (type, data);
         }
 
