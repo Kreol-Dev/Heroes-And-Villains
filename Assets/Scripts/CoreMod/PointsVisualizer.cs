@@ -1,29 +1,25 @@
 using UnityEngine;
 using System.Collections;
 using Demiurg;
+using Demiurg.Core;
+
+
 namespace CoreMod
 {
-    public class PointsVisualizer : CreationNode
+    public class PointsVisualizer :Demiurg.Core.Avatar
     {
-        NodeInput<Texture2D> baseTextureI;
-        NodeInput<TileRef[]> tiles;
-        FloatParam red;
-        FloatParam green;
-        FloatParam blue;
-        protected override void SetupIOP ()
+        [AInput ("texture")]
+        Texture2D baseTextureI;
+        [AInput ("tiles")]
+        TileRef[] tiles;
+        [AConfig ("tile_color")]
+        Color tileColor;
+
+        public override void Work ()
         {
-            baseTextureI = Input<Texture2D> ("base_texture");
-            tiles = Input<TileRef[]> ("tiles");
-            red = Config<FloatParam> ("tile_red");
-            green = Config<FloatParam> ("tile_green");
-            blue = Config<FloatParam> ("tile_blue");
-        }
-        protected override void Work ()
-        {
-            Color tileColor = new Color (red, green, blue, 0.5f);
-            Texture2D texture = Object.Instantiate<Texture2D> (baseTextureI.Content);
-            for (int i = 0; i < tiles.Content.Length; i++)
-                texture.SetPixel (tiles.Content [i].X, tiles.Content [i].Y, tileColor);
+            Texture2D texture = Object.Instantiate<Texture2D> (baseTextureI);
+            for (int i = 0; i < tiles.Length; i++)
+                texture.SetPixel (tiles [i].X, tiles [i].Y, tileColor);
             texture.Apply ();
             GameObject go = new GameObject (Name);
             Map map = go.AddComponent<Map> ();
@@ -33,7 +29,7 @@ namespace CoreMod
                 Rect.MinMaxRect (0, 0, texture.width, texture.height),
                 Vector2.zero, 1f);
             map.Setup ();
-                
+            FinishWork ();
 
         }
     }

@@ -3,31 +3,36 @@ using UnityEngine;
 using System.Collections;
 using System.Collections.Generic;
 using Demiurg;
+using Demiurg.Core;
+
+
 namespace CoreMod
 {
-    public abstract class ArrayVisualiser : CreationNode
+    public abstract class ArrayVisualiser : Demiurg.Core.Avatar
     {
-		
         protected class ColorLevel
         {
-            public FloatParam Level = new FloatParam ("level");
-            public FloatParam Red = new FloatParam ("red");
-            public FloatParam Green = new FloatParam ("green");
-            public FloatParam Blue = new FloatParam ("blue");
+            [AConfig (1)]
+            public float Level { get; set; }
+
+            [AConfig (2)]
+            public Color Color { get; set; }
         }
-        protected GlobalArrayParam<ColorLevel> Levels;
-        protected override void SetupIOP ()
+
+        [AConfig ("levels")]
+        protected List<ColorLevel> Levels;
+
+        public sealed override void Work ()
         {
-            Levels = Config<GlobalArrayParam<ColorLevel>> ("levels");
-        }
-        protected sealed override void Work ()
-        {
+            
             GameObject go = new GameObject (Name);
             Map map = go.AddComponent<Map> ();
             map.Name = this.Name;
             map.Sprite = CreateSprite ();
             map.Setup ();
+            FinishWork ();
         }
+
         protected abstract Sprite CreateSprite ();
     }
 }

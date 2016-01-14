@@ -1,61 +1,82 @@
-
-using UnityEngine;
+﻿using UnityEngine;
 using System.Collections;
 using System.Collections.Generic;
-using LuaTableEntries;
 using System;
-using Demiurg;
-using System.Reflection;
+using Demiurg.Core.Extensions;
+using System.Linq.Expressions;
 
-public enum CreationWay
-{
-    Load,
-    Init
-}
-[RootDependencies(typeof(ModsManager))]
+[RootDependencies (typeof(ModsManager))]
 public class ObjectsCreator : Root
 {
-    ModsManager manager;
-    Scribe scribe = Scribes.Register ("ObjectsCreator");
+    Dictionary<string, Dictionary<string, GameObject>> prototypes;
+
+    Dictionary<string, Type> registeredCmps = new Dictionary<string, Type> ();
+
     protected override void CustomSetup ()
     {
-        manager = Find.Root<ModsManager> ();
-
+        var modsManager = Find.Root<ModsManager> ();
+        var asm = modsManager.GetModAssembly ("Core mod");
+        List<Type> components = new List<Type> ();
+        foreach (var type in asm.GetTypes())
+        {
+            if (type.IsSubclassOf (typeof(EntityComponent)) && !type.IsAbstract && !type.IsGenericType)
+                components.Add (type);
+        }
+        foreach (var cmp in components)
+        {
+            RegisterComponent (cmp);
+        }
         Fulfill.Dispatch ();
+
     }
 
-    public T CreateFromTypedTable<T> (Table table, CreationWay way) where T : class, ILuaTabled
+    public GameObject CreateObject (string name, ITable fromTable)
     {
-        Type assumedType = typeof(T);
-        Type actualType = manager.ResolveType (table.Get<LuaString> ("ObjectRef"));
-        if (!actualType.IsSubclassOf (assumedType))
+        GameObject go = new GameObject (name);
+        foreach (var cmpName in fromTable.GetKeys())
         {
-            scribe.LogFormat ("{0} is not a subclass of {1}", actualType, assumedType);
-            return null;
+            Type type = null;
+            registeredCmps.TryGetValue (cmpName as string, out type);
+            if (type == null)
+                continue;
+            EntityComponent cmp = go.AddComponent (type) as EntityComponent;
+            cmp.LoadFromTable (fromTable);
         }
-			
-        T t = null;
-        if (assumedType.IsSubclassOf (typeof(MonoBehaviour)))
-        {
-            GameObject go = new GameObject ();
-            t = go.AddComponent (actualType) as T;
-        }
-        else
-            t = Activator.CreateInstance (actualType) as T;
-        switch (way)
-        {
-        case CreationWay.Init:
-            t.InitFrom (table);
-            break;
-        case CreationWay.Load:
-            t.LoadFrom (table);
-            break;
-        }
-        return t;
+        return go;
+    }
 
+    Type eCompNameAttr = typeof(ECompName);
+
+    void RegisterComponent (Type cmp)
+    {
+        if (!cmp.IsDefined (eCompNameAttr, false))
+            return;
+        
+        ECompName nameAttr = cmp.GetCustomAttributes (eCompNameAttr, false) [0] as ECompName;
+        Debug.Log ("Component registered: " + nameAttr.Name);
+        registeredCmps.Add (nameAttr.Name, cmp);
+    }
+
+    protected override void PreSetup ()
+    {
+        
+    }
+
+}
+
+public class ECompName : Attribute
+{
+    public string Name { get; internal set; }
+
+    public ECompName (string name)
+    {
+        Name = name;
     }
 }
 
-
-
-
+public class EntityComponent : MonoBehaviour
+{
+    public virtual void LoadFromTable (ITable table)
+    {
+    }
+}

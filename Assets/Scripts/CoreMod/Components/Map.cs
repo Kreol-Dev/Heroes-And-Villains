@@ -14,12 +14,14 @@ namespace CoreMod
         public string Name;
         SpriteRenderer spriteRenderer;
         Text text;
+
         public void Setup ()
         {
             Sprite.texture.filterMode = FilterMode.Point;
             thisID = id++;
             Debug.LogWarningFormat ("{0} {1}", Name, thisID);
             spriteRenderer = GameObject.Find ("Map").GetComponent<SpriteRenderer> ();
+            spriteRenderer.sortingLayerName = "Default";
             //spriteRenderer.gameObject.transform.localScale = new Vector3 (Sprite.texture.width, Sprite.texture.width, 1);
             text = GameObject.Find ("MapName").GetComponent<Text> ();
             if (thisID == currentID)
@@ -54,7 +56,6 @@ namespace CoreMod
                     spriteRenderer.sprite = Sprite;
                     text.text = Name;
                 }
-                Debug.Log (currentID);
             }
 
 

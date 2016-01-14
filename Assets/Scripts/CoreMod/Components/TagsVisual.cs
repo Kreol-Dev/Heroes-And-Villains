@@ -2,7 +2,8 @@ using UnityEngine;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine.UI;
-using Demiurg;
+using Demiurg.Core.Extensions;
+
 namespace CoreMod
 {
     public class TagsVisual : MonoBehaviour
@@ -11,6 +12,7 @@ namespace CoreMod
         string tagsStr;
         Text text;
         RectTransform thisTransform;
+
         void Awake ()
         {
             Slot slot = GetComponent<Slot> ();

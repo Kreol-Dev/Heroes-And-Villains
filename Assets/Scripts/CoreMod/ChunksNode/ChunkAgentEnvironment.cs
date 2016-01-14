@@ -6,11 +6,12 @@ using System.Collections.Generic;
 
 namespace CoreMod
 {
-    public partial class ContinuousChunksModule : CreationNode
+    public partial class ContinuousChunksModule : Demiurg.Core.Avatar
     {
         class AgentEnvironment
         {
             public bool Active { get; internal set; }
+
             int nextID;
             int[,] surface;
             public int[] Assigned;
@@ -20,6 +21,7 @@ namespace CoreMod
             int tilesCount;
             EnvConnection envCon;
             public Direction[] TileConnections;
+
             public AgentEnvironment (int[,] tiles, TilesConnection tilesCon, EnvConnection envCon)
             {
                 Active = true;
@@ -37,27 +39,29 @@ namespace CoreMod
                 {
                 case TilesConnection.Four:
                     TileConnections = new Direction[] {
-                Direction.Left,
-                Direction.Top,
-                Direction.Down,
-                Direction.Right
-                };
+                        Direction.Left,
+                        Direction.Top,
+                        Direction.Down,
+                        Direction.Right
+                    };
                     break;
                 case TilesConnection.Eight:
                     TileConnections = new Direction[] {
-                Direction.Left,
-                Direction.Top,
-                Direction.Down,
-                Direction.Right,
-                Direction.TopLeft,
-                Direction.TopRight,
-                Direction.DownLeft,
-                Direction.DownRight
-                };
+                        Direction.Left,
+                        Direction.Top,
+                        Direction.Down,
+                        Direction.Right,
+                        Direction.TopLeft,
+                        Direction.TopRight,
+                        Direction.DownLeft,
+                        Direction.DownRight
+                    };
                     break;
                 }
             }
+
             #region agentsControl
+
             public void Update ()
             {
                 bool activeAgents = false;
@@ -71,12 +75,13 @@ namespace CoreMod
                     Active = false;
 
             }
+
             public void NewAgent (int tile)
             {
                 ChunkAgent agent = new ChunkAgent (nextID++, tile, this);
                 Agents.Add (agent);
             }
-    
+
             public void MergeAgents (int which, ChunkAgent intoWhat)
             {
                 ChunkAgent mergedAgent = Agents.Find (x => x.ID == which);
@@ -90,23 +95,26 @@ namespace CoreMod
                 for (int i = 0; i < mergedAgent.Frontier.Count; i++)
                     Assigned [mergedAgent.Frontier [i]] = intoWhat.ID;
             }
+
             #endregion
 
             #region tilesControl
+
             public int Assignment (int tile)
             {
                 return Assigned [tile];
             }
-            
+
             public int Surface (int tile)
             {
                 return surface [tile % sizeX, tile / sizeX];
             }
-            
+
             public void AssignID (int tile, ChunkAgent agent)
             {
                 Assigned [tile] = agent.ID;
             }
+
             public int GetNext (int tile, Direction dir)
             {
                 int y = tile / sizeX;
@@ -200,6 +208,7 @@ namespace CoreMod
                 }
                 return x + y * sizeX;
             }
+
             #endregion
         }
     }
