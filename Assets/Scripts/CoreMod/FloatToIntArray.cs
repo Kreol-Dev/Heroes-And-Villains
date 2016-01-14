@@ -1,45 +1,44 @@
 using UnityEngine;
 using System.Collections;
 using Demiurg;
+using Demiurg.Core;
 
 namespace CoreMod
 {
-    public class FloatToIntArray : CreationNode
+    public class FloatToIntArray : Demiurg.Core.Avatar
     {
-        NodeOutput<int[,]> mainO; 
-        NodeInput<float[,]> mainI;
-        IntParam maxValue;
-        IntParam minValue;
-        protected override void SetupIOP ()
-        {
-            mainO = Output<int[,]> ("main");
-            mainI = Input<float[,]> ("main");
-            maxValue = Config<IntParam> ("max_value");
-            minValue = Config<IntParam> ("min_value");
-        }
+        [AOutput ("main")]
+        int[,] mainO;
+        [AInput ("main")]
+        float[,] mainI;
+        [AConfig ("max_value")]
+        int maxValue;
+        [AConfig ("min_value")]
+        int minValue;
 
         
         
-        protected override void Work ()
+        public override void Work ()
         {
-            var array = new int[mainI.Content.GetLength (0), mainI.Content.GetLength (1)];
+            var array = new int[mainI.GetLength (0), mainI.GetLength (1)];
             float maxInputValue = float.MinValue;
             float minInputValue = float.MaxValue;
-            for (int i = 0; i < array.GetLength(0); i++)
-                for (int j = 0; j < array.GetLength(1); j++)
+            for (int i = 0; i < array.GetLength (0); i++)
+                for (int j = 0; j < array.GetLength (1); j++)
                 {
-                    if (mainI.Content [i, j] > maxInputValue)
-                        maxInputValue = mainI.Content [i, j];
-                    if (mainI.Content [i, j] < minInputValue)
-                        minInputValue = mainI.Content [i, j];
+                    if (mainI [i, j] > maxInputValue)
+                        maxInputValue = mainI [i, j];
+                    if (mainI [i, j] < minInputValue)
+                        minInputValue = mainI [i, j];
                 }
 
-            for (int i = 0; i < array.GetLength(0); i++)
-                for (int j = 0; j < array.GetLength(1); j++)
+            for (int i = 0; i < array.GetLength (0); i++)
+                for (int j = 0; j < array.GetLength (1); j++)
                 {
-                    array [i, j] = (int)(Mathf.Lerp (minValue, maxValue, Mathf.InverseLerp (minInputValue, maxInputValue, mainI.Content [i, j])));
+                    array [i, j] = (int)(Mathf.Lerp (minValue, maxValue, Mathf.InverseLerp (minInputValue, maxInputValue, mainI [i, j])));
                 }
-            mainO.Finish (array);
+            mainO = array;
+            FinishWork ();
             
         }
     }

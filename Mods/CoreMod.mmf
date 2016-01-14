@@ -1,0 +1,21 @@
+name = "CoreMod"
+
+description = "This is the core mod of the Mythos Cult"
+
+assembly = "main_assembly"
+shared_libraries =
+{
+	tags = { dir = "Tags", deps = {"expressions"} },
+	expressions = "Expressions",
+	replacers = "Replacers",
+	wiring = { dir = "Wiring", deps = {"defines"} },
+	map_layers = "MapLayers",
+	interactors = "MapInteractors",
+	representations = "MapRepresentations",
+	defines = "Defines"
+}
+
+dependencies =
+{
+	
+}

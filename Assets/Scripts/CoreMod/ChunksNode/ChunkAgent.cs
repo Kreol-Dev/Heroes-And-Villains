@@ -6,16 +6,21 @@ using Demiurg;
 
 namespace CoreMod
 {
-    public partial class ContinuousChunksModule : CreationNode
+    public partial class ContinuousChunksModule : Demiurg.Core.Avatar
     {
         class ChunkAgent
         {
             public bool Active { get; internal set; }
+
             public List<int> Tiles = new List<int> ();
             public List<int> Frontier = new List<int> ();
+
             public int Surface { get; internal set; }
+
             public int ID { get; internal set; }
+
             AgentEnvironment env;
+
             public ChunkAgent (int id, int tile, AgentEnvironment env)
             {
                 Active = true;
@@ -39,7 +44,7 @@ namespace CoreMod
                 Frontier = newFrontier;
                 
             }
-            
+
             List<int> Expand (int tile)
             {
                 List<int> frontier = new List<int> ();
@@ -54,7 +59,7 @@ namespace CoreMod
                 }
                 return frontier;
             }
-            
+
             int TryExpandTo (int tile, Direction direction)
             {
                 int nextTile = env.GetNext (tile, direction);

@@ -2,22 +2,26 @@
 using UnityEngine;
 using System.Collections;
 using System.Collections.Generic;
-using Demiurg;
+using Demiurg.Core;
 using System;
 using System.Reflection;
 using MoonSharp.Interpreter;
 using MoonSharp.Interpreter.Loaders;
+using DemiurgBinding;
+using Demiurg.Core.Extensions;
 
-[RootDependencies(typeof(LuaContext), typeof(ModsManager), typeof(ObjectsCreator), typeof(Sprites))]
+[RootDependencies (typeof(ModsManager), typeof(ObjectsCreator), typeof(Sprites), typeof(MapRoot.Map))]
 public class PlanetsGenerator : Root
 {
-    public const string WiringTable = "wiring";
+    Scribe scribe = Scribes.Find ("PlanetsGenerator");
     LuaContext luaContext;
     ModsManager modsManager;
-    WorldCreator creator;
+    //WorldCreator creator;
+    ITable wiring;
+
     protected override void CustomSetup ()
     {
-        creator = new WorldCreator ();
+        /*creator = new WorldCreator ();
 
 		
 
@@ -52,21 +56,75 @@ public class PlanetsGenerator : Root
         }
         creator.SetupReplacers (FormReplacers (script.Globals ["replacers"] as Table));
         creator.SetupTags (FormTags (script.Globals ["tags"] as Table));
-        creator.InitWiring (tables, nodes);
+        creator.InitWiring (tables, nodes);*/
 
+        wiring = Find.Root<ModsManager> ().GetTable ("wiring");
+
+
+        DemiurgEntity dem = new DemiurgEntity (FindAvatarTypes (), PrepareAvatarsTables (), LoadConverters (), LoadLoaders ());
         Fulfill.Dispatch ();
     }
 
-    Dictionary<string, Type> FindNodeTypes ()
+    Dictionary<string, Type> FindAvatarTypes ()
     {
         Dictionary<string, Type> nodes = new Dictionary<string, Type> ();
         Assembly asm = Assembly.GetExecutingAssembly ();
         foreach (var type in asm.GetTypes())
         {
-            if (type.IsSubclassOf (typeof(CreationNode)) && !type.IsAbstract && !type.IsGenericType)
+            if (type.IsSubclassOf (typeof(Demiurg.Core.Avatar)) && !type.IsAbstract && !type.IsGenericType)
                 nodes.Add (type.FullName, type);
         }
         return nodes;
+    }
+
+    Dictionary<string, ITable> PrepareAvatarsTables ()
+    {
+        Dictionary<string, Demiurg.Core.Extensions.ITable> tables = new Dictionary<string, Demiurg.Core.Extensions.ITable> ();
+        foreach (var avatarKey in wiring.GetKeys())
+        {
+            
+            ITable avatarTable = wiring.Get (avatarKey) as ITable;
+            if (avatarTable != null)
+            if (avatarTable.Get ("global") == null || ((bool)avatarTable.Get ("global")) != true)
+            {
+                Debug.Log (avatarKey.GetType ());
+                tables.Add ((string)avatarKey, avatarTable);
+                scribe.LogFormat ("{0} has been added ", avatarKey);
+            }
+                
+        }
+        return tables;
+    }
+
+    List<Demiurg.Core.Extensions.IConverter> LoadConverters ()
+    {
+        List<IConverter> convs = new List<IConverter> ();
+        Assembly asm = Assembly.GetExecutingAssembly ();
+        Type convType = typeof(IConfigLoader);
+        foreach (var type in asm.GetTypes())
+        {
+            if (convType.IsAssignableFrom (type) && !type.IsAbstract && !type.IsGenericType)
+                convs.Add (Activator.CreateInstance (type) as IConverter);
+        }
+        return convs;
+    }
+
+    List<Demiurg.Core.Extensions.IConfigLoader> LoadLoaders ()
+    {
+        List<IConfigLoader> loads = new List<IConfigLoader> ();
+        Assembly asm = Assembly.GetExecutingAssembly ();
+        Type loaderType = typeof(IConfigLoader);
+        foreach (var type in asm.GetTypes())
+        {
+            if (loaderType.IsAssignableFrom (type) && !type.IsAbstract && !type.IsGenericType)
+                loads.Add (Activator.CreateInstance (type) as IConfigLoader);
+        }
+        return loads;
+    }
+    /*
+    Dictionary<string, Type> FindNodeTypes ()
+    {
+        
     }
 
     public Dictionary<string, Tag> FormTags (Table tagsTable)
@@ -102,11 +160,11 @@ public class PlanetsGenerator : Root
             gos.Add (entry.Key.ToPrintString (), go);
         }
         return gos;
-    }
- 
-    void RegisterSlotComponents (Script script)
+    }*/
+
+    void RegisterSlotComponents (BindingTable table)
     {
-        script.Globals ["component"] = new Table (script);
+        /*script.Globals ["component"] = new Table (script);
         Table table = script.Globals ["component"] as Table;
         Type[] types = Assembly.GetExecutingAssembly ().GetTypes ();
         List<Type> slotComponents = new List<Type> ();
@@ -120,7 +178,7 @@ public class PlanetsGenerator : Root
                 slotComponents.Add (types [i]);
             }
                 
-        SlotComponentsProvider.Types = slotComponents;
+        SlotComponentsProvider.Types = slotComponents;*/
 
     }
 }

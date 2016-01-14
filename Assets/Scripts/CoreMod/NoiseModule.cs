@@ -1,31 +1,30 @@
 using System;
 using Demiurg;
 using UnityEngine;
+using Demiurg.Core;
+
+
 namespace CoreMod
 {
-    public class NoiseModule : CreationNode
+    public class NoiseModule :  Demiurg.Core.Avatar
     {
-        NodeOutput<float[,]> main; 
+        [AOutput ("main")]
+        float[,] main;
+        [AConfig ("width")]
+        int sizeX;
+        [AConfig ("height")]
+        int sizeY;
+        [AConfig ("scale")]
+        int scale;
 
-        IntParam sizeX;
-        IntParam sizeY;
-        IntParam scale;
-        protected override void SetupIOP ()
-        {
-            main = Output<float[,]> ("main");
-            sizeX = Config<IntParam> ("planet_width");
-            sizeY = Config<IntParam> ("planet_height");
-            scale = Config<IntParam> ("scale");
-        }
-
-        protected override void Work ()
+        public override void Work ()
         { 
             DiamondSquare ds = new DiamondSquare (sizeX, sizeY, sizeX / (int)Mathf.Pow (2, scale), Random.Next (), true);
-            float[,] values = ds.GetNormalValues ();
-            main.Finish (values);
+            main = ds.GetNormalValues ();
+            FinishWork ();
 
         }
-       
+
         class DiamondSquare
         {
             double[] values;
@@ -33,6 +32,7 @@ namespace CoreMod
             int height;
             int width;
             System.Random rand;
+
             public DiamondSquare (int width, int height, int featuresize, int seed, bool nullEdges)
             {
                 rand = new System.Random (seed);
@@ -75,7 +75,7 @@ namespace CoreMod
                 }
 				
             }
-			
+
             public float[,] GetNormalValues ()
             {
                 float[,] dimensionalValues = new float[width, height];
@@ -105,7 +105,7 @@ namespace CoreMod
 				
                 return dimensionalValues;
             }
-			
+
             public float[,] GetFloatValues ()
             {
                 float[,] dimensionalValues = new float[width, height];
@@ -121,7 +121,7 @@ namespace CoreMod
 				
                 return dimensionalValues;
             }
-			
+
             public static float[, ] DSNoiseNormal (int width, int height, bool nullEdges, int scale, int seed)
             {
                 int featureSize = width / scale;
@@ -129,7 +129,7 @@ namespace CoreMod
                 DiamondSquare ds = new DiamondSquare (width, height, featureSize, seed, nullEdges);
                 return ds.GetNormalValues ();
             }
-			
+
             public static float[, ] DSNoise (int width, int height, bool nullEdges, int scale, int seed)
             {
                 int featureSize = width / scale;
@@ -137,21 +137,21 @@ namespace CoreMod
                 DiamondSquare ds = new DiamondSquare (width, height, featureSize, seed, nullEdges);
                 return ds.GetFloatValues ();
             }
-			
+
             double GetSample (int x, int y)
             {
                 if (y >= height || y < 0)
                     return -1;
                 return values [(x & (width - 1)) + y * width];
             }
-			
+
             void SetSample (int x, int y, double value)
             {
                 if (y >= height || y < 0)
                     return;
                 values [(x & (width - 1)) + y * width] = value;
             }
-			
+
             void ComputerSquare (int x, int y, int size, double value)
             {
                 int hs = size / 2;
@@ -170,7 +170,7 @@ namespace CoreMod
                 SetSample (x, y, ((a + b + c + d) / 4.0) + value);
 				
             }
-			
+
             void ComputeDiamond (int x, int y, int size, double value)
             {
                 int hs = size / 2;
@@ -188,7 +188,7 @@ namespace CoreMod
 				
                 SetSample (x, y, ((a + b + c + d) / 4.0) + value);
             }
-			
+
             void DiamondSquarePass (int stepsize, double scale)
             {
 				
