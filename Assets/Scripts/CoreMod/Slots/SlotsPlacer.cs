@@ -11,7 +11,7 @@ namespace CoreMod
     public class SlotsPlacer : Demiurg.Core.Avatar
     {
         [AInput ("points")]
-        TileRef[] points;
+        TileHandle[] points;
         [AOutput ("slots")]
         List<GameObject> slots;
 

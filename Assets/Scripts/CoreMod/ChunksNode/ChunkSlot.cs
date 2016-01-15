@@ -3,13 +3,12 @@ using System.Collections;
 
 namespace CoreMod
 {
-    public class ChunkSlot : MonoBehaviour
-    {
-        public TileRef[] Tiles;
-        public int ID;
-        public int Surface;
-        
-    }
+	public class ChunkSlot : MonoBehaviour
+	{
+		public int ID;
+		public int Surface;
+		public TileHandle[] Tiles;
+	}
 }
 
 

@@ -16,7 +16,7 @@ distinctor_module =
 	{
 		levels =
 		{
-		{ level = 0.6, val = 0},
+		{ level = 0.2, val = 0},
 		{ level = 1, val = 1}
 	}
 		
@@ -30,7 +30,7 @@ continents_module =
 {
 	avatar_type = "CoreMod.ContinuousChunksModule",
 	configs = {
-		planet_connectivity = "sphere"
+		planet_connectivity = "none"
 	},
 	inputs = {
 		main = { "distinctor_module", "main" }
@@ -97,7 +97,7 @@ surface_extractor =
 	configs =
 	{
 		target_surface = 1,
-		filter_less = 10
+		filter_less = 0
 	},
 	inputs =
 	{
@@ -361,5 +361,32 @@ replacers_collection =
 	configs = 
 	{
 		replacers_table = "replacers"
+	}
+}
+
+regions_creator = 
+{
+	avatar_type = "CoreMod.RegionsModule",
+	configs =
+	{
+		density = 1000
+	},
+	inputs =
+	{
+		main = { "surface_extractor", "extracted_chunks"}
+	}
+}
+
+regions_visual = 
+{
+	avatar_type = "CoreMod.DistinctArrayVisualizer",
+	configs = 
+	{
+		levels = {},
+		random = true
+	},
+	inputs =
+	{
+		main = { "regions_creator", "environment" }
 	}
 }

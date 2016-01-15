@@ -52,7 +52,7 @@ namespace CoreMod
         void TileUpdated (TileHandle tile, TLayerObject obj)
         {
 
-            SetTile (tile.X, tile.Y, GetSprite (tile.Content<TLayerObject> (Layer.Tiles)));
+            SetTile (tile.X, tile.Y, GetSprite (tile.Get<TLayerObject> (Layer.Tiles)));
         }
 
         void UpdateAll ()

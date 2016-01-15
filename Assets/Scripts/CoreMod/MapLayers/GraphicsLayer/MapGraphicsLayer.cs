@@ -2,39 +2,41 @@
 using System.Collections;
 using MapRoot;
 using Demiurg.Core.Extensions;
+using System;
 
 namespace CoreMod
 {
-    public class MapGraphicsLayer : MapLayer, ITileMapLayer<GraphicsTile>
-    {
-        public Signals.Signal<TileHandle, GraphicsTile> TileUpdated { get; internal set; }
+	public class MapGraphicsLayer : MapLayer, ITileMapLayer<GraphicsTile>
+	{
+		public MapHandle MapHandle { get; internal set; }
 
-        public Signals.Signal MassUpdate { get; internal set; }
+		public Signals.Signal<TileHandle, GraphicsTile> TileUpdated { get; internal set; }
 
-        public GraphicsTile[,] Tiles { get; internal set; }
+		public Signals.Signal MassUpdate { get; internal set; }
+
+		public GraphicsTile[,] Tiles { get; internal set; }
 
 
 
-        protected override void Setup (ITable definesTable)
-        {
-            TileUpdated = new Signals.Signal<TileHandle, GraphicsTile> ();
-            MassUpdate = new Signals.Signal ();
-            int height = (int)(double)definesTable.Get ("MAP_HEIGHT");
-            int width = (int)(double)definesTable.Get ("MAP_WIDTH");
-            Tiles = new GraphicsTile[width, height];
-            for (int i = 0; i < width; i++)
-                for (int j = 0; j < height; j++)
-                {
+		protected override void Setup (ITable definesTable)
+		{
+			TileUpdated = new Signals.Signal<TileHandle, GraphicsTile> ();
+			MassUpdate = new Signals.Signal ();
+			var map = Find.Root<TilesRoot> ().MapHandle;
+				
+			Tiles = new GraphicsTile[map.SizeX, map.SizeY];
+			for (int i = 0; i < map.SizeX; i++)
+				for (int j = 0; j < map.SizeY; j++) {
 
-                    Tiles [i, j] = defaultTile;
+					Tiles [i, j] = defaultTile;
 
-                }
-            MassUpdate.Dispatch ();
-        }
+				}
+			MassUpdate.Dispatch ();
+		}
 
-        readonly GraphicsTile defaultTile = new GraphicsTile (Resources.Load<Sprite> ("Default"), 0, "Placeholder Tile");
+		readonly GraphicsTile defaultTile = new GraphicsTile (Resources.Load<Sprite> ("Default"), 0, "Placeholder Tile");
 
-    }
+	}
 }
 
 

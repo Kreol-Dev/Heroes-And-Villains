@@ -11,7 +11,7 @@ namespace CoreMod
         [AInput ("texture")]
         Texture2D baseTextureI;
         [AInput ("tiles")]
-        TileRef[] tiles;
+        TileHandle[] tiles;
         [AConfig ("tile_color")]
         Color tileColor;
 
