@@ -20,6 +20,7 @@ namespace CoreMod
 			MapConnectivity connectivity = (MapConnectivity)Enum.Parse (typeof(MapConnectivity), (string)definesTable.Get ("MAP_CONNECTIVITY"));
 			TileConnnectivity tilesConnectivity = (TileConnnectivity)Enum.Parse (typeof(TileConnnectivity), (string)definesTable.Get ("TILES_CONNECTIVITY"));
 			MapHandle = new MapHandle (width, height, connectivity, tilesConnectivity);
+			Fulfill.Dispatch ();
 		}
 
 

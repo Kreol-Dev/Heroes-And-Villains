@@ -369,7 +369,7 @@ regions_creator =
 	avatar_type = "CoreMod.RegionsModule",
 	configs =
 	{
-		density = 1000
+		density = 50
 	},
 	inputs =
 	{

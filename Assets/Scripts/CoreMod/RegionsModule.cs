@@ -71,16 +71,21 @@ namespace CoreMod
 			bool updated = false;
 			int steps = 0;
 			do {
-				foreach (var region in regions)
-					updated |= region.Update ();
-				dirs.Shuffle ();
-				if (steps++ > 100) {
-					break;
-					
+				updated = false;
+				//Debug.LogWarning ("STEP __________________________________ " + steps);
+				foreach (var region in regions) {
+
+					dirs.Shuffle ();
+					if (region.Update ()) {
+						//Debug.LogWarningFormat ("UPDATED REGION {0}", region.ID);
+						updated = true;
+					}
 				}
+				steps++;
+				if (steps == 30)
+					break;
 			} while(updated);
 
-			Debug.LogError (steps);
 			OutputObjects = new List<GameObject> ();
 			foreach (var region in regions) {
 				GameObject go = new GameObject ("Region " + region.ID);
@@ -88,6 +93,9 @@ namespace CoreMod
 				OutputObjects.Add (go);
 			}
 		}
+
+
+
 	}
 
 	public class Region
@@ -115,6 +123,7 @@ namespace CoreMod
 		public bool Update ()
 		{
 			cachedFrontier.Clear ();
+			bool update = frontier.Count > 0;
 			for (int i = 0; i < frontier.Count; i++) {
 				int j = 0;
 				for (; j < dirs.values.Length; j++) {
@@ -138,6 +147,8 @@ namespace CoreMod
 			temp.Clear ();
 			frontier = cachedFrontier;
 			cachedFrontier = temp;
+//			if (update)
+//				Debug.LogWarningFormat ("UPDATED Region {0} tiles {1} frontier {2}", ID, tiles.Count, frontier.Count);
 			return frontier.Count > 0;
 		}
 
