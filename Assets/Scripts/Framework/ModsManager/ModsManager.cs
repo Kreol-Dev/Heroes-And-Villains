@@ -28,9 +28,26 @@ public class ModsManager : Root
 	{
 		ITable table = null;
 		globalMod.Tables.TryGetValue (name, out table);
-		if (table == null)
-			table = new BindingTable (new Table (globalContext));
+		if (table == null) {
+			Table internalTable = new Table (globalContext);
+
+			table = new BindingTable (internalTable);
+			globalMod.Tables.Add (name, table);
+		}
 		return table;
+	}
+
+	public void SetTableAsGlobal (string name)
+	{
+		ITable table = GetTable (name);
+		table.Set ("global", true);
+		foreach (var tablePair in globalMod.Tables)
+			tablePair.Value.Set (name, table);
+	}
+
+	public List<Type> GetAllTypes ()
+	{
+		return new List<Type> (globalMod.ModAssembly.GetTypes ());
 	}
 
 	public Assembly GetModAssembly (string modName)

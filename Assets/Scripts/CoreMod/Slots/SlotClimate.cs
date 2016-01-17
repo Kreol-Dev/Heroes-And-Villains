@@ -7,7 +7,8 @@ using Demiurg.Core.Extensions;
 
 namespace CoreMod
 {
-	[MoonSharpUserData]
+	[ASlotComponent ("Climate")]
+	[ATabled]
 	public class SlotClimate : SlotComponent
 	{
 		public int Height;

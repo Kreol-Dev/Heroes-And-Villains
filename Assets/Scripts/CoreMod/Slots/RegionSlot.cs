@@ -1,9 +1,12 @@
 ﻿using UnityEngine;
 using System.Collections;
+using Demiurg.Core.Extensions;
 
 namespace CoreMod
 {
-	public class RegionSlot : MonoBehaviour
+	[ASlotComponent ("Region")]
+	[ATabled]
+	public class RegionSlot : SlotComponent
 	{
 		public TileHandle[] Tiles;
 	}

@@ -2,6 +2,7 @@
 using System.Collections;
 using System.Collections.Generic;
 using Demiurg;
+using DemiurgBinding;
 
 public class FrameworkRoots : MonoBehaviour
 {
@@ -16,7 +17,7 @@ public class FrameworkRoots : MonoBehaviour
 		Find.Register<MapRoot.Map> ();
 		Find.Register<MapRoot.MapInteractor> ();
 		Find.Register<MapRoot.MapRepresenter> ();
-
+		Find.Register<BindingRoot> ();
 	}
 
 

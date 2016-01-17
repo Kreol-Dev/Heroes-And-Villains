@@ -1,5 +1,6 @@
 ﻿using UnityEngine;
 using System.Collections;
+using Demiurg.Core.Extensions;
 
 namespace CoreMod
 {
@@ -89,6 +90,7 @@ namespace CoreMod
 		}
 	}
 
+	[ATabled]
 	public class TileHandle
 	{
 		public int X { get; internal set; }
