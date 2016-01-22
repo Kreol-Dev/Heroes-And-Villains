@@ -12,14 +12,16 @@ namespace Demiurg.Core
 {
 	public abstract class Avatar
 	{
-		protected static System.Random Random = new System.Random (1);
+		protected static System.Random Random;
 		Scribe scribe = Scribes.Find ("Avatars");
 
-		public static Avatar Create (Type type, string name)
+		public int Seed { get; internal set; }
+
+		public static Avatar Create (Type type, string name, int seed)
 		{
 			Avatar avatar = Activator.CreateInstance (type) as Avatar;
 			avatar.SetupIO ();
-			avatar.ConfigureName (name);
+			avatar.Configure (name, seed);
 			return avatar;
 		}
 
@@ -32,9 +34,12 @@ namespace Demiurg.Core
 
 		protected DemiurgEntity Demiurg { get; set; }
 
-		public void ConfigureName (string name)
+		public void Configure (string name, int seed)
 		{
 			Name = name;
+			Seed = seed;
+			Random = new System.Random (Seed);
+
 		}
 
 		public void Configure (DemiurgEntity demiurg, ITable wiringTable, ITable configs)
@@ -48,7 +53,8 @@ namespace Demiurg.Core
 		public void TryWork ()
 		{
 
-			if (Inputs.Count == 0) {
+			if (Inputs.Count == 0)
+			{
 				Debug.LogFormat ("[AVATARS WORKFLOW] {0} started working", this.Name);
 				Work ();
 			}
@@ -64,25 +70,30 @@ namespace Demiurg.Core
 		void SetupWiring (ITable wiringTable)
 		{
 			Debug.LogFormat ("{0} started wiring inputs {1}", Name, Inputs.Count);
-			foreach (var input in Inputs) {
+			foreach (var input in Inputs)
+			{
 				ITable table = wiringTable.Get (input.Name) as ITable;
-				if (table == null) {
+				if (table == null)
+				{
 					scribe.LogFormatError ("INPUT DATA MISSING: Can't find wiring reference for avatar {0} input {1}", Name, input.Name);
 					continue;
 				}
 				string targetAvatarName = table.Get (1) as String;
 				string targetOutputName = table.Get (2) as String;
-				if (targetAvatarName == null || targetOutputName == null) {
+				if (targetAvatarName == null || targetOutputName == null)
+				{
 					scribe.LogFormatError ("INPUT DATA MISSING: Can't retrieve wiring reference data for avatar {0} input {1}\n Retrieved: {2} | {3}", Name, input.Name, targetAvatarName, targetOutputName);
 					continue;
 				}
 				Avatar targetAvatar = Demiurg.FindAvatar (targetAvatarName);
-				if (targetAvatar == null) {
+				if (targetAvatar == null)
+				{
 					scribe.LogFormatError ("INPUT DATA MISSING: Can't find target avatar {2} for avatar {0} input {1}", Name, input.Name, targetAvatarName);
 					continue;
 				}
 				AvatarOutput output = targetAvatar.GetOutput (targetOutputName);
-				if (output == null) {
+				if (output == null)
+				{
 					scribe.LogFormatError ("INPUT DATA MISSING: Can't find output {2} in avatar {3} for avatar {0} input {1}", Name, input.Name, targetOutputName, targetAvatarName);
 					continue;
 				}
@@ -93,22 +104,33 @@ namespace Demiurg.Core
 		void SetupConfigs (ITable configs)
 		{
 			ConfigLoaders loaders = Demiurg.GetLoaders ();
-			foreach (var config in Configs) {
+			if (configs == null)
+			{
+				scribe.LogFormatWarning ("No configs table for: {0}", Name);
+
+				return;
+			}
+			foreach (var config in Configs)
+			{
 				IConfigLoader loader = loaders.FindLoader (config.FieldType ());
 
 				object cfg = configs.Get (config.Name);
-				if (cfg == null) {
+				if (cfg == null)
+				{
 					scribe.LogFormatError ("Config not found {0} {1} {2} {3} {4}", Name, config.Name, config.FieldType (), loader, cfg);
-					if (configs.Get (config.Name) == null) {
+					if (configs.Get (config.Name) == null)
+					{
 						foreach (var key in configs.GetKeys())
 							scribe.LogError (key.ToString ());
 					}
 					continue;
 				}
 				object value = loader.Load (cfg, config.FieldType (), loaders);
-				if (value == null) {
+				if (value == null)
+				{
 					scribe.LogFormatError ("Value not loaded properly {0} {1} {2} {3} {4}", Name, config.Name, config.FieldType (), loader, cfg);
-					if (configs.Get (config.Name) == null) {
+					if (configs.Get (config.Name) == null)
+					{
 						foreach (var key in configs.GetKeys())
 							scribe.LogError (key.ToString ());
 					}
@@ -155,37 +177,62 @@ namespace Demiurg.Core
 		static Type outputAttr = typeof(AOutput);
 		static Type configAttr = typeof(AConfig);
 
+		static BindingFlags flags = BindingFlags.Public | BindingFlags.NonPublic |
+		                            BindingFlags.Static | BindingFlags.Instance |
+		                            BindingFlags.DeclaredOnly;
+
+		public static IEnumerable<FieldInfo> GetAllFields (Type type)
+		{
+			if (type == null)
+				return Enumerable.Empty<FieldInfo> ();
+			return type.GetFields (flags).Concat (GetAllFields (type.BaseType));
+		}
+
 		public static void UseAvatarType (Type type)
 		{
-			var fields = type.GetFields (BindingFlags.NonPublic | BindingFlags.Instance);
+			var fields = GetAllFields (type);
 
 			InheritedClassData data = new InheritedClassData ();
-			foreach (var field in fields) {
-                
+			int ioCount = 0;
+			foreach (var field in fields)
+			{
+				
 				if (field.IsDefined (inputAttr, true))
+				{
 					data.inputs.Add (new FieldData (field, ((AInput)Attribute.GetCustomAttribute (field, inputAttr)).Name));
-				else if (field.IsDefined (outputAttr, true))
+					ioCount++;
+				}
+				if (field.IsDefined (outputAttr, true))
+				{
 					data.outputs.Add (new FieldData (field, ((AOutput)Attribute.GetCustomAttribute (field, outputAttr)).Name));
-				else if (field.IsDefined (configAttr, true))
+					ioCount++;
+				}
+				if (field.IsDefined (configAttr, true))
+				{
 					data.configs.Add (new FieldData (field, ((AConfig)Attribute.GetCustomAttribute (field, configAttr)).Name));
+					ioCount++;
+				}
 			}
 			StringBuilder builder = new StringBuilder (100);
 			builder.Append ("IN: ");
-			foreach (var inp in data.inputs) {
+			foreach (var inp in data.inputs)
+			{
 				builder.Append (inp.ID);
 				builder.Append (' ');
 			}
 			builder.Append ("OUT: ");
-			foreach (var inp in data.outputs) {
+			foreach (var inp in data.outputs)
+			{
 				builder.Append (inp.ID);
 				builder.Append (' ');
 			}
 			builder.Append ("CFG: ");
-			foreach (var inp in data.configs) {
+			foreach (var inp in data.configs)
+			{
 				builder.Append (inp.ID);
 				builder.Append (' ');
 			}
-			Debug.LogFormat ("{0} : {1} : {2}", type, fields.Length, builder.ToString ());
+			Debug.LogFormat ("{0} : {1} : {2}", type, ioCount, builder.ToString ());
 			usedAvatars.Add (type, data);
 		}
 
@@ -194,7 +241,8 @@ namespace Demiurg.Core
 		void CountFinishedInputs ()
 		{
 			finishedInputs++;
-			if (finishedInputs >= Inputs.Count) {
+			if (finishedInputs >= Inputs.Count)
+			{
 				Debug.LogFormat ("[AVATARS WORKFLOW] {0} started working", this.Name);
 				Work ();
 			}
@@ -204,17 +252,20 @@ namespace Demiurg.Core
 		public void SetupIO ()
 		{
 			var data = usedAvatars [this.GetType ()];
-			foreach (var con in data.configs) {
+			foreach (var con in data.configs)
+			{
 				AvatarConfig config = new AvatarConfig (con.ID, con.Field, this);
 				Configs.Add (config);
 			}
-			foreach (var inp in data.inputs) {
+			foreach (var inp in data.inputs)
+			{
 				AvatarInput input = new AvatarInput (inp.ID, inp.Field, this);
 				input.OnFinish (CountFinishedInputs);
 				Inputs.Add (input);
 			}
 
-			foreach (var outp in data.outputs) {
+			foreach (var outp in data.outputs)
+			{
 				AvatarOutput output = new AvatarOutput (outp.ID, outp.Field, this);
 				Outputs.Add ((string)outp.ID, output);
 			}

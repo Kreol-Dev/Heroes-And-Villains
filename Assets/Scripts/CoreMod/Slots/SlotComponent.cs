@@ -4,7 +4,7 @@ using Demiurg.Core.Extensions;
 
 namespace CoreMod
 {
-	[ATabled]
+	[AShared]
 	public class SlotComponent : MonoBehaviour
 	{
 

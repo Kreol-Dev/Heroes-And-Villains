@@ -90,7 +90,7 @@ namespace CoreMod
 		}
 	}
 
-	[ATabled]
+	[AShared]
 	public class TileHandle
 	{
 		public int X { get; internal set; }

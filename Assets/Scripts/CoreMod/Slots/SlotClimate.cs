@@ -8,12 +8,13 @@ using Demiurg.Core.Extensions;
 namespace CoreMod
 {
 	[ASlotComponent ("Climate")]
-	[ATabled]
+	[AShared]
 	public class SlotClimate : SlotComponent
 	{
-		public int Height;
-		public int Temperature;
-		public int Humidity;
+		public float Height;
+		public float Temperature;
+		public float Humidity;
+		public float Radioactivity;
 		public float Inlandness;
 	}
 }

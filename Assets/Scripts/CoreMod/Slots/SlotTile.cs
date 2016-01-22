@@ -8,7 +8,7 @@ using Demiurg.Core.Extensions;
 namespace CoreMod
 {
 	[ASlotComponent ("Tile")]
-	[ATabled]
+	[AShared]
 	public class SlotTile : SlotComponent
 	{
 		public int X;
@@ -19,6 +19,12 @@ namespace CoreMod
 			this.transform.position = new Vector3 (X, Y, 0);
 			go.GetComponent<Transform> ().position = new Vector3 (X, Y, 0);
 		}
+	}
+
+
+	public interface ISlotted<T>
+	{
+		void Receive (T data);
 	}
 }
 

@@ -15,7 +15,7 @@ namespace DemiurgBinding
 		protected override void CustomSetup ()
 		{
 			Registry = new BindingRegistry ();
-			Type attrType = typeof(ATabled);
+			Type attrType = typeof(AShared);
 			var tabledTypes = from type  in Find.Root<ModsManager> ().GetAllTypes ()
 			                  where Attribute.GetCustomAttribute (type, attrType, true) != null
 			                  select type;

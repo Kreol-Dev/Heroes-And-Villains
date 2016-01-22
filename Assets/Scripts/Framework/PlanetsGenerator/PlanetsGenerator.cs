@@ -13,15 +13,15 @@ using Demiurg.Core.Extensions;
 [RootDependencies (typeof(ModsManager), typeof(ObjectsCreator), typeof(Sprites), typeof(MapRoot.Map))]
 public class PlanetsGenerator : Root
 {
-    Scribe scribe = Scribes.Find ("PlanetsGenerator");
-    LuaContext luaContext;
-    ModsManager modsManager;
-    //WorldCreator creator;
-    ITable wiring;
+	Scribe scribe = Scribes.Find ("PlanetsGenerator");
+	LuaContext luaContext;
+	ModsManager modsManager;
+	//WorldCreator creator;
+	ITable wiring;
 
-    protected override void CustomSetup ()
-    {
-        /*creator = new WorldCreator ();
+	protected override void CustomSetup ()
+	{
+		/*creator = new WorldCreator ();
 
 		
 
@@ -58,70 +58,65 @@ public class PlanetsGenerator : Root
         creator.SetupTags (FormTags (script.Globals ["tags"] as Table));
         creator.InitWiring (tables, nodes);*/
 
-        wiring = Find.Root<ModsManager> ().GetTable ("wiring");
+		wiring = Find.Root<ModsManager> ().GetTable ("wiring");
 
+		int seed = (int)(double)Find.Root<ModsManager> ().GetTable ("defines").Get ("SEED");
+		DemiurgEntity dem = new DemiurgEntity (FindAvatarTypes (), PrepareAvatarsTables (), LoadConverters (), LoadLoaders (), seed);
+		Fulfill.Dispatch ();
+	}
 
-        DemiurgEntity dem = new DemiurgEntity (FindAvatarTypes (), PrepareAvatarsTables (), LoadConverters (), LoadLoaders ());
-        Fulfill.Dispatch ();
-    }
+	Dictionary<string, Type> FindAvatarTypes ()
+	{
+		Dictionary<string, Type> nodes = new Dictionary<string, Type> ();
+		Assembly asm = Assembly.GetExecutingAssembly ();
+		foreach (var type in asm.GetTypes()) {
+			if (type.IsSubclassOf (typeof(Demiurg.Core.Avatar)) && !type.IsAbstract && !type.IsGenericType)
+				nodes.Add (type.FullName, type);
+		}
+		return nodes;
+	}
 
-    Dictionary<string, Type> FindAvatarTypes ()
-    {
-        Dictionary<string, Type> nodes = new Dictionary<string, Type> ();
-        Assembly asm = Assembly.GetExecutingAssembly ();
-        foreach (var type in asm.GetTypes())
-        {
-            if (type.IsSubclassOf (typeof(Demiurg.Core.Avatar)) && !type.IsAbstract && !type.IsGenericType)
-                nodes.Add (type.FullName, type);
-        }
-        return nodes;
-    }
-
-    Dictionary<string, ITable> PrepareAvatarsTables ()
-    {
-        Dictionary<string, Demiurg.Core.Extensions.ITable> tables = new Dictionary<string, Demiurg.Core.Extensions.ITable> ();
-        foreach (var avatarKey in wiring.GetKeys())
-        {
+	Dictionary<string, ITable> PrepareAvatarsTables ()
+	{
+		Dictionary<string, Demiurg.Core.Extensions.ITable> tables = new Dictionary<string, Demiurg.Core.Extensions.ITable> ();
+		foreach (var avatarKey in wiring.GetKeys()) {
             
-            ITable avatarTable = wiring.Get (avatarKey) as ITable;
-            if (avatarTable != null)
-            if (avatarTable.Get ("global") == null || ((bool)avatarTable.Get ("global")) != true)
-            {
-                Debug.Log (avatarKey.GetType ());
-                tables.Add ((string)avatarKey, avatarTable);
-                scribe.LogFormat ("{0} has been added ", avatarKey);
-            }
+			ITable avatarTable = wiring.Get (avatarKey) as ITable;
+			if (avatarTable != null)
+			if (avatarTable.Get ("global") == null || ((bool)avatarTable.Get ("global")) != true) {
+				Debug.Log (avatarKey.GetType ());
+				tables.Add ((string)avatarKey, avatarTable);
+				scribe.LogFormat ("{0} has been added ", avatarKey);
+			}
                 
-        }
-        return tables;
-    }
+		}
+		return tables;
+	}
 
-    List<Demiurg.Core.Extensions.IConverter> LoadConverters ()
-    {
-        List<IConverter> convs = new List<IConverter> ();
-        Assembly asm = Assembly.GetExecutingAssembly ();
-        Type convType = typeof(IConfigLoader);
-        foreach (var type in asm.GetTypes())
-        {
-            if (convType.IsAssignableFrom (type) && !type.IsAbstract && !type.IsGenericType)
-                convs.Add (Activator.CreateInstance (type) as IConverter);
-        }
-        return convs;
-    }
+	List<Demiurg.Core.Extensions.IConverter> LoadConverters ()
+	{
+		List<IConverter> convs = new List<IConverter> ();
+		Assembly asm = Assembly.GetExecutingAssembly ();
+		Type convType = typeof(IConfigLoader);
+		foreach (var type in asm.GetTypes()) {
+			if (convType.IsAssignableFrom (type) && !type.IsAbstract && !type.IsGenericType)
+				convs.Add (Activator.CreateInstance (type) as IConverter);
+		}
+		return convs;
+	}
 
-    List<Demiurg.Core.Extensions.IConfigLoader> LoadLoaders ()
-    {
-        List<IConfigLoader> loads = new List<IConfigLoader> ();
-        Assembly asm = Assembly.GetExecutingAssembly ();
-        Type loaderType = typeof(IConfigLoader);
-        foreach (var type in asm.GetTypes())
-        {
-            if (loaderType.IsAssignableFrom (type) && !type.IsAbstract && !type.IsGenericType)
-                loads.Add (Activator.CreateInstance (type) as IConfigLoader);
-        }
-        return loads;
-    }
-    /*
+	List<Demiurg.Core.Extensions.IConfigLoader> LoadLoaders ()
+	{
+		List<IConfigLoader> loads = new List<IConfigLoader> ();
+		Assembly asm = Assembly.GetExecutingAssembly ();
+		Type loaderType = typeof(IConfigLoader);
+		foreach (var type in asm.GetTypes()) {
+			if (loaderType.IsAssignableFrom (type) && !type.IsAbstract && !type.IsGenericType)
+				loads.Add (Activator.CreateInstance (type) as IConfigLoader);
+		}
+		return loads;
+	}
+	/*
     Dictionary<string, Type> FindNodeTypes ()
     {
         
@@ -162,9 +157,9 @@ public class PlanetsGenerator : Root
         return gos;
     }*/
 
-    void RegisterSlotComponents (BindingTable table)
-    {
-        /*script.Globals ["component"] = new Table (script);
+	void RegisterSlotComponents (BindingTable table)
+	{
+		/*script.Globals ["component"] = new Table (script);
         Table table = script.Globals ["component"] as Table;
         Type[] types = Assembly.GetExecutingAssembly ().GetTypes ();
         List<Type> slotComponents = new List<Type> ();
@@ -180,7 +175,7 @@ public class PlanetsGenerator : Root
                 
         SlotComponentsProvider.Types = slotComponents;*/
 
-    }
+	}
 }
 
 

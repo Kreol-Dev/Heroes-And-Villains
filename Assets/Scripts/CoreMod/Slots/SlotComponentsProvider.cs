@@ -4,7 +4,7 @@ using CoreMod;
 using Demiurg.Core.Extensions;
 using MoonSharp.Interpreter;
 
-[ATabled]
+[AShared]
 public class SlotComponentsProvider
 {
 	public GameObject GO;

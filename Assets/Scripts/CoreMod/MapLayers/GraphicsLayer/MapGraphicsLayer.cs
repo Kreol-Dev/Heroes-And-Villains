@@ -20,13 +20,16 @@ namespace CoreMod
 
 		protected override void Setup (ITable definesTable)
 		{
+			foreach (var  UV in defaultTile.Sprite.uv)
+				Debug.LogWarning (UV);
 			TileUpdated = new Signals.Signal<TileHandle, GraphicsTile> ();
 			MassUpdate = new Signals.Signal ();
 			var map = Find.Root<TilesRoot> ().MapHandle;
 				
 			Tiles = new GraphicsTile[map.SizeX, map.SizeY];
 			for (int i = 0; i < map.SizeX; i++)
-				for (int j = 0; j < map.SizeY; j++) {
+				for (int j = 0; j < map.SizeY; j++)
+				{
 
 					Tiles [i, j] = defaultTile;
 

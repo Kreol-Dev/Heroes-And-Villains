@@ -1,11 +1,128 @@
+
 base_module = 
 {
 	avatar_type = "CoreMod.NoiseModule",
 	configs =
 	{
-		width = defines.MAP_WIDTH,
-		height = defines.MAP_HEIGHT,
+		east_edge_levels = { { 0, 1, 0} },
+		west_edge_levels = { { 0, 1, 1} },
+		south_edge_levels = { { 0, 0.5, 1}, {0.6, 1, 0} },
+		north_edge_levels = { { 0, 1, 1} },
+		corners = {
+			north_east = 0,
+			south_east = 0,
+			north_west = 1,
+			north_east = 1
+		},
 		scale = 3
+	}
+}
+
+temperature_noise = 
+{
+	avatar_type = "CoreMod.NoiseModule",
+	configs = base_module.configs
+}
+
+height_noise = 
+{
+	avatar_type = "CoreMod.NoiseModule",
+	configs = base_module.configs
+}
+height_sharpen = 
+{
+	avatar_type = "CoreMod.MultiplyFloatArray",
+	inputs =
+	{
+		array = { "height_noise", "main"},
+		mod_array = { "height_noise", "main"}
+	}	
+}
+
+height_sharpen_x2 = 
+{
+	avatar_type = "CoreMod.MultiplyFloatArray",
+	inputs =
+	{
+		array = { "height_sharpen", "main"},
+		mod_array = { "height_sharpen", "main"}
+	}	
+}
+
+temperature_height_correction = 
+{
+	avatar_type = "CoreMod.SubMulFloatArray",
+	inputs = 
+	{
+		array = { "temperature_noise", "main"},
+		mod_array = { "height_sharpen_x2", "main"}
+	}
+}
+
+
+humidity_noise =
+{
+	avatar_type = "CoreMod.NoiseModule",
+	configs = base_module.configs
+}
+
+radiation_noise =
+{
+	avatar_type = "CoreMod.NoiseModule",
+	configs = base_module.configs
+}
+
+
+temperature_finished =
+{
+	avatar_type = "CoreMod.TransposeByValueFloatArray",
+	configs = {
+		min_value = 0,
+		max_value = 50
+	},
+	inputs = {
+		array = { "temperature_height_correction", "main" }
+	}
+}
+
+height_finished =
+{
+	avatar_type = "CoreMod.TransposeByValueFloatArray",
+	configs = {
+		min_value = 0,
+		max_value = 4000
+	},
+	inputs = {
+		array = { "height_sharpen_x2", "main" }
+	}
+}
+
+
+
+cities_climate =
+{
+	avatar_type = "CoreMod.ClimateDataGatherer",
+	inputs = 
+	{
+		main = { "cities_placer", "slots" },
+		temperature_map = { "temperature_finished", "main"},
+		height_map = { "height_finished", "main" },
+		inlandness_map = { "base_module", "main" },
+		humidity_map = { "humidity_noise", "main" },
+		radiation_map = { "radiation_noise", "main" }
+	}
+}
+
+regions_climate =
+{
+	avatar_type = "CoreMod.ClimateDataGatherer",
+	inputs = {
+		main = { "regions_slots_creator", "main" },
+		temperature_map = { "temperature_finished", "main"},
+		height_map = { "height_finished", "main" },
+		inlandness_map = { "base_module", "main" },
+		humidity_map = { "humidity_noise", "main" },
+		radiation_map = { "radiation_noise", "main" }
 	}
 }
 
@@ -16,7 +133,7 @@ distinctor_module =
 	{
 		levels =
 		{
-		{ level = 0.2, val = 0},
+		{ level = 0.3, val = 0},
 		{ level = 1, val = 1}
 	}
 		
@@ -36,58 +153,6 @@ continents_module =
 		main = { "distinctor_module", "main" }
 	}
 }
-
-base_visual = 
-{
-	avatar_type = "CoreMod.FloatArrayVisualizer",
-	configs = 
-	{
-		levels =
-		{
-			{ 0, { 0,  0,  0}},
-			{ 1, { 1,  1,  1}}
-		}
-		
-		
-	},
-	inputs =
-	{
-		main = { "base_module", "main" }
-	}
-}
-
-distinct_visual = 
-{
-	avatar_type = "CoreMod.DistinctArrayVisualizer",
-	configs = 
-	{
-	levels =
-		{
-			{ 0, { 0.3,  0.3,  0.8}},
-			{ 1, { 0.3,  0.8,  0.3}}
-		},
-	random = false
-	},
-	inputs =
-	{
-		main = { "distinctor_module", "main" }
-	}
-}
-
-chunks_visual = 
-{
-	avatar_type = "CoreMod.DistinctArrayVisualizer",
-	configs = 
-	{
-		levels = {},
-		random = true
-	},
-	inputs =
-	{
-		main = { "continents_module", "assignments" }
-	}
-}
-
 
 surface_extractor =
 {
@@ -119,164 +184,9 @@ random_points =
 	}
 }
 
-points_visualizer =
-{
-
-	avatar_type = "CoreMod.PointsVisualizer",
-	configs =
-	{
-		tile_color = { 1, 1, 1}
-	},
-	inputs = 
-	{
-		texture = { "chunks_visual", "main" },
-		tiles = { "random_points", "main" }
-	}
-}
-
-latitude_temp_module =
-{
-	avatar_type = "CoreMod.LatitudeModule",
-	configs =
-	{
-		polar_value = -50,
-		central_value = 40,
-		width = base_module.configs.width,
-		height = base_module.configs.height
-	}
-
-}
 
 
-temperature_noise = 
-{
-	avatar_type = "CoreMod.NoiseModule",
-	configs =
-	{
-		width = base_module.configs.width,
-		height = base_module.configs.height,
-		scale = 2
-	}
-}
 
-array_temperature_noise =
-{
-	avatar_type = "CoreMod.FloatToIntArray",
-	configs = {
-		max_value = 50,
-		min_value = -50
-	},
-	inputs = 
-	{
-		main = { "temperature_noise", "main" }
-	}
-}
-
-temperature_blend =
-{
-	avatar_type = "CoreMod.ArrayBlendModule",
-	configs =
-	{
-		weight = 0.8
-	},
-	inputs = 
-	{
-		first = { "latitude_temp_module", "main" },
-		second = { "array_temperature_noise", "main" }
-	}
-}
-lat_visual = 
-{
-	avatar_type = "CoreMod.IntArrayVisualizer",
-	configs = 
-	{
-	levels =
-	{
-		{ -50, {0, 0, 1}},
-		{ 50, {1, 0, 0}}
-	}
-	},
-	inputs =
-	{
-		main = { "latitude_temp_module", "main" }
-	}
-}
-temp_noise_visual = 
-{
-	avatar_type = "CoreMod.IntArrayVisualizer",
-	configs = 
-	{
-	levels =
-	{
-		{ -50, {0, 0, 1}},
-		{ 50, {1, 0, 0}}
-	}
-	},
-	inputs =
-	{
-		main = { "array_temperature_noise", "main" }
-	}
-}
-temperature_visual = 
-{
-	avatar_type = "CoreMod.IntArrayVisualizer",
-	configs = 
-	{
-	levels=
-	{
-		{ -50, {0, 0, 1}},
-		{ 50, {1, 0, 0}}
-	}
-	},
-	inputs =
-	{
-		main = { "temperature_blend", "main" }
-	}
-}
-
-height_noise = 
-{
-	avatar_type = "CoreMod.NoiseModule",
-	configs =
-	{
-		width = base_module.configs.width,
-		height = base_module.configs.height,
-		scale = 3
-	}
-}
-
-array_height_noise =
-{
-	avatar_type = "CoreMod.FloatToIntArray",
-	configs = {
-		max_value = 8000,
-		min_value = -4000
-	},
-	inputs = 
-	{
-		main = { "height_noise", "main" }
-	}
-}
-
-height_visual = 
-{
-	avatar_type = "CoreMod.IntArrayVisualizer",
-	configs = 
-	{
-		levels =
-		{
-		{ -4000, {0, 0, 1} },
-		{ 0    , {0, 1, 1} },
-		{ 4000 , {0.8, 0.8, 0} },
-		{ 8000 , {1, 1, 1} }
-	}
-		
-	},
-	inputs =
-	{
-		main = { "array_height_noise", "main" }
-	}
-}
 
 cities_placer =
 {
@@ -286,19 +196,9 @@ cities_placer =
 		points = {"random_points", "main"}
 	}	
 }
-climate_gatherer =
-{
-	avatar_type = "CoreMod.ClimateDataGatherer",
-	inputs = 
-	{
-		main = { "cities_placer", "slots" },
-		temperature_map = { "temperature_blend", "main"},
-		height_map = { "array_height_noise", "main" },
-		inlandness_map = { "base_module", "main"}
-	}
-}
 
-climate_tags_assigner =
+
+cities_climate_tags =
 {
 	avatar_type = "CoreMod.TagsAssigner",
 	configs =
@@ -308,9 +208,24 @@ climate_tags_assigner =
 	inputs =
 	{
 		tags = { "tags_collection", "tags" },
-		main = { "climate_gatherer", "main" }
+		main = { "cities_climate", "main" }
 	}
 }
+
+regions_climate_tags =
+{
+	avatar_type = "CoreMod.TagsAssigner",
+	configs =
+	{
+		tags_namespace = "climate"
+	},
+	inputs =
+	{
+		tags = { "tags_collection", "tags" },
+		main = { "regions_climate", "main" }
+	}
+}
+
 
 
 cities_creator = 
@@ -339,11 +254,12 @@ cities_creator =
 	},
 	inputs = 
 	{
-		main = { "climate_tags_assigner", "main" },
+		main = { "cities_climate_tags", "main" },
 		available_tags = { "tags_collection", "tags"},
 		available_replacers = { "replacers_collection", "replacers"}
 	}
 }
+
 
 
 tags_collection =
@@ -364,12 +280,12 @@ replacers_collection =
 	}
 }
 
-regions_creator = 
+regions_slots_creator = 
 {
 	avatar_type = "CoreMod.RegionsModule",
 	configs =
 	{
-		density = 50
+		density = 25
 	},
 	inputs =
 	{
@@ -377,16 +293,26 @@ regions_creator =
 	}
 }
 
-regions_visual = 
+biomes_creator =
 {
-	avatar_type = "CoreMod.DistinctArrayVisualizer",
-	configs = 
+	avatar_type = "CoreMod.SlotsReplacer",
+	configs =
 	{
-		levels = {},
-		random = true
+		replacers = 
+		{
+			{ 
+				ref = "wasteland_biome",
+				tags = { { "desert", 1 },  { "mountains", 1 }, { "plains", 1 } }
+			}
+		},
+		tags_namespace = "climate",
+		replacers_namespace = "biomes"
+		
 	},
-	inputs =
+	inputs = 
 	{
-		main = { "regions_creator", "environment" }
+		main = { "regions_climate_tags", "main" },
+		available_tags = { "tags_collection", "tags"},
+		available_replacers = { "replacers_collection", "replacers"}
 	}
 }

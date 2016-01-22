@@ -27,7 +27,7 @@ namespace CoreMod
 				dirs = new Deck<TileDirection> (random, TileDirection.East, TileDirection.West, TileDirection.North, TileDirection.South);
 			else
 				dirs = new Deck<TileDirection> (random, TileDirection.East, TileDirection.West, TileDirection.North, TileDirection.South,
-					TileDirection.NorthEast, TileDirection.NorthWest, TileDirection.SouthEast, TileDirection.SouthWest);
+				                                TileDirection.NorthEast, TileDirection.NorthWest, TileDirection.SouthEast, TileDirection.SouthWest);
 
 
 			env = new int[map.SizeX, map.SizeY];
@@ -35,7 +35,8 @@ namespace CoreMod
 				for (int j = 0; j < map.SizeY; j++)
 					env [i, j] = -2;
 			
-			foreach (var go in InputObjects) {
+			foreach (var go in InputObjects)
+			{
 				ProcessChunk (go.GetComponent<ChunkSlot> ());
 
 			}
@@ -51,9 +52,11 @@ namespace CoreMod
 			foreach (var tile in chunk.Tiles)
 				tile.Set (env, -1);
 			HashSet<int> tileIDs = new HashSet<int> ();
-			while (tileIDs.Count < startingPointsCount) {
+			while (tileIDs.Count < startingPointsCount)
+			{
 				int id;
-				do {
+				do
+				{
 					id = random.Next (0, chunk.Tiles.Length);
 				} while (tileIDs.Contains (id));
 				tileIDs.Add (id);
@@ -63,20 +66,24 @@ namespace CoreMod
 			              select chunk.Tiles [id];
 
 			List<Region> regions = new List<Region> ();
-			foreach (var handle in handles) {
+			foreach (var handle in handles)
+			{
 				Region region = new Region (regionID++, handle, env, dirs);
 				regions.Add (region);
 			}
 
 			bool updated = false;
 			int steps = 0;
-			do {
+			do
+			{
 				updated = false;
 				//Debug.LogWarning ("STEP __________________________________ " + steps);
-				foreach (var region in regions) {
+				foreach (var region in regions)
+				{
 
 					dirs.Shuffle ();
-					if (region.Update ()) {
+					if (region.Update ())
+					{
 						//Debug.LogWarningFormat ("UPDATED REGION {0}", region.ID);
 						updated = true;
 					}
@@ -87,9 +94,10 @@ namespace CoreMod
 			} while(updated);
 
 			OutputObjects = new List<GameObject> ();
-			foreach (var region in regions) {
+			foreach (var region in regions)
+			{
 				GameObject go = new GameObject ("Region " + region.ID);
-				go.AddComponent<RegionSlot> ().Tiles = region.Tiles.ToArray ();
+				go.AddComponent<RegionSlot> ().Tiles = region.Tiles;
 				OutputObjects.Add (go);
 			}
 		}
@@ -124,11 +132,14 @@ namespace CoreMod
 		{
 			cachedFrontier.Clear ();
 			bool update = frontier.Count > 0;
-			for (int i = 0; i < frontier.Count; i++) {
+			for (int i = 0; i < frontier.Count; i++)
+			{
 				int j = 0;
-				for (; j < dirs.values.Length; j++) {
+				for (; j < dirs.values.Length; j++)
+				{
 					TileHandle nextHandle = GrowTile (frontier [i], dirs.values [j]);
-					if (nextHandle != null) {
+					if (nextHandle != null)
+					{
 
 						nextHandle.Set (env, ID);
 						cachedFrontier.Add (nextHandle);
@@ -158,7 +169,8 @@ namespace CoreMod
 			int nextID = -1;
 
 			nextHandle = handle.GetNext (direction);
-			if (nextHandle != null) {
+			if (nextHandle != null)
+			{
 				nextID = nextHandle.Get (env);
 				if (nextID == -1)
 					return nextHandle;
