@@ -13,6 +13,7 @@ namespace CoreMod
 		public void Receive (RegionSlot data)
 		{
 			tiles = data.Tiles;
+			gameObject.AddComponent<TilesComponent> ().tiles = tiles;
 			foreach (var tile in tiles)
 			{
 				tile.Set (SharedData.layer.Tiles, SharedData.graphicsTile);
@@ -40,6 +41,9 @@ namespace CoreMod
 			biome.SharedData = SharedData;
 		}
 	}
+
+
+
 
 }
 

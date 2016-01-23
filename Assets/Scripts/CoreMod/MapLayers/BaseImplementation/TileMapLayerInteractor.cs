@@ -30,56 +30,67 @@ namespace CoreMod
 			public TileHandle Handle;
 		}
 
-		public abstract TObject ObjectFromLayerObject (TLayerObject obj);
+		public abstract bool ObjectFromLayerObject (TLayerObject obj, out TObject outObject);
 
 		TilesRoot tilesRoot;
 
-		Tile FindTile (Vector3 point)
+		bool FindTile (Vector3 point, out Tile tile)
 		{
-			Tile tile = new Tile ();
+			tile = new Tile ();
 			tile.Handle = tilesRoot.MapHandle.GetHandle (point);
-			tile.Content = ObjectFromLayerObject (tile.Handle.Get<TLayerObject> (Layer.Tiles));
-			return tile;
+			return ObjectFromLayerObject (tile.Handle.Get<TLayerObject> (Layer.Tiles), out tile.Content);
 		}
 
 		protected override void OnHover (Transform obj, Vector3 point)
 		{
-			Tile tile = FindTile (point);
+			Tile tile;
+			if (!FindTile (point, out tile))
+				return;
 			if (TileHovered != null)
 				TileHovered (tile.Handle, tile.Content);
 		}
 
 		protected override void OnEndHover (Transform obj, Vector3 point)
 		{
-			Tile tile = FindTile (point);
+			Tile tile;
+			if (!FindTile (point, out tile))
+				return;
 			if (TileDeHovered != null)
 				TileDeHovered (tile.Handle, tile.Content);
 		}
 
 		protected override void OnClick (Transform obj, Vector3 point)
 		{
-			Tile tile = FindTile (point);
+			Tile tile;
+			if (!FindTile (point, out tile))
+				return;
 			if (TileClicked != null)
 				TileClicked (tile.Handle, tile.Content);
 		}
 
 		protected override void OnEndClick (Transform obj, Vector3 point)
 		{
-			Tile tile = FindTile (point);
+			Tile tile;
+			if (!FindTile (point, out tile))
+				return;
 			if (TileDeClicked != null)
 				TileDeClicked (tile.Handle, tile.Content);
 		}
 
 		protected override void OnHighlight (Transform obj, Vector3 point)
 		{
-			Tile tile = FindTile (point);
+			Tile tile;
+			if (!FindTile (point, out tile))
+				return;
 			if (TileHighlighted != null)
 				TileHighlighted (tile.Handle, tile.Content);
 		}
 
 		protected override void OnEndHighlight (Transform obj, Vector3 point)
 		{
-			Tile tile = FindTile (point);
+			Tile tile;
+			if (!FindTile (point, out tile))
+				return;
 			if (TileDeHighlighted != null)
 				TileDeHighlighted (tile.Handle, tile.Content);
 		}

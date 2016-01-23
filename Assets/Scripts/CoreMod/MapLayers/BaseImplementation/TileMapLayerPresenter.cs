@@ -5,67 +5,69 @@ using System.Collections.Generic;
 
 namespace CoreMod
 {
-    public class TileMapLayerPresenter<TObject, TLayerObject, TLayer, TInteractor> : BaseMapLayerPresenter<TObject, TLayer, TInteractor>
-        where TLayer : class, IMapLayer, ITileMapLayer<TLayerObject> where TInteractor : BaseMapLayerInteractor<TLayer>, ITileMapInteractor<TObject, TLayerObject, TLayer>
-    {
-        HashSet<TileHandle> selectedTiles = new HashSet<TileHandle> ();
-        HashSet<TileHandle> hoveredTiles = new HashSet<TileHandle> ();
+	public abstract class TileMapLayerPresenter<TObject, TLayerObject, TLayer, TInteractor> : BaseMapLayerPresenter<TObject, TLayer, TInteractor>
+		where TLayer : class, IMapLayer, ITileMapLayer<TLayerObject> where TInteractor : BaseMapLayerInteractor<TLayer>, ITileMapInteractor<TLayerObject, TLayerObject, TLayer>
+	{
+		HashSet<TileHandle> selectedTiles = new HashSet<TileHandle> ();
+		HashSet<TileHandle> hoveredTiles = new HashSet<TileHandle> ();
 
-        public override void ChangeState (RepresenterState state)
-        {
-            switch (state)
-            {
-            case RepresenterState.Active:
-                Interactor.TileClicked += Clicked;
-                Interactor.TileDeClicked += DeClicked;
-                Interactor.TileHovered += Hovered;
-                Interactor.TileDeHovered += DeHovered;
-                Layer.MassUpdate.AddListener (ObjectPresenter.Update);
-                Layer.TileUpdated.AddListener (TileUpdated);
-                break;
-            case RepresenterState.NotActive:
-                Interactor.TileClicked -= Clicked;
-                Interactor.TileDeClicked -= DeClicked;
-                Interactor.TileHovered -= Hovered;
-                Interactor.TileDeHovered -= DeHovered;
-                Layer.MassUpdate.RemoveListener (ObjectPresenter.Update);
-                Layer.TileUpdated.RemoveListener (TileUpdated);
-                break;
-            }
-        }
+		public override void ChangeState (RepresenterState state)
+		{
+			switch (state)
+			{
+			case RepresenterState.Active:
+				Interactor.TileClicked += Clicked;
+				Interactor.TileDeClicked += DeClicked;
+				Interactor.TileHovered += Hovered;
+				Interactor.TileDeHovered += DeHovered;
+				Layer.MassUpdate.AddListener (ObjectPresenter.Update);
+				Layer.TileUpdated.AddListener (TileUpdated);
+				break;
+			case RepresenterState.NotActive:
+				Interactor.TileClicked -= Clicked;
+				Interactor.TileDeClicked -= DeClicked;
+				Interactor.TileHovered -= Hovered;
+				Interactor.TileDeHovered -= DeHovered;
+				Layer.MassUpdate.RemoveListener (ObjectPresenter.Update);
+				Layer.TileUpdated.RemoveListener (TileUpdated);
+				break;
+			}
+		}
 
-        void Clicked (TileHandle tile, TObject obj)
-        {
-            if (selectedTiles.Add (tile))
-                ObjectPresenter.ShowObjectDesc (obj);
-        }
+		public abstract TObject ObjectFromLayer (TLayerObject obj);
 
-        void DeClicked (TileHandle tile, TObject obj)
-        {
-            if (selectedTiles.Remove (tile))
-                ObjectPresenter.HideObjectDesc (obj);
-        }
+		void Clicked (TileHandle tile, TLayerObject obj)
+		{
+			if (selectedTiles.Add (tile))
+				ObjectPresenter.ShowObjectDesc (ObjectFromLayer (obj));
+		}
 
-        void Hovered (TileHandle tile, TObject obj)
-        {
-            if (hoveredTiles.Add (tile))
-                ObjectPresenter.ShowObjectShortDesc (obj);
-        }
+		void DeClicked (TileHandle tile, TLayerObject obj)
+		{
+			if (selectedTiles.Remove (tile))
+				ObjectPresenter.HideObjectDesc (ObjectFromLayer (obj));
+		}
 
-        void DeHovered (TileHandle tile, TObject obj)
-        {
-            if (hoveredTiles.Remove (tile))
-                ObjectPresenter.HideObjectShortDesc (obj);
-        }
+		void Hovered (TileHandle tile, TLayerObject obj)
+		{
+			if (hoveredTiles.Add (tile))
+				ObjectPresenter.ShowObjectShortDesc (ObjectFromLayer (obj));
+		}
 
-        void TileUpdated (TileHandle tile, TLayerObject obj)
-        {
+		void DeHovered (TileHandle tile, TLayerObject obj)
+		{
+			if (hoveredTiles.Remove (tile))
+				ObjectPresenter.HideObjectShortDesc (ObjectFromLayer (obj));
+		}
+
+		void TileUpdated (TileHandle tile, TLayerObject obj)
+		{
             
-            if (selectedTiles.Contains (tile) || hoveredTiles.Contains (tile))
-                ObjectPresenter.Update ();
-        }
+			if (selectedTiles.Contains (tile) || hoveredTiles.Contains (tile))
+				ObjectPresenter.Update ();
+		}
 
-    }
+	}
 
 }
 

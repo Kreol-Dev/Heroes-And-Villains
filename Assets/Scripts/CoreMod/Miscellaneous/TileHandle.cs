@@ -59,12 +59,32 @@ namespace CoreMod
 
 		public TileHandle GetHandle (Vector2 vec)
 		{
-			return GetHandle ((int)vec.x, (int)vec.y);
+			int X = (int)vec.x;
+			int Y = (int)vec.y;
+			if (X == SizeX)
+				X = SizeX - 1;
+			else if (X == -1)
+				X = 0;
+			if (Y == SizeY)
+				Y = SizeY - 1;
+			else if (Y == -1)
+				Y = 0;
+			return GetHandle (X, Y);
 		}
 
 		public TileHandle GetHandle (Vector3 vec)
 		{
-			return GetHandle ((int)vec.x, (int)vec.y);
+			int X = (int)vec.x;
+			int Y = (int)vec.y;
+			if (X == SizeX)
+				X = SizeX - 1;
+			else if (X == -1)
+				X = 0;
+			if (Y == SizeY)
+				Y = SizeY - 1;
+			else if (Y == -1)
+				Y = 0;
+			return GetHandle (X, Y);
 		}
 
 		public TileHandle GetHandle (int x, int y)

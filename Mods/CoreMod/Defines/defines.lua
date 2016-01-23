@@ -8,3 +8,5 @@ SEED = 1488
 
 
 BIOMES_GRAPHICS_LAYER = "graphics_layer"
+
+STATIC_OBJECTS_LAYER = "static_go_layer"

@@ -3,17 +3,18 @@ using System.Collections;
 
 namespace CoreMod
 {
-    public class GraphicsLayerInteractor : TileMapLayerInteractor<GraphicsTile, GraphicsTile, MapGraphicsLayer>
-    {
+	public class GraphicsLayerInteractor : TileMapLayerInteractor<GraphicsTile, GraphicsTile, MapGraphicsLayer>
+	{
 
-        public override GraphicsTile ObjectFromLayerObject (GraphicsTile obj)
-        {
-            return obj;
-        }
+		public override bool ObjectFromLayerObject (GraphicsTile obj, out GraphicsTile outObj)
+		{
+			outObj = obj;
+			return obj != null;
+		}
 
 
 
-    }
+	}
 }
 
 

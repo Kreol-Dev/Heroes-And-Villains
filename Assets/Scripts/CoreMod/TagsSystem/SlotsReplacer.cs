@@ -108,8 +108,11 @@ namespace CoreMod
 			return replacers;
 		}
 
+		List<Replacer> possibleSlotReplacers = new List<Replacer> ();
+
 		GameObject Replacement (Slot slot)
 		{
+			possibleSlotReplacers.Clear ();
 			if (replacers.Count == 0)
 				return null;
 			int maxSimilarity = int.MinValue;
@@ -119,11 +122,16 @@ namespace CoreMod
 				int sim = slot.Tags.ComputeSimilarity (replacers [i].Tags, replacers [i].Weights);
 				if (sim > maxSimilarity)
 				{
+					possibleSlotReplacers.Clear ();
 					maxSimilarity = sim;
 					maxID = i;
+					possibleSlotReplacers.Add (replacers [maxID]);
+				} else if (sim == maxSimilarity)
+				{
+					possibleSlotReplacers.Add (replacers [i]);
 				}
 			}
-			GameObject replacer = replacers [maxID].GO;
+			GameObject replacer = possibleSlotReplacers [Random.Next () % possibleSlotReplacers.Count].GO;
 			GameObject go = new GameObject (replacer.name);
 			foreach (var comp in replacer.GetComponents<EntityComponent>())
 				comp.CopyTo (go);
