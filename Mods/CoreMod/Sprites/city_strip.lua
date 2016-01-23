@@ -15,3 +15,9 @@ mountains_city =
 	left_top_corner = { 0, 64},
 	right_bottom_corner = { 32, 96}
 }
+
+oasis_city =
+{
+	left_top_corner = { 0, 128},
+	right_bottom_corner = { 32, 159}
+}
