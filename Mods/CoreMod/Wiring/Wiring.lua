@@ -193,12 +193,8 @@ random_points =
 	avatar_type = "CoreMod.RandomPointsOnTiles",
 	configs =
 	{
-<<<<<<< HEAD
-		density = 100
-=======
 		density = 50,
 		min_count = 1
->>>>>>> refs/remotes/origin/master
 	},
 	inputs = 
 	{
