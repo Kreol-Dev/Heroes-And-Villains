@@ -4,7 +4,7 @@ cities.desert =
 	settlement = 
 	{
 		population = 100,
-		race = "desert people"
+		race = "desert_people"
 	},
 	graphics = 
 	{
@@ -17,7 +17,7 @@ cities.plains =
 	settlement = 
 	{
 		population = 200,
-		race = "plains people"
+		race = "plains_people"
 	},
 	graphics = 
 	{
@@ -30,7 +30,7 @@ cities.mountains =
 	settlement = 
 	{
 		population = 50,
-		race = "mountains people"
+		race = "mountains_people"
 	},
 	graphics = 
 	{
@@ -43,7 +43,7 @@ cities.oasis =
 	settlement = 
 	{
 		population = 50,
-		race = "oasis people"
+		race = "oasis_people"
 	},
 	graphics = 
 	{

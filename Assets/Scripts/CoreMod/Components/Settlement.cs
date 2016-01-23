@@ -33,7 +33,7 @@ namespace CoreMod
 		public override void LoadFromTable (ITable table)
 		{
 			Population = (int)(double)table.Get ("population");
-			string spriteName = "plains_people";//(string)table.Get ("race");
+			string spriteName = (string)table.Get ("race");
 			Race = Find.Root<Sprites> ().GetSprite ("races", spriteName);
 			SharedData = new SettlementSharedData ();
 

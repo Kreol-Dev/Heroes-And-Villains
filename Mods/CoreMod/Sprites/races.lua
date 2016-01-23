@@ -4,7 +4,7 @@ desert_people =
 	right_bottom_corner = { 32, 32}
 }
 
-ocean_people =
+oasis_people =
 {
 	left_top_corner = { 32, 0 },
 	right_bottom_corner = { 64, 32}
