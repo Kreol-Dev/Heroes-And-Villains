@@ -59,6 +59,7 @@ provinces.basic_province =
 	province = {}
 }
 
+<<<<<<< HEAD
 biomes = {}
 biomes.wasteland_biome = 
 {
@@ -80,3 +81,5 @@ biomes.desert_biome =
 		tile_graphics = "desert"
 	}
 }
+=======
+>>>>>>> refs/remotes/origin/master

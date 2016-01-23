@@ -69,7 +69,8 @@ namespace CoreMod
 
 		public TileHandle GetHandle (int x, int y)
 		{
-			switch (MapConnectivity) {
+			switch (MapConnectivity)
+			{
 			case MapConnectivity.Flat:
 				if (x >= 0 && x < SizeX && y >= 0 && y < SizeY)
 					return tiles [x, y];
@@ -91,8 +92,12 @@ namespace CoreMod
 	}
 
 	[AShared]
+	[System.Serializable]
 	public class TileHandle
 	{
+		public int x;
+		public int y;
+
 		public int X { get; internal set; }
 
 		public int Y { get; internal set; }
@@ -101,6 +106,8 @@ namespace CoreMod
 
 		public TileHandle (int x, int y, MapHandle map)
 		{
+			this.x = x;
+			this.y = y;
 			X = x; 
 			Y = y;
 			Map = map;
@@ -109,7 +116,8 @@ namespace CoreMod
 		public TileHandle GetNext (TileDirection direction)
 		{
 			TileHandle handle = null;
-			switch (direction) {
+			switch (direction)
+			{
 			case TileDirection.East:
 				handle = Map.GetHandle (X - 1, Y);
 				break;
@@ -124,7 +132,8 @@ namespace CoreMod
 				break;
 			default:
 				if (Map.TileConnectivity == TileConnnectivity.Eight)
-					switch (direction) {
+					switch (direction)
+					{
 					case TileDirection.NorthEast:
 						handle = Map.GetHandle (X - 1, Y + 1);
 						break;
@@ -181,7 +190,8 @@ namespace CoreMod
 
 		public override int GetHashCode ()
 		{
-			unchecked {         
+			unchecked
+			{         
 				int hash = 27;
 				hash = (13 * hash) + X.GetHashCode ();
 				hash = (13 * hash) + Y.GetHashCode ();
