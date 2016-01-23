@@ -75,7 +75,6 @@ namespace CoreMod
 			}
 
 			bool updated = false;
-			int steps = 0;
 			do
 			{
 				updated = false;
@@ -90,9 +89,6 @@ namespace CoreMod
 						updated = true;
 					}
 				}
-				steps++;
-				if (steps == 30)
-					break;
 			} while(updated);
 
 			foreach (var region in regions)

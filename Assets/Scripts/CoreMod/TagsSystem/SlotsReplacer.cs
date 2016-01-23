@@ -132,6 +132,7 @@ namespace CoreMod
 				}
 			}
 			GameObject replacer = possibleSlotReplacers [Random.Next () % possibleSlotReplacers.Count].GO;
+			slot.Similarity = maxSimilarity;
 			GameObject go = new GameObject (replacer.name);
 			foreach (var comp in replacer.GetComponents<EntityComponent>())
 				comp.CopyTo (go);

@@ -32,10 +32,11 @@ namespace CoreMod
 				int localCount = tiles.Length / density + minCount;
 				if (localCount == 0)
 					continue;
+
 				int chunkRange = tiles.Length / localCount;
-				for (int j = 0; j <= tiles.Length - chunkRange; j += chunkRange)
+				for (int j = 0, r = 0; j < localCount; j++, r += chunkRange)
 				{
-					points [curPoint++] = tiles [Random.Next (j, j + chunkRange)];
+					points [curPoint++] = tiles [Random.Next (r, r + chunkRange)];
 				}
 			}
 			mainO = points;

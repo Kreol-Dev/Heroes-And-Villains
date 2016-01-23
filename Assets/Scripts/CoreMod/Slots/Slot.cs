@@ -9,6 +9,7 @@ namespace CoreMod
 {
 	public class Slot : SlotComponent
 	{
+		public int Similarity;
 		public TagsCollection Tags;
 		public Dictionary<object, object> CustomData;
 		public GameObject Replacer;

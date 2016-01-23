@@ -193,7 +193,7 @@ random_points =
 	avatar_type = "CoreMod.RandomPointsOnTiles",
 	configs =
 	{
-		density = 50,
+		density = 300,
 		min_count = 1
 	},
 	inputs = 
@@ -308,7 +308,7 @@ regions_slots_creator =
 	configs =
 	{
 		name = "Land",
-		density = 25
+		density = 100
 	},
 	inputs =
 	{
