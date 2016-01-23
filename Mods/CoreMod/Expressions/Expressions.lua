@@ -16,7 +16,7 @@ height_expression = function (slot, criteria )
 	end
 end
 
-desert_expression = function (slot, criteria )
+temp_hum__expression = function (slot, criteria )
 	climate = slot.Get(component.Climate)
 	if climate.temperature >= criteria.min_temperature and climate.temperature <= criteria.max_temperature and 
 		climate.humidity >= criteria.min_humidity and climate.humidity <= criteria.max_humidity then

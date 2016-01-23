@@ -8,7 +8,7 @@ climate.desert =
 		min_humidity = 0,
 		max_humidity = 0.5
 	},
-	expression = expressions.desert_expression
+	expression = expressions.temp_hum__expression
 }
 
 climate.mountains =
@@ -47,8 +47,8 @@ climate.irradiated =
 {
 	criteria = 
 	{
-		min_radioactivity = 0.5,
-		max_radioactivity = 1
+		min_radioactivity = 0.2,
+		max_radioactivity = 0.5
 	},
 	expression = expressions.rad_expression
 }
@@ -83,3 +83,14 @@ climate.steppe =
 	expression = expressions.steppe_expression
 }
 
+climate.grassland =
+{
+	criteria = 
+	{
+		min_temperature = 18,
+		max_temperature = 30,
+		min_humidity = 0.5,
+		max_humidity = 1
+	},
+	expression = expressions.temp_hum__expression
+}

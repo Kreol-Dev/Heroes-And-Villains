@@ -255,11 +255,11 @@ cities_creator =
 		{
 			{ 
 				ref = "desert",
-				tags = { { "desert", 1 },  { "mountains", -1 }, { "plains", -1 } }
+				tags = { { "desert", 10 }, { "mountains", -1 }, { "steppe", -5 } }
 			},
 			{ 
 				ref = "plains",
-				tags = { { "desert", -1 },  { "mountains", -1 }, { "plains", 1 } }
+				tags = { { "desert", -3 }, { "mountains", -1 }, { "plains" , 1 }, { "grassland", 4 }, { "irradiated", -5 } }
 			},
 			{ 
 				ref = "oasis",
@@ -267,7 +267,7 @@ cities_creator =
 			},
 			{ 
 				ref = "mountains",
-				tags = { { "desert", -1 },  { "mountains", 2 }, {  "plains", -1 } }
+				tags = { { "mountains", 1 }, { "hills", 3 }, { "swamp", -5 }, { "plains", -5 } }
 			}
 		},
 		tags_namespace = "climate",
@@ -363,11 +363,31 @@ biomes_creator =
 		{
 			{ 
 				ref = "desert_biome",
-				tags = { { "desert", 10 }, { "mountains", -1 } }
+				tags = { { "desert", 3 }, { "mountains", -1 } }
+			},
+			{ 
+				ref = "mountains_biome",
+				tags = { { "swamp", -5 }, { "mountains", 5 } }
+			},
+			{ 
+				ref = "swamp_biome",
+				tags = { { "desert", -3 }, { "mountains", -1 }, { "swamp", 5 } }
+			},
+			{ 
+				ref = "hills_biome",
+				tags = { { "mountains", 1 }, { "hills", 3 }, { "swamp", -5 } }
+			},
+			{ 
+				ref = "steppe_biome",
+				tags = { { "desert", 1 }, { "hills", -2 }, { "steppe", 5 }, { "mountains", -3 } }
+			},
+			{ 
+				ref = "grassland_biome",
+				tags = { { "desert", -3 }, { "mountains", -1 }, { "plains" , 1 }, { "grassland", 3 }, { "irradiated", -5 } }
 			},
 			{ 
 				ref = "wasteland_biome",
-				tags = { { "plains", 1 } }
+				tags = { { "plains", 1 }, { "irradiated", 1 } }
 			}
 		},
 		tags_namespace = "climate",
