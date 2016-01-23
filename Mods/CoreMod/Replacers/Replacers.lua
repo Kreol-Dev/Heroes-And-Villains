@@ -38,6 +38,19 @@ cities.mountains =
 	}
 }
 
+cities.oasis =
+{
+	settlement = 
+	{
+		population = 50,
+		race = "oasis people"
+	},
+	graphics = 
+	{
+		sprite = {"city_strip", "oasis_city"}
+	}
+}
+
 
 provinces = {}
 
@@ -55,5 +68,15 @@ biomes.wasteland_biome =
 		priority = 1,
 		tile_movement_cost = 1,
 		tile_graphics = "wasteland"
+	}
+}
+biomes.desert_biome = 
+{
+	biome = 
+	{
+		name = "Desert",
+		priority = 1,
+		tile_movement_cost = 1,
+		tile_graphics = "desert"
 	}
 }

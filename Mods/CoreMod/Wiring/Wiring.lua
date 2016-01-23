@@ -176,7 +176,7 @@ random_points =
 	avatar_type = "CoreMod.RandomPointsOnTiles",
 	configs =
 	{
-		density = 1000
+		density = 100
 	},
 	inputs = 
 	{
@@ -244,6 +244,10 @@ cities_creator =
 				tags = { { "desert", -1 },  { "mountains", -1 }, { "plains", 1 } }
 			},
 			{ 
+				ref = "oasis",
+				tags = { { "desert", 1 },  { "mountains", -1 }, { "plains", 3 } }
+			},
+			{ 
 				ref = "mountains",
 				tags = { { "desert", -1 },  { "mountains", 2 }, {  "plains", -1 } }
 			}
@@ -301,8 +305,12 @@ biomes_creator =
 		replacers = 
 		{
 			{ 
+				ref = "desert_biome",
+				tags = { { "desert", 10 }, { "mountains", -1 } }
+			},
+			{ 
 				ref = "wasteland_biome",
-				tags = { { "desert", 1 },  { "mountains", 1 }, { "plains", 1 } }
+				tags = { { "plains", 1 } }
 			}
 		},
 		tags_namespace = "climate",
