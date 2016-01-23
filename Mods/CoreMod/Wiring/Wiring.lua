@@ -170,13 +170,31 @@ surface_extractor =
 	}
 }
 
+ocean_extractor =
+{
+
+
+	avatar_type = "CoreMod.ExtractSurfaceFromChunks",
+	configs =
+	{
+		target_surface = 0,
+		filter_less = 0
+	},
+	inputs =
+	{
+		main = { "continents_module", "chunks"}
+	}
+}
+
+
 random_points = 
 {
 
 	avatar_type = "CoreMod.RandomPointsOnTiles",
 	configs =
 	{
-		density = 1000
+		density = 50,
+		min_count = 1
 	},
 	inputs = 
 	{
@@ -285,11 +303,50 @@ regions_slots_creator =
 	avatar_type = "CoreMod.RegionsModule",
 	configs =
 	{
+		name = "Land",
 		density = 25
 	},
 	inputs =
 	{
 		main = { "surface_extractor", "extracted_chunks"}
+	}
+}
+
+ocean_slots_creator = 
+{
+	avatar_type = "CoreMod.RegionsModule",
+	configs =
+	{
+		name = "Ocean",
+		density = 1000
+	},
+	inputs =
+	{
+		main = { "ocean_extractor", "extracted_chunks"}
+	}
+}
+
+oceans_creator = 
+{
+	avatar_type = "CoreMod.SlotsReplacer",
+	configs =
+	{
+		replacers = 
+		{
+			{ 
+				ref = "ocean_biome",
+				tags = { { "ocean", 0 } }
+			}
+		},
+		tags_namespace = "climate",
+		replacers_namespace = "biomes"
+		
+	},
+	inputs = 
+	{
+		main = { "ocean_slots_creator", "main" },
+		available_tags = { "tags_collection", "tags"},
+		available_replacers = { "replacers_collection", "replacers"}
 	}
 }
 

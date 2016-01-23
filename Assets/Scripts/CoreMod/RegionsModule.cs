@@ -10,6 +10,8 @@ namespace CoreMod
 	{
 		[AConfig ("density")]
 		int density;
+		[AConfig ("name")]
+		string slotName;
 		System.Random random;
 		MapHandle map;
 		Deck<TileDirection> dirs;
@@ -29,7 +31,7 @@ namespace CoreMod
 				dirs = new Deck<TileDirection> (random, TileDirection.East, TileDirection.West, TileDirection.North, TileDirection.South,
 				                                TileDirection.NorthEast, TileDirection.NorthWest, TileDirection.SouthEast, TileDirection.SouthWest);
 
-
+			OutputObjects = new List<GameObject> ();
 			env = new int[map.SizeX, map.SizeY];
 			for (int i = 0; i < map.SizeX; i++)
 				for (int j = 0; j < map.SizeY; j++)
@@ -93,11 +95,11 @@ namespace CoreMod
 					break;
 			} while(updated);
 
-			OutputObjects = new List<GameObject> ();
 			foreach (var region in regions)
 			{
-				GameObject go = new GameObject ("Region " + region.ID);
+				GameObject go = new GameObject (slotName + " Region " + region.ID);
 				go.AddComponent<RegionSlot> ().Tiles = region.Tiles;
+				go.AddComponent<Slot> ();
 				OutputObjects.Add (go);
 			}
 		}
