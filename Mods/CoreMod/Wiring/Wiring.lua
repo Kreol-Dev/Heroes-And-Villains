@@ -12,7 +12,7 @@ base_module =
 			north_east = 0,
 			south_east = 0,
 			north_west = 1,
-			north_east = 1
+			south_west = 1
 		},
 		scale = 3
 	}

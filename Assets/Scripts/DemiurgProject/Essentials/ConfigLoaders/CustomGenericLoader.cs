@@ -38,6 +38,7 @@ namespace Demiurg.Essentials
 
 		public object Load (object fromObject, Type targetType, Demiurg.Core.ConfigLoaders loaders)
 		{
+			
 			ITable objectTable = fromObject as ITable;
 			object loadedObject = Activator.CreateInstance (targetType);
 			LoadTemplate template = null;

@@ -21,11 +21,13 @@ namespace CoreMod
 		class EdgeLevel
 		{
 			[AConfig (1)]
-			public float StartValue;
+			public float StartValue { get; set; }
+
 			[AConfig (2)]
-			public float EndValue;
+			public float EndValue { get; set; }
+
 			[AConfig (3)]
-			public float Value;
+			public float Value { get; set; }
 
 			public int EndTile;
 			public int StartTile;
@@ -34,13 +36,16 @@ namespace CoreMod
 		class CornerValues
 		{
 			[AConfig ("north_east")]
-			public float NEValue;
+			public float NEValue { get; set; }
+
 			[AConfig ("north_west")]
-			public float NWValue;
+			public float NWValue { get; set; }
+
 			[AConfig ("south_east")]
-			public float SEValue;
+			public float SEValue { get; set; }
+
 			[AConfig ("south_west")]
-			public float SWValue;
+			public float SWValue { get; set; }
 		}
 
 		[AOutput ("main")]
@@ -60,10 +65,58 @@ namespace CoreMod
 		[AConfig ("corners")]
 		CornerValues corners = new CornerValues ();
 
+		void SetRow (string message, bool horizontal, int fixedTile, List<EdgeLevel> levels, double[,] initValues)
+		{
+			int size = horizontal ? sizeX : sizeY;
+			EdgeLevel carriedLevel;
+			if (levels.Count > 0)
+			{
+				carriedLevel = levels [0];
+			
+				carriedLevel.StartTile = (int)(carriedLevel.StartValue * (float)size);
+				if (carriedLevel.StartTile == 0)
+					carriedLevel.StartTile = 1;
+				carriedLevel.EndTile = (int)(carriedLevel.EndValue * (float)size);
+				for (int i = 1; i < levels.Count; i++)
+				{
+					EdgeLevel level = levels [i];
+					level.StartTile = (int)(level.StartValue * (float)size);
+					level.EndTile = (int)(level.EndValue * (float)size);
+					if (level.StartTile == carriedLevel.EndTile)
+						level.StartTile = carriedLevel.EndTile + 1;
+					carriedLevel = level;
+				}
+			}
+
+			if (horizontal)
+			{
+				foreach (var level in levels)
+				{
+					level.Value = level.Value * 2 - 1;
+					Debug.LogWarningFormat (" {3} LEVEL {4} {5} | {0} {1} -> {2}", level.StartTile, level.EndTile, level.Value, message, level.StartValue, level.EndValue);
+					for (int tile = level.StartTile; tile < level.EndTile; tile++)
+						initValues [tile, fixedTile] = level.Value;
+				}
+			} else
+			{
+				foreach (var level in levels)
+				{
+					level.Value = level.Value * 2 - 1;
+					Debug.LogWarningFormat (" {3} LEVEL {4} {5} | {0} {1} -> {2}", level.StartTile, level.EndTile, level.Value, message, level.StartValue, level.EndValue);
+					for (int tile = level.StartTile; tile < level.EndTile; tile++)
+						initValues [fixedTile, tile] = level.Value;
+				}
+			}
+
+		}
+
+		int sizeX;
+		int sizeY;
+
 		public override void Work ()
 		{ 
-			int sizeX = Find.Root<TilesRoot> ().MapHandle.SizeX;
-			int sizeY = Find.Root<TilesRoot> ().MapHandle.SizeY;
+			sizeX = Find.Root<TilesRoot> ().MapHandle.SizeX;
+			sizeY = Find.Root<TilesRoot> ().MapHandle.SizeY;
 			double[,] initValues = new double[sizeX, sizeY];
 
 			for (int y = 0; y < sizeY; y += 1)
@@ -72,96 +125,10 @@ namespace CoreMod
 					initValues [x, y] = Random.NextDouble () * 2.0 - 1.0;
 				}
 			#region levelsCopyPaste
-			EdgeLevel carriedLevel;
-			if (southLevels.Count > 0)
-			{
-				carriedLevel = southLevels [0];
-				carriedLevel.StartTile = (int)(carriedLevel.StartValue * sizeX);
-				if (carriedLevel.StartTile == 0)
-					carriedLevel.StartTile = 1;
-				carriedLevel.EndTile = (int)(carriedLevel.StartValue * sizeX);
-				for (int tileX = carriedLevel.StartTile; tileX < carriedLevel.EndTile; tileX++)
-					initValues [tileX, 0] = carriedLevel.Value;
-				for (int i = 1; i < southLevels.Count; i++)
-				{
-					southLevels [i].StartTile = (int)(southLevels [i].StartValue * sizeX);
-					southLevels [i].EndTile = (int)(southLevels [i].StartValue * sizeX);
-					if (southLevels [i].StartTile == carriedLevel.EndTile)
-						southLevels [i].StartTile = carriedLevel.EndTile + 1;
-					carriedLevel = southLevels [i];
-					for (int tileX = carriedLevel.StartTile; tileX < carriedLevel.EndTile; tileX++)
-						initValues [tileX, 0] = carriedLevel.Value;
-				}
-			}
-
-
-			if (northLevels.Count > 0)
-			{
-				carriedLevel = northLevels [0];
-				carriedLevel.StartTile = (int)(carriedLevel.StartValue * sizeX);
-				if (carriedLevel.StartTile == 0)
-					carriedLevel.StartTile = 1;
-				carriedLevel.EndTile = (int)(carriedLevel.StartValue * sizeX);
-				for (int tileX = carriedLevel.StartTile; tileX < carriedLevel.EndTile; tileX++)
-					initValues [tileX, sizeY - 1] = carriedLevel.Value;
-				for (int i = 1; i < northLevels.Count; i++)
-				{
-					northLevels [i].StartTile = (int)(northLevels [i].StartValue * sizeX);
-					northLevels [i].EndTile = (int)(northLevels [i].StartValue * sizeX);
-					if (northLevels [i].StartTile == carriedLevel.EndTile)
-						northLevels [i].StartTile = carriedLevel.EndTile + 1;
-					carriedLevel = northLevels [i];
-					for (int tileX = carriedLevel.StartTile; tileX < carriedLevel.EndTile; tileX++)
-						initValues [tileX, sizeY - 1] = carriedLevel.Value;
-				}
-			}
-
-
-			if (westLevels.Count > 0)
-			{
-				carriedLevel = westLevels [0];
-				carriedLevel.StartTile = (int)(carriedLevel.StartValue * sizeX);
-				if (carriedLevel.StartTile == 0)
-					carriedLevel.StartTile = 1;
-				carriedLevel.EndTile = (int)(carriedLevel.StartValue * sizeX);
-				for (int tileY = carriedLevel.StartTile; tileY < carriedLevel.EndTile; tileY++)
-					initValues [0, tileY] = carriedLevel.Value;
-				for (int i = 1; i < westLevels.Count; i++)
-				{
-					westLevels [i].StartTile = (int)(westLevels [i].StartValue * sizeX);
-					if (carriedLevel.StartTile == 0)
-						carriedLevel.StartTile = 1;
-					westLevels [i].EndTile = (int)(westLevels [i].StartValue * sizeX);
-					if (westLevels [i].StartTile == carriedLevel.EndTile)
-						westLevels [i].StartTile = carriedLevel.EndTile + 1;
-					carriedLevel = westLevels [i];
-					for (int tileY = carriedLevel.StartTile; tileY < carriedLevel.EndTile; tileY++)
-						initValues [0, tileY] = carriedLevel.Value;
-				}
-			}
-
-
-			if (eastLevels.Count > 0)
-			{
-				carriedLevel = eastLevels [0];
-				carriedLevel.StartTile = (int)(carriedLevel.StartValue * sizeX);
-				if (carriedLevel.StartTile == 0)
-					carriedLevel.StartTile = 1;
-				carriedLevel.EndTile = (int)(carriedLevel.StartValue * sizeX);
-				for (int tileY = carriedLevel.StartTile; tileY < carriedLevel.EndTile; tileY++)
-					initValues [sizeX - 1, tileY] = carriedLevel.Value;
-				for (int i = 1; i < eastLevels.Count; i++)
-				{
-					eastLevels [i].StartTile = (int)(eastLevels [i].StartValue * sizeX);
-					eastLevels [i].EndTile = (int)(eastLevels [i].StartValue * sizeX);
-					if (eastLevels [i].StartTile == carriedLevel.EndTile)
-						eastLevels [i].StartTile = carriedLevel.EndTile + 1;
-					carriedLevel = eastLevels [i];
-					for (int tileY = carriedLevel.StartTile; tileY < carriedLevel.EndTile; tileY++)
-						initValues [sizeX - 1, tileY] = carriedLevel.Value;
-				}
-			}
-
+			SetRow ("SOUTH", true, 0, southLevels, initValues);
+			SetRow ("NORTH", true, sizeY - 1, northLevels, initValues);
+			SetRow ("WEST", false, 0, westLevels, initValues);
+			SetRow ("EAST", false, sizeX - 1, eastLevels, initValues);
 			#endregion
 			if (corners.NEValue >= 0)
 				initValues [sizeX - 1, 0] = corners.NEValue;
@@ -184,13 +151,20 @@ namespace CoreMod
 			int height;
 			int width;
 			System.Random rand;
+			double[,] initValues;
 
 			public DiamondSquare (double[,] initValues, int featuresize, int seed)
 			{
 				rand = new System.Random (seed);
 				this.height = initValues.GetLength (1);
 				this.width = initValues.GetLength (0);
-				values = new double[width * height];
+				this.initValues = initValues;
+				values = new double[height * width];
+				for (int y = 0; y < height; y += 1)
+					for (int x = 0; x < width; x += 1)
+					{
+						SetSample (x, y, initValues [x, y]);
+					}
 				this.featuresize = featuresize;
 				
 				int samplesize = featuresize;
@@ -274,15 +248,27 @@ namespace CoreMod
 
 			double GetSample (int x, int y)
 			{
-				
+				bool edge = false;
 				if (x >= width)
+				{
+					edge = true;
 					x = width - 1;
-				else if (x < 0)
+				} else if (x < 0)
+				{
+					edge = true;
 					x = 0;
+				}
 				if (y >= height)
+				{
+					edge = true;
 					y = height - 1;
-				else if (y < 0)
+				} else if (y < 0)
+				{
+					edge = true;
 					y = 0;
+				}
+				if (edge)
+					return initValues [x, y];
 				return values [x + y * width];
 			}
 
