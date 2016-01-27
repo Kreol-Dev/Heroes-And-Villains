@@ -14,20 +14,13 @@ namespace MapRoot
 
 		public delegate void HitDelegate (Transform hitTransform, Vector3 hitPoint);
 
-		public event HitDelegate ObjectHover;
-		public event HitDelegate EndObjectHover;
-		public event HitDelegate ObjectHighlight;
-		public event HitDelegate EndObjectHighlight;
-		public event HitDelegate ObjectClick;
-		public event HitDelegate EndObjectClick;
 
 		MapRoot.Map map;
 		InputManager manager;
 		HitsGetter hitsGetter;
-		ObjectHit currentHover;
-		ObjectHit lastHover;
 
-		int hoverObjectID = 0;
+
+
 
 		protected override void CustomSetup ()
 		{
@@ -45,181 +38,126 @@ namespace MapRoot
 
 		protected override void PreSetup ()
 		{
-			ObjectHover += (obj, pos) => {
-			};
-			EndObjectHover += (obj, pos) => {
-			};
-			ObjectHighlight += (obj, pos) => {
-			};
-			EndObjectHighlight += (obj, pos) => {
-			};
-			ObjectClick += (obj, pos) => {
-			};
-			EndObjectClick += (obj, pos) => {
-			};
+		}
+
+
+		void Update ()
+		{
+			foreach (var interactor in interactors)
+				interactor.Value.Interactor.OnUpdate ();
 		}
 
 
 
+		public int currentTargetID = 0;
+		ObjectHit currentTarget;
+		ObjectHit lastTarget;
 
-		public struct ObjectHit
+		void SwitchCurrentTargetTo (ObjectHit hit, int currentObjectID)
 		{
-			public Transform Transform { get; internal set; }
-
-			public Vector3 Position { get; internal set; }
-
-			public ObjectHit (Transform transform, Vector3 position)
-			{
-				Transform = transform;
-				Position = position;
-			}
+			if (currentTarget.Transform != null)
+				lastTarget = currentTarget;
+			currentTarget = hit;
+			currentTargetID = currentObjectID;
 		}
 
-		public class HitsGetter
+
+		void TrySwitchToTarget (ObjectHit target, int objectHitsCount, ObjectHit[] objectHits)
 		{
-			MapInteractor interactor;
-
-			public HitsGetter (MapInteractor interactor)
+			ObjectHit newTargetHit = new ObjectHit (null, Vector3.zero, null);
+			int targetID = 0;
+			for (int i = 0; i < objectHitsCount; i++)
 			{
-				this.interactor = interactor;
-			}
 
-			RaycastHit[] hits = new RaycastHit[10];
-			ObjectHit[] objectHits = new ObjectHit[10];
+				if (objectHits [i].Interactor.OnHover (objectHits [i].Transform, objectHits [i].Position))
+				{
+					if (newTargetHit.Transform == null)
+					{
+						newTargetHit = objectHits [i];
+						targetID = i;
+					}
 
-			public ObjectHit[] ObjectHits { get { return objectHits; } }
+					if (newTargetHit.Interactor != target.Interactor && objectHits [i].Interactor == target.Interactor)
+					{
+						newTargetHit = objectHits [i];
+						targetID = i;
+					}
 
-			public int ObjectHitsCount { get { return objectHitsCount; } }
-
-			int objectHitsCount = 0;
-
-			public int GetHits (Vector2 screenPoint, out ObjectHit[] providedHits)
-			{
-				objectHitsCount = 0;
-				Ray ray = Camera.main.ScreenPointToRay (screenPoint);
-				int collidersCount = Physics.RaycastNonAlloc (ray, hits, 30);
-				if (collidersCount >= hits.Length) {
-					hits = new RaycastHit[collidersCount + 10];
-					objectHits = new ObjectHit[collidersCount + 10];
-					collidersCount = Physics.RaycastNonAlloc (ray, hits, 30);
-				}
-				for (int i = 0; i < collidersCount; i++) {
-					LayerHandle handle = hits [i].transform.gameObject.GetComponent<LayerHandle> ();
-					if (handle == null)
-						continue;
-					if (interactor.GetLayerState (handle.Layer) == InteractorState.Active) {
-                        
-						objectHits [objectHitsCount++] = new ObjectHit (hits [i].transform, hits [i].point);
+					if (objectHits [i].Transform == target.Transform && objectHits [i].Interactor == target.Interactor)
+					{
+						newTargetHit = objectHits [i];
+						targetID = i;
 					}
 				}
-				providedHits = objectHits;
-				return objectHitsCount;
-			}
-		}
 
+					
+
+			}
+			SwitchCurrentTargetTo (newTargetHit, targetID);
+		}
 
 		void OnRawHover (Vector2 screenPoint)
 		{
 			ObjectHit[] objectHits = null;
 			int objectHitsCount = hitsGetter.GetHits (screenPoint, out objectHits);
-
-
-			int hoverObjectID = 0;
-			if (objectHitsCount == 0) {
-				if (currentHover.Transform == null)
-					return;
-				EndObjectHover (currentHover.Transform, currentHover.Position);
-				lastHover = currentHover;
-				currentHover.Transform = null;
+			if (objectHitsCount == 0)
+			{
+				SwitchCurrentTargetTo (new ObjectHit (null, Vector3.zero, null), -1);
 				return;
 			}
 
-			if (lastHover.Transform == null) {
-				Hover (objectHits [0].Transform, objectHits [0].Position);
-				this.hoverObjectID = 0;
-				lastHover = currentHover;
+			if (currentTarget.Transform == null)
+			{
+				if (lastTarget.Transform != null)
+				{
+					TrySwitchToTarget (lastTarget, objectHitsCount, objectHits);
+				} else
+				{
+					SwitchCurrentTargetTo (objectHits [0], 0);
+				}
 				return;
 			}
 
-
-			ObjectHit tempHit = new ObjectHit () {
-				Transform = null,
-				Position = Vector3.zero
-			};
-			for (int i = 0; i < objectHitsCount; i++) {
-				if (tempHit.Transform == null) {
-					tempHit = objectHits [i];
-					hoverObjectID = i;
-				}
-				if (objectHits [i].Transform == currentHover.Transform) {
-
-					this.hoverObjectID = i;
-					currentHover.Position = objectHits [i].Position;
-					Hover (currentHover.Transform, currentHover.Position);
-					return;
-				}
-			}
-			currentHover = tempHit;
-			this.hoverObjectID = hoverObjectID;
-			if (currentHover.Transform != null)
-				Hover (currentHover.Transform, currentHover.Position);
+			TrySwitchToTarget (currentTarget, objectHitsCount, objectHits);
 
 		}
 
-		void Hover (Transform transform, Vector3 point)
-		{
-			if (currentHover.Transform != null) {
-				lastHover = currentHover;
-				EndObjectHover (lastHover.Transform, lastHover.Position);
-			}
-			currentHover.Transform = transform;
-			currentHover.Position = point;
-			ObjectHover (currentHover.Transform, currentHover.Position);
-
-		}
 
 		void OnRawWheel (WheelScrollDir dir)
 		{
+			Debug.Log (dir);
 			if (hitsGetter.ObjectHitsCount > 1)
-				switch (dir) {
+			{
+				switch (dir)
+				{
 				case WheelScrollDir.Up:
-					hoverObjectID++;
-					hoverObjectID %= hitsGetter.ObjectHitsCount;
-					Hover (hitsGetter.ObjectHits [hoverObjectID].Transform, hitsGetter.ObjectHits [hoverObjectID].Position);
+					currentTargetID++;
+					currentTargetID %= hitsGetter.ObjectHitsCount;
 					break;
 				case WheelScrollDir.Down:
-					hoverObjectID--;
-					if (hoverObjectID < 0)
-						hoverObjectID = hitsGetter.ObjectHitsCount - hoverObjectID;
-					Hover (hitsGetter.ObjectHits [hoverObjectID].Transform, hitsGetter.ObjectHits [hoverObjectID].Position);
+					currentTargetID--;
+					if (currentTargetID < 0)
+						currentTargetID = hitsGetter.ObjectHitsCount + currentTargetID;
 					break;
 				}
+				SwitchCurrentTargetTo (hitsGetter.ObjectHits [currentTargetID], currentTargetID);
+			}
+				
 		}
 
 		void OnRightClick (Vector2 point)
 		{
-			if (selectedObject.Transform != null) {
-
-				EndObjectClick (selectedObject.Transform, selectedObject.Position);
-				selectedObject.Transform = null;
-			}
+			if (currentTarget.Interactor != null && currentTarget.Transform != null)
+				currentTarget.Interactor.OnAltClick (currentTarget.Transform, currentTarget.Position);
 		}
 
 		ObjectHit selectedObject;
 
 		void OnRawClick (Vector2 screenPoint)
 		{
-			Debug.LogFormat ("MAP INTERACTOR CLICK {0}", screenPoint);
-			if (currentHover.Transform == null) {
-				if (selectedObject.Transform != null)
-					EndObjectClick (selectedObject.Transform, selectedObject.Position);
-				return;
-			}
-
-			if (selectedObject.Transform != null)
-				EndObjectClick (selectedObject.Transform, selectedObject.Position);
-			selectedObject = currentHover;
-			ObjectClick (selectedObject.Transform, selectedObject.Position);
+			
+			if (currentTarget.Interactor != null && currentTarget.Transform != null)
+				currentTarget.Interactor.OnClick (currentTarget.Transform, currentTarget.Position);
 		}
 
 		class InteractorBinding
@@ -228,10 +166,7 @@ namespace MapRoot
 
 			public InteractorState State {
 				get { return state; }
-				internal set {
-					state = value;
-					Interactor.ChangeState (state);
-				}
+				internal set{ state = value; }
 			}
 
 			public IMapLayerInteractor Interactor { get; internal set; }
@@ -251,7 +186,8 @@ namespace MapRoot
 			InteractorBinding interactor;
 			if (interactors.TryGetValue (layer, out interactor))
 				return interactor.State;
-			else {
+			else
+			{
 				scribe.LogFormatWarning ("Can't get state of a layer interactor {0} ({1}) - it isn't registered in a states dictionary", layer, layer.GetType ());
 				return InteractorState.NotActive;
 			}
@@ -261,7 +197,8 @@ namespace MapRoot
 		{
 			InteractorBinding binding = null;
 			interactors.TryGetValue (layer, out binding);
-			if (binding == null) {
+			if (binding == null)
+			{
 				scribe.LogFormatWarning ("No such layer {0}. Interactor state won't be changed", layer.Name);
 				return;
 			}
@@ -273,7 +210,8 @@ namespace MapRoot
 			InteractorBinding interactor;
 			if (interactors.TryGetValue (layer, out interactor))
 				return interactor.Interactor;
-			else {
+			else
+			{
 				scribe.LogFormatWarning ("Can't get interactor {0} ({1}) - it isn't registered in interactors dictionary", layer, layer.GetType ());
 				return null;
 			}
@@ -282,17 +220,20 @@ namespace MapRoot
 		void ReadInteractors (string[] layerNames)
 		{
 			ITable table = Find.Root<ModsManager> ().GetTable ("interactors");
-			foreach (var layerName in layerNames) {
+			foreach (var layerName in layerNames)
+			{
 				string interactorName = layerName + "_interactor";
 				ITable interactorTable = table.Get (interactorName) as ITable;
-				if (interactorTable == null) {
+				if (interactorTable == null)
+				{
 					scribe.LogFormatWarning ("Can't find table named {0}", interactorName);
 					continue;
 				}
 				string interactorTypeName = (string)interactorTable.Get (1);
 				Type interactorType = Type.GetType (interactorTypeName);
 				IMapLayerInteractor interactor = Activator.CreateInstance (interactorType) as IMapLayerInteractor;
-				if (interactor == null) {
+				if (interactor == null)
+				{
 					scribe.LogFormatWarning ("Interactor with the name {0} and type {1} doesn't inherit IMapLayerInteractor, while it should", interactorName, interactorTypeName);
 					continue;
 				}
@@ -305,21 +246,6 @@ namespace MapRoot
 			}
 		}
 
-		void OnDrawGizmos ()
-		{
-			Gizmos.color = Color.yellow;
-			for (int i = 0; i < hitsGetter.ObjectHitsCount; i++) {
-                
-				Gizmos.DrawSphere (hitsGetter.ObjectHits [i].Position, 0.2f);
-			}
-
-			Gizmos.color = Color.red;
-			if (selectedObject.Transform != null)
-				Gizmos.DrawSphere (selectedObject.Position, 0.3f);
-			Gizmos.color = Color.blue;
-			if (currentHover.Transform != null)
-				Gizmos.DrawSphere (currentHover.Position, 0.35f);
-		}
 	}
 
 	public enum InteractorState

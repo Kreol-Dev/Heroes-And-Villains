@@ -208,16 +208,16 @@ namespace CoreMod
 
 		}
 
-		public override int GetHashCode ()
-		{
-			unchecked
-			{         
-				int hash = 27;
-				hash = (13 * hash) + X.GetHashCode ();
-				hash = (13 * hash) + Y.GetHashCode ();
-				return hash;
-			}
-		}
+		//		public override int GetHashCode ()
+		//		{
+		//			unchecked
+		//			{
+		//				int hash = 27;
+		//				hash = (13 * hash) + X.GetHashCode ();
+		//				hash = (13 * hash) + Y.GetHashCode ();
+		//				return hash;
+		//			}
+		//		}
 
 	}
 }

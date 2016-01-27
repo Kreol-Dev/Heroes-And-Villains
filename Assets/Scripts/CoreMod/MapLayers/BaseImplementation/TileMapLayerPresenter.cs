@@ -16,16 +16,16 @@ namespace CoreMod
 			switch (state)
 			{
 			case RepresenterState.Active:
-				Interactor.TileClicked += Clicked;
-				Interactor.TileDeClicked += DeClicked;
+				Interactor.TileSelected += Clicked;
+				Interactor.TileDeselected += DeClicked;
 				Interactor.TileHovered += Hovered;
 				Interactor.TileDeHovered += DeHovered;
 				Layer.MassUpdate.AddListener (ObjectPresenter.Update);
 				Layer.TileUpdated.AddListener (TileUpdated);
 				break;
 			case RepresenterState.NotActive:
-				Interactor.TileClicked -= Clicked;
-				Interactor.TileDeClicked -= DeClicked;
+				Interactor.TileSelected -= Clicked;
+				Interactor.TileDeselected -= DeClicked;
 				Interactor.TileHovered -= Hovered;
 				Interactor.TileDeHovered -= DeHovered;
 				Layer.MassUpdate.RemoveListener (ObjectPresenter.Update);
@@ -38,33 +38,28 @@ namespace CoreMod
 
 		void Clicked (TileHandle tile, TLayerObject obj)
 		{
-			if (selectedTiles.Add (tile))
-				ObjectPresenter.ShowObjectDesc (ObjectFromLayer (obj));
+			ObjectPresenter.ShowObjectDesc (ObjectFromLayer (obj));
 		}
 
 		void DeClicked (TileHandle tile, TLayerObject obj)
 		{
-			if (selectedTiles.Remove (tile))
-				ObjectPresenter.HideObjectDesc (ObjectFromLayer (obj));
+			ObjectPresenter.HideObjectDesc ();
 		}
 
 		void Hovered (TileHandle tile, TLayerObject obj)
 		{
-			if (hoveredTiles.Add (tile))
-				ObjectPresenter.ShowObjectShortDesc (ObjectFromLayer (obj));
+			ObjectPresenter.ShowObjectShortDesc (ObjectFromLayer (obj));
 		}
 
 		void DeHovered (TileHandle tile, TLayerObject obj)
 		{
-			if (hoveredTiles.Remove (tile))
-				ObjectPresenter.HideObjectShortDesc (ObjectFromLayer (obj));
+			ObjectPresenter.HideObjectShortDesc ();
 		}
 
 		void TileUpdated (TileHandle tile, TLayerObject obj)
 		{
             
-			if (selectedTiles.Contains (tile) || hoveredTiles.Contains (tile))
-				ObjectPresenter.Update ();
+			ObjectPresenter.Update ();
 		}
 
 	}

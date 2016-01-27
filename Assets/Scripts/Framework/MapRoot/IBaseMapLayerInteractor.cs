@@ -4,80 +4,54 @@ using Demiurg.Core.Extensions;
 
 namespace MapRoot
 {
-    public interface IMapLayerInteractor
-    {
-        void Setup (IMapLayer layer, InteractorState defaultState);
+	public interface IMapLayerInteractor
+	{
+		void Setup (IMapLayer layer, InteractorState defaultState);
 
-        void ChangeState (InteractorState newState);
-    }
+		bool OnHover (Transform target, Vector3 point);
 
-    public abstract class BaseMapLayerInteractor<TLayer> : IMapLayerInteractor where TLayer : class, IMapLayer
-    {
-        protected Scribe Scribe = Scribes.Find ("INTERACTORS");
-        TLayer layer;
+		bool OnClick (Transform target, Vector3 point);
 
-        protected TLayer Layer { get { return layer; } }
+		void OnAltClick (Transform target, Vector3 point);
 
-        public void ChangeState (InteractorState newState)
-        {
-            if (layer == null)
-                return;
-            switch (newState)
-            {
-            case InteractorState.NotActive:
+		void OnUpdate ();
+	}
 
-                mapInteractor.ObjectHover -= OnHover;
-                mapInteractor.EndObjectHover -= OnEndHover;
-                mapInteractor.ObjectClick -= OnClick;
-                mapInteractor.EndObjectClick -= OnEndClick;
-                mapInteractor.ObjectHighlight -= OnHighlight;
-                mapInteractor.EndObjectHighlight -= OnEndHighlight;
-                break;
-            case InteractorState.Active:
+	public abstract class BaseMapLayerInteractor<TLayer> : IMapLayerInteractor where TLayer : class, IMapLayer
+	{
 
-                mapInteractor.ObjectHover += OnHover;
-                mapInteractor.EndObjectHover += OnEndHover;
-                mapInteractor.ObjectClick += OnClick;
-                mapInteractor.EndObjectClick += OnEndClick;
-                mapInteractor.ObjectHighlight += OnHighlight;
-                mapInteractor.EndObjectHighlight += OnEndHighlight;
-                break;
-            }
-        }
+		protected Scribe Scribe = Scribes.Find ("INTERACTORS");
+		TLayer layer;
 
-        MapInteractor mapInteractor;
+		protected TLayer Layer { get { return layer; } }
 
-        public void Setup (IMapLayer layer, InteractorState defaultState)
-        {
+		MapInteractor mapInteractor;
 
-            Scribe.LogFormat ("Interactor {0} start working with a layer {1}", this.GetType (), layer.Name);
-            this.layer = layer as TLayer;
-            if (this.layer == null)
-            {
-                Scribe.LogFormatError ("Interactor doesn't match layer provided: interactor type is {0} while layer {1}", this.GetType (), layer.GetType ());
-                return;
-            }
-            mapInteractor = Find.Root<MapInteractor> ();
-            ChangeState (defaultState);
-            ITable table = Find.Root<ModsManager> ().GetTable ("defines");
-            if (table != null)
-                this.Setup (table);
-        }
+		public void Setup (IMapLayer layer, InteractorState defaultState)
+		{
 
-        protected abstract void Setup (ITable definesTable);
+			Scribe.LogFormat ("Interactor {0} start working with a layer {1}", this.GetType (), layer.Name);
+			this.layer = layer as TLayer;
+			if (this.layer == null)
+			{
+				Scribe.LogFormatError ("Interactor doesn't match layer provided: interactor type is {0} while layer {1}", this.GetType (), layer.GetType ());
+				return;
+			}
+			mapInteractor = Find.Root<MapInteractor> ();
+			ITable table = Find.Root<ModsManager> ().GetTable ("defines");
+			if (table != null)
+				this.Setup (table);
+		}
 
-        protected abstract void OnHover (Transform obj, Vector3 point);
+		protected abstract void Setup (ITable definesTable);
 
-        protected abstract void OnEndHover (Transform obj, Vector3 point);
+		public abstract bool OnHover (Transform obj, Vector3 point);
 
-        protected abstract void OnClick (Transform obj, Vector3 point);
+		public abstract bool OnClick (Transform obj, Vector3 point);
 
-        protected abstract void OnEndClick (Transform obj, Vector3 point);
+		public abstract void OnAltClick (Transform obj, Vector3 point);
 
-        protected abstract void OnHighlight (Transform obj, Vector3 point);
-
-        protected abstract void OnEndHighlight (Transform obj, Vector3 point);
-
-    }
+		public abstract void OnUpdate ();
+	}
 }
 

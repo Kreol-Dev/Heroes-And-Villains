@@ -2,101 +2,91 @@
 using System.Collections;
 using MapRoot;
 using Demiurg.Core.Extensions;
+using System.Collections.Generic;
+using System.Text;
 
 namespace CoreMod
 {
 	public abstract class TileMapLayerInteractor<TObject, TLayerObject, TLayer> : BaseMapLayerInteractor<TLayer>, 
     ITileMapInteractor<TObject, TLayerObject, TLayer> where TLayer : class, IMapLayer, ITileMapLayer<TLayerObject>
 	{
-		public event TileDelegate<TObject> TileClicked;
+		public event TileDelegate<TObject> TileSelected;
 
-		public event TileDelegate<TObject> TileDeClicked;
-
-		public event TileDelegate<TObject> TileRightClicked;
-
-		public event TileDelegate<TObject> TileDeRightClicked;
-
-		public event TileDelegate<TObject> TileHighlighted;
-
-		public event TileDelegate<TObject> TileDeHighlighted;
+		public event TileDelegate<TObject> TileDeselected;
 
 		public event TileDelegate<TObject> TileHovered;
 
 		public event TileDelegate<TObject> TileDeHovered;
 
-		struct Tile
-		{
-			public TObject Content;
-			public TileHandle Handle;
-		}
+
+		TileHandle hoveredTile;
+		TObject hoveredObject;
+		TObject selectedObject;
+		TileHandle lastSelectedTile;
+
 
 		public abstract bool ObjectFromLayerObject (TLayerObject obj, out TObject outObject);
 
 		TilesRoot tilesRoot;
 
-		bool FindTile (Vector3 point, out Tile tile)
+
+		public override bool OnHover (Transform obj, Vector3 point)
 		{
-			tile = new Tile ();
-			tile.Handle = tilesRoot.MapHandle.GetHandle (point);
-			return ObjectFromLayerObject (tile.Handle.Get<TLayerObject> (Layer.Tiles), out tile.Content);
+			TileHandle handle = tilesRoot.MapHandle.GetHandle (point);
+			if (handle != hoveredTile)
+			{
+				TObject tileContent;
+
+				if (hoveredTile != null && hoveredObject != null)
+					TileDeHovered (hoveredTile, hoveredObject);
+
+				hoveredTile = handle;
+				if (!ObjectFromLayerObject (handle.Get (Layer.Tiles), out tileContent))
+				{
+					hoveredObject = default(TObject);
+					return false;
+				}
+					
+				TileHovered (handle, tileContent);
+				hoveredObject = tileContent;
+			}
+
+			return true;
 		}
 
-		protected override void OnHover (Transform obj, Vector3 point)
+
+		public override bool OnClick (Transform obj, Vector3 point)
 		{
-			Tile tile;
-			if (!FindTile (point, out tile))
-				return;
-			if (TileHovered != null)
-				TileHovered (tile.Handle, tile.Content);
+			TileHandle handle = tilesRoot.MapHandle.GetHandle (point);
+			TObject tileContent;
+
+			if (lastSelectedTile != null)
+				TileDeselected (lastSelectedTile, selectedObject);
+
+			if (!ObjectFromLayerObject (handle.Get (Layer.Tiles), out tileContent))
+				return false;
+			TileSelected (handle, tileContent);
+			lastSelectedTile = handle;
+			selectedObject = tileContent;
+			return true;
 		}
 
-		protected override void OnEndHover (Transform obj, Vector3 point)
+		public override void OnAltClick (Transform obj, Vector3 point)
 		{
-			Tile tile;
-			if (!FindTile (point, out tile))
-				return;
-			if (TileDeHovered != null)
-				TileDeHovered (tile.Handle, tile.Content);
+			TileDeselected (lastSelectedTile, selectedObject);
+			lastSelectedTile = null;
+
 		}
 
-		protected override void OnClick (Transform obj, Vector3 point)
+		public override void OnUpdate ()
 		{
-			Tile tile;
-			if (!FindTile (point, out tile))
-				return;
-			if (TileClicked != null)
-				TileClicked (tile.Handle, tile.Content);
+			
 		}
 
-		protected override void OnEndClick (Transform obj, Vector3 point)
-		{
-			Tile tile;
-			if (!FindTile (point, out tile))
-				return;
-			if (TileDeClicked != null)
-				TileDeClicked (tile.Handle, tile.Content);
-		}
-
-		protected override void OnHighlight (Transform obj, Vector3 point)
-		{
-			Tile tile;
-			if (!FindTile (point, out tile))
-				return;
-			if (TileHighlighted != null)
-				TileHighlighted (tile.Handle, tile.Content);
-		}
-
-		protected override void OnEndHighlight (Transform obj, Vector3 point)
-		{
-			Tile tile;
-			if (!FindTile (point, out tile))
-				return;
-			if (TileDeHighlighted != null)
-				TileDeHighlighted (tile.Handle, tile.Content);
-		}
 
 		protected override void Setup (ITable definesTable)
 		{
+			
 			tilesRoot = Find.Root<TilesRoot> ();
 			GameObject go = GameObject.Find ("MapCollider");
 			LayerHandle handle = go.AddComponent<LayerHandle> ();

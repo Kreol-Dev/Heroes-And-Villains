@@ -114,27 +114,31 @@ namespace CoreMod
 
 		public override void ShowObjectDesc (Settlement obj)
 		{
+			Debug.LogWarning ("SHOW CLICK");
 			selectPanelGO.SetActive (true);
 			image.sprite = obj.Race;
 			selectText.text = obj.Population.ToString ();
 			selectObj = obj;
 		}
 
-		public override void HideObjectDesc (Settlement obj)
+		public override void HideObjectDesc ()
 		{
+			Debug.LogWarning ("HIDE CLICK");
 			selectPanelGO.SetActive (false);
 			selectObj = null;
 		}
 
 		public override void ShowObjectShortDesc (Settlement obj)
 		{
+			Debug.LogWarning ("SHOW HOVER");
 			hoverPanelGO.SetActive (true);
 			hoverText.text = obj.name;
 			hoverObj = obj;
 		}
 
-		public override void HideObjectShortDesc (Settlement obj)
+		public override void HideObjectShortDesc ()
 		{
+			Debug.LogWarning ("HIDE HOVER");
 			hoverPanelGO.SetActive (false);
 			hoverObj = null;
 		}
