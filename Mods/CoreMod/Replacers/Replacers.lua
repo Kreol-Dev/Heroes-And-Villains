@@ -59,3 +59,17 @@ provinces.basic_province =
 	province = {}
 }
 
+encounters = {}
+
+encounters.easy_encounter = 
+{
+	encounter = 
+	{
+		description = "easy_encounter",
+		danger = 10
+	},
+	graphics =
+	{
+		sprite = {"city_strip","encounter"}
+	}
+}

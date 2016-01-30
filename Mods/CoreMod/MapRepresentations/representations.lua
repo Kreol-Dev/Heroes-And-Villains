@@ -6,5 +6,7 @@ graphics_layer_representations =
 
 static_go_layer_representations =
 {
-	settlement = { "CoreMod.GORenderer", "CoreMod.SettlementLayerPresenter", "CoreMod.SettlementPresenter", "Active"}
+	settlement = { "CoreMod.GORenderer", "CoreMod.SettlementLayerPresenter", "CoreMod.SettlementPresenter", "Active"},
+	encounter = { "CoreMod.GORenderer", "CoreMod.EncounterLayerPresenter", "CoreMod.EncounterPresenter", "Active"}
 }
+

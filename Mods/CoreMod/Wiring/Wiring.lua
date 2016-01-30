@@ -203,9 +203,6 @@ random_points =
 }
 
 
-
-
-
 cities_placer =
 {
 	avatar_type = "CoreMod.SlotsPlacer",
@@ -397,6 +394,52 @@ biomes_creator =
 	inputs = 
 	{
 		main = { "regions_climate_tags", "main" },
+		available_tags = { "tags_collection", "tags"},
+		available_replacers = { "replacers_collection", "replacers"}
+	}
+}
+
+encounter_points = 
+{
+	avatar_type = "CoreMod.RandomPointsOnTiles",
+	configs = 
+	{
+		density = 20,
+		min_count = 0 
+	},
+	inputs =
+	{
+		main = { "surface_extractor", "main" }
+	}
+}
+
+encounter_placer =
+{
+	avatar_type = "CoreMod.SlotsPlacer",
+	inputs = 
+	{
+		points = {"encounter_points", "main"}
+	}
+}
+
+encounter_creator =
+{
+	avatar_type = "CoreMod.SlotsReplacer",
+	configs =
+	{
+		replacers =
+		{
+			{
+				ref = "easy_encounter",
+				tags = {}
+			}
+		},
+		tags_namespace = "",
+		replacers_namespace = "encounters"
+	},
+	inputs = 
+	{
+		main = { "encounter_placer", "slots" },
 		available_tags = { "tags_collection", "tags"},
 		available_replacers = { "replacers_collection", "replacers"}
 	}

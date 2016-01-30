@@ -77,8 +77,9 @@ namespace CoreMod
 		{
             
 			Dictionary<string, Tag> tags = new Dictionary<string, Tag> ();
-			foreach (var tag in this.tags[this.tagsNamespace])
-				tags.Add (tag.Name, tag);
+			if (this.tagsNamespace != "")
+				foreach (var tag in this.tags[this.tagsNamespace])
+					tags.Add (tag.Name, tag);
 			Dictionary<string, GameObject> replacerGOs = new Dictionary<string, GameObject> ();
 			foreach (var rep in this.avaliableReplacers[this.replacersNamespace])
 				replacerGOs.Add (rep.name, rep);

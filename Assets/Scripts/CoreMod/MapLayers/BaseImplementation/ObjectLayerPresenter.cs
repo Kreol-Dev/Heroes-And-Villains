@@ -36,30 +36,34 @@ namespace CoreMod
 
 		public abstract TObject ObjectFromLayer (TLayerObject obj);
 
-		void Clicked (TLayerObject tile)
-		{
-			ObjectPresenter.ShowObjectDesc (ObjectFromLayer (tile));
-		}
+		void Clicked (TLayerObject tile) 
+		{ 
+			TObject o = ObjectFromLayer (tile); 
+			if (o != null) 
+			ObjectPresenter.ShowObjectDesc (o); 
+		} 
 
-		void DeClicked (TLayerObject tile)
-		{
-			ObjectPresenter.HideObjectDesc ();
-		}
+		void DeClicked (TLayerObject tile) 
+		{ 
+			ObjectPresenter.HideObjectDesc (); 
+		} 
 
-		void Hovered (TLayerObject tile)
-		{
-			ObjectPresenter.ShowObjectShortDesc (ObjectFromLayer (tile));
-		}
+		void Hovered (TLayerObject tile) 
+		{ 
+			TObject o = ObjectFromLayer (tile); 
+			if (o != null) 
+				ObjectPresenter.ShowObjectShortDesc (o); 
+		} 
 
-		void DeHovered (TLayerObject tile)
-		{
-			ObjectPresenter.HideObjectShortDesc ();
-		}
+		void DeHovered (TLayerObject tile) 
+		{ 
+			ObjectPresenter.HideObjectShortDesc (); 
+		} 
 
-		void TileUpdated (TileHandle tile, TLayerObject obj)
-		{
+		void TileUpdated (TileHandle tile, TLayerObject obj) 
+		{ 
 
-			ObjectPresenter.Update ();
+			ObjectPresenter.Update (); 
 		}
 
 	}

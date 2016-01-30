@@ -21,3 +21,9 @@ oasis_city =
 	left_top_corner = { 0, 128},
 	right_bottom_corner = { 32, 159}
 }
+
+encounter =
+{
+	left_top_corner = { 64, 0},
+	right_bottom_corner = { 96, 32}
+}

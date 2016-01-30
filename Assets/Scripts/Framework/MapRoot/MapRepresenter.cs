@@ -103,7 +103,7 @@ namespace MapRoot
 					Type rendererType = Type.GetType (rendererName);
 					Type presenterType = Type.GetType (presenterName);
 					Type objectPresenterType = Type.GetType (objectPresenterName);
-					Debug.LogFormat ("{0} {1} {2}", rendererType, presenterType, objectPresenterType);
+					Debug.LogFormat ("{0} {1} {2}", rendererName, presenterName, objectPresenterName);
 					IMapLayerRenderer renderer = Activator.CreateInstance (rendererType) as IMapLayerRenderer;
 					IMapLayerPresenter presenter = Activator.CreateInstance (presenterType) as IMapLayerPresenter;
 					IObjectPresenter objectPresenter = Activator.CreateInstance (objectPresenterType) as IObjectPresenter;
