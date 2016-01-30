@@ -7,25 +7,22 @@ using System.Text;
 
 namespace CoreMod
 {
-	public abstract class TileMapLayerInteractor<TObject, TLayerObject, TLayer> : BaseMapLayerInteractor<TLayer>, 
-    ITileMapInteractor<TObject, TLayerObject, TLayer> where TLayer : class, IMapLayer, ITileMapLayer<TLayerObject>
+	public abstract class TileMapLayerInteractor<TLayer> : BaseMapLayerInteractor<TLayer>, 
+	ITileMapInteractor where TLayer : class, IMapLayer
 	{
-		public event TileDelegate<TObject> TileSelected;
+		public event TileDelegate TileSelected;
 
-		public event TileDelegate<TObject> TileDeselected;
+		public event TileDelegate TileDeselected;
 
-		public event TileDelegate<TObject> TileHovered;
+		public event TileDelegate TileHovered;
 
-		public event TileDelegate<TObject> TileDeHovered;
+		public event TileDelegate TileDeHovered;
 
 
 		TileHandle hoveredTile;
-		TObject hoveredObject;
-		TObject selectedObject;
-		TileHandle lastSelectedTile;
+		TileHandle selectedTile;
 
 
-		public abstract bool ObjectFromLayerObject (TLayerObject obj, out TObject outObject);
 
 		TilesRoot tilesRoot;
 
@@ -33,24 +30,23 @@ namespace CoreMod
 		public override bool OnHover (Transform obj, Vector3 point)
 		{
 			TileHandle handle = tilesRoot.MapHandle.GetHandle (point);
-			if (handle != hoveredTile)
+			if (handle == null)
 			{
-				TObject tileContent;
-
-				if (hoveredTile != null && hoveredObject != null)
-					TileDeHovered (hoveredTile, hoveredObject);
-
-				hoveredTile = handle;
-				if (!ObjectFromLayerObject (handle.Get (Layer.Tiles), out tileContent))
+				if (hoveredTile != null)
 				{
-					hoveredObject = default(TObject);
-					return false;
+					TileDeHovered (hoveredTile);
+					hoveredTile = null;
 				}
-					
-				TileHovered (handle, tileContent);
-				hoveredObject = tileContent;
+				return false;
 			}
 
+			if (handle != hoveredTile)
+			{
+				if (hoveredTile != null)
+					TileDeHovered (hoveredTile);
+				hoveredTile = handle;
+				TileHovered (hoveredTile);
+			}
 			return true;
 		}
 
@@ -58,24 +54,27 @@ namespace CoreMod
 		public override bool OnClick (Transform obj, Vector3 point)
 		{
 			TileHandle handle = tilesRoot.MapHandle.GetHandle (point);
-			TObject tileContent;
-
-			if (lastSelectedTile != null)
-				TileDeselected (lastSelectedTile, selectedObject);
-
-			if (!ObjectFromLayerObject (handle.Get (Layer.Tiles), out tileContent))
+			if (handle == null)
+			{
+				if (selectedTile != null)
+				{
+					TileDeselected (selectedTile);
+					selectedTile = null;
+				}
 				return false;
-			TileSelected (handle, tileContent);
-			lastSelectedTile = handle;
-			selectedObject = tileContent;
+			}
+			if (handle == selectedTile)
+			{
+				TileDeselected (selectedTile);
+				selectedTile = null;
+				return false;
+			} else
+			{
+				TileSelected (handle);
+				selectedTile = handle;
+			}
+
 			return true;
-		}
-
-		public override void OnAltClick (Transform obj, Vector3 point)
-		{
-			TileDeselected (lastSelectedTile, selectedObject);
-			lastSelectedTile = null;
-
 		}
 
 		public override void OnUpdate ()
@@ -92,8 +91,8 @@ namespace CoreMod
 			LayerHandle handle = go.AddComponent<LayerHandle> ();
 			handle.Layer = Find.Root<MapRoot.Map> ().GetLayer (Layer.Name);
 			Transform transform = go.transform;
-			transform.position = new Vector3 (Layer.Tiles.GetLength (0) / 2, Layer.Tiles.GetLength (1) / 2, 0);
-			transform.localScale = new Vector3 (Layer.Tiles.GetLength (0), Layer.Tiles.GetLength (1), 0);
+			transform.position = new Vector3 (tilesRoot.MapHandle.SizeX / 2, tilesRoot.MapHandle.SizeY / 2, 0);
+			transform.localScale = new Vector3 (tilesRoot.MapHandle.SizeX, tilesRoot.MapHandle.SizeY, 0);
 
 		}
 

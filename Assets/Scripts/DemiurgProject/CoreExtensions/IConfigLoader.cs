@@ -4,14 +4,14 @@ using System;
 
 namespace Demiurg.Core.Extensions
 {
-    public interface IConfigLoader
-    {
-        bool IsSpecific ();
+	public interface IConfigLoader
+	{
+		bool IsSpecific ();
 
-        bool Check (Type targetType);
+		bool Check (Type targetType);
 
-        object Load (object fromObject, Type targetType, ConfigLoaders loaders);
-    }
+		object Load (ITable fromTable, object id, Type targetType, ConfigLoaders loaders);
+	}
 }
 
 

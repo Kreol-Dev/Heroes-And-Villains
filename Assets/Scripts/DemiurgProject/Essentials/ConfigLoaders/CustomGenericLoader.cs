@@ -36,10 +36,10 @@ namespace Demiurg.Essentials
 			return targetType.IsClass && !targetType.IsGenericType && !targetType.IsAbstract;
 		}
 
-		public object Load (object fromObject, Type targetType, Demiurg.Core.ConfigLoaders loaders)
+		public object Load (ITable fromTable, object id, Type targetType, Demiurg.Core.ConfigLoaders loaders)
 		{
 			
-			ITable objectTable = fromObject as ITable;
+			ITable objectTable = fromTable.GetTable (id);
 			object loadedObject = Activator.CreateInstance (targetType);
 			LoadTemplate template = null;
 			templates.TryGetValue (targetType, out template);
@@ -48,23 +48,23 @@ namespace Demiurg.Essentials
 				template = CreateTemplate (targetType);
 				templates.Add (targetType, template);
 			}
-			scribe.LogFormat ("Found values {0} in table {1} for object {2}", template.fields.Count, fromObject, targetType);
+			scribe.LogFormat ("Found values {0} in table {1}[{3}] for object {2}", template.fields.Count, fromTable.Name, targetType, id);
 			foreach (var field in template.fields)
 			{
-				object value = objectTable.Get (field.Key);
+//				object value = objectTable.Get (field.Key);
 				IConfigLoader loader = loaders.FindLoader (field.Type);
-				if (value == null)
-				{
-					scribe.LogFormatError ("Can't find value {0} in table {1} for object {2}", field.Key, fromObject, targetType);
-					continue;
-				}
-				if (loader == null)
-				{
-					scribe.LogFormatError ("Can't find loader for a value {0} with type {1} in table {2} for object {3}", field.Key, field.Type, fromObject, targetType);
-					continue;
-				}
-				scribe.LogFormat ("Found value {0} with type {1} in table {2} for object {3}", field.Key, field.Type, fromObject, targetType);
-				value = loader.Load (value, field.Type, loaders);
+//				if (value == null)
+//				{
+//					scribe.LogFormatError ("Can't find value {0} in table {1} for object {2}", field.Key, fromObject, targetType);
+//					continue;
+//				}
+//				if (loader == null)
+//				{
+//					scribe.LogFormatError ("Can't find loader for a value {0} with type {1} in table {2} for object {3}", field.Key, field.Type, fromObject, targetType);
+//					continue;
+//				}
+//				scribe.LogFormat ("Found value {0} with type {1} in table {2} for object {3}", field.Key, field.Type, fromObject, targetType);
+				object value = loader.Load (objectTable, field.Key, field.Type, loaders);
 				//Call setter on the object with loaded value
 				field.Setter (loadedObject, value);
 			}

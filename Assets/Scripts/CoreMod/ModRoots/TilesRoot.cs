@@ -15,10 +15,10 @@ namespace CoreMod
 		protected override void CustomSetup ()
 		{
 			ITable definesTable = Find.Root<ModsManager> ().GetTable ("defines");
-			int height = (int)(double)definesTable.Get ("MAP_HEIGHT");
-			int width = (int)(double)definesTable.Get ("MAP_WIDTH");
-			MapConnectivity connectivity = (MapConnectivity)Enum.Parse (typeof(MapConnectivity), (string)definesTable.Get ("MAP_CONNECTIVITY"));
-			TileConnnectivity tilesConnectivity = (TileConnnectivity)Enum.Parse (typeof(TileConnnectivity), (string)definesTable.Get ("TILES_CONNECTIVITY"));
+			int height = definesTable.GetInt ("MAP_HEIGHT");
+			int width = definesTable.GetInt ("MAP_WIDTH");
+			MapConnectivity connectivity = (MapConnectivity)Enum.Parse (typeof(MapConnectivity), definesTable.GetString ("MAP_CONNECTIVITY"));
+			TileConnnectivity tilesConnectivity = (TileConnnectivity)Enum.Parse (typeof(TileConnnectivity), definesTable.GetString ("TILES_CONNECTIVITY"));
 			MapHandle = new MapHandle (width, height, connectivity, tilesConnectivity);
 			Fulfill.Dispatch ();
 		}

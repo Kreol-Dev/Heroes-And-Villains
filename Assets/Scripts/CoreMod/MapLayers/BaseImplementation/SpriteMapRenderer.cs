@@ -6,7 +6,7 @@ using Demiurg.Core.Extensions;
 namespace CoreMod
 {
 	public abstract class SpriteMapRenderer<TObject, TLayerObject, TLayer, TInteractor> : BaseMapLayerRenderer<TLayer, TInteractor>
-        where TLayer: class, IMapLayer, ITileMapLayer<TLayerObject> where TInteractor : TileMapLayerInteractor<TObject, TLayerObject, TLayer>
+		where TLayer: class, IMapLayer, ITileMapLayer<TLayerObject> where TInteractor : TileMapLayerInteractor<TLayer>
 	{
 		public override void ChangeState (RepresenterState state)
 		{
@@ -33,19 +33,19 @@ namespace CoreMod
 
 		protected abstract Sprite GetSprite (TLayerObject obj);
 
-		void Clicked (TileHandle tile, TObject obj)
+		void Clicked (TileHandle tile)
 		{
 		}
 
-		void DeClicked (TileHandle tile, TObject obj)
+		void DeClicked (TileHandle tile)
 		{
 		}
 
-		void Hovered (TileHandle tile, TObject obj)
+		void Hovered (TileHandle tile)
 		{
 		}
 
-		void DeHovered (TileHandle tile, TObject obj)
+		void DeHovered (TileHandle tile)
 		{
 		}
 
@@ -72,8 +72,8 @@ namespace CoreMod
 		{
 			mapWidth = Layer.Tiles.GetLength (0);
 			mapHeight = Layer.Tiles.GetLength (1);
-			chunksSizeX = (int)(double)definesTable.Get ("SPRITE_CHUNK_SIZE_X");
-			chunksSizeY = (int)(double)definesTable.Get ("SPRITE_CHUNK_SIZE_Y");
+			chunksSizeX = definesTable.GetInt ("SPRITE_CHUNK_SIZE_X");
+			chunksSizeY = definesTable.GetInt ("SPRITE_CHUNK_SIZE_Y");
 			int chunkCountX = mapWidth / chunksSizeX;
 			int chunkCountY = mapHeight / chunksSizeY;
 			chunks = new SpriteMapChunk[chunkCountX, chunkCountX];

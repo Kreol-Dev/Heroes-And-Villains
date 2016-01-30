@@ -147,8 +147,6 @@ namespace MapRoot
 
 		void OnRightClick (Vector2 point)
 		{
-			if (currentTarget.Interactor != null && currentTarget.Transform != null)
-				currentTarget.Interactor.OnAltClick (currentTarget.Transform, currentTarget.Position);
 		}
 
 		ObjectHit selectedObject;
@@ -223,13 +221,13 @@ namespace MapRoot
 			foreach (var layerName in layerNames)
 			{
 				string interactorName = layerName + "_interactor";
-				ITable interactorTable = table.Get (interactorName) as ITable;
+				ITable interactorTable = table.GetTable (interactorName) as ITable;
 				if (interactorTable == null)
 				{
 					scribe.LogFormatWarning ("Can't find table named {0}", interactorName);
 					continue;
 				}
-				string interactorTypeName = (string)interactorTable.Get (1);
+				string interactorTypeName = (string)interactorTable.GetString (1);
 				Type interactorType = Type.GetType (interactorTypeName);
 				IMapLayerInteractor interactor = Activator.CreateInstance (interactorType) as IMapLayerInteractor;
 				if (interactor == null)
@@ -237,7 +235,7 @@ namespace MapRoot
 					scribe.LogFormatWarning ("Interactor with the name {0} and type {1} doesn't inherit IMapLayerInteractor, while it should", interactorName, interactorTypeName);
 					continue;
 				}
-				string interactorDefaultState = (string)interactorTable.Get (2);
+				string interactorDefaultState = (string)interactorTable.GetString (2);
 				InteractorState state = (InteractorState)Enum.Parse (typeof(InteractorState), interactorDefaultState);
 				var layer = map.GetLayer (layerName);
 				InteractorBinding binding = new InteractorBinding (layer, interactor, state);

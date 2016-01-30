@@ -32,12 +32,12 @@ namespace CoreMod
 
 		public override void LoadFromTable (ITable table)
 		{
-			Population = (int)(double)table.Get ("population");
-			string spriteName = (string)table.Get ("race");
+			Population = table.GetInt ("population");
+			string spriteName = table.GetString ("race");
 			Race = Find.Root<Sprites> ().GetSprite ("races", spriteName);
 			SharedData = new SettlementSharedData ();
 
-			string graphicsLayerName = (string)Find.Root<ModsManager> ().GetTable ("defines").Get ("STATIC_OBJECTS_LAYER");
+			string graphicsLayerName = Find.Root<ModsManager> ().GetTable ("defines").GetString ("STATIC_OBJECTS_LAYER");
 			SharedData.layer = Find.Root<MapRoot.Map> ().GetLayer (graphicsLayerName) as IListMapLayer<GameObject>;
 
 			//SharedData.layer.ObjectAdded.Dispatch (this.gameObject);
@@ -53,7 +53,7 @@ namespace CoreMod
 
 
 
-	public class SettlementLayerPresenter : TileMapLayerPresenter<Settlement, GameObject, GOLayer, GOInteractor>
+	public class SettlementLayerPresenter : ObjectLayerPresenter<Settlement, GameObject, GOLayer, GOInteractor>
 	{
 		public override Settlement ObjectFromLayer (GameObject obj)
 		{
@@ -63,6 +63,8 @@ namespace CoreMod
 		}
 		
 	}
+
+
 
 
 

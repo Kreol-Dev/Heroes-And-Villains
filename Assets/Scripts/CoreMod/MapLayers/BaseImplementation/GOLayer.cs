@@ -92,7 +92,7 @@ namespace CoreMod
 
 	}
 
-	public class GOInteractor : TileMapLayerInteractor<GameObject, GameObject, GOLayer>
+	public class GOInteractor : TiledObjectsLayerInteractor<GameObject, GameObject, GOLayer>
 	{
 		public override bool ObjectFromLayerObject (GameObject obj, out GameObject outObj)
 		{

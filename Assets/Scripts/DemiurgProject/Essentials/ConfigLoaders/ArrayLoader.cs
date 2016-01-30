@@ -20,16 +20,16 @@ namespace Demiurg.Essentials
 			return targetType.IsArray;
 		}
 
-		public object Load (object fromObject, Type targetType, Demiurg.Core.ConfigLoaders loaders)
+		public object Load (ITable fromTable, object id, Type targetType, Demiurg.Core.ConfigLoaders loaders)
 		{
 			List<object> objects = new List<object> ();
-			Table table = fromObject as Table;
+			ITable table = fromTable.GetTable (id);
 			Type containedType = targetType.GetGenericArguments () [0];
 			IConfigLoader loader = loaders.FindLoader (containedType);
-			var keys = table.Keys;
+			var keys = table.GetKeys ();
 			foreach (var key in keys)
 			{
-				objects.Add (loader.Load (table [key], containedType, loaders));
+				objects.Add (loader.Load (table, key, containedType, loaders));
 			}
 			return objects.ToArray ();
 

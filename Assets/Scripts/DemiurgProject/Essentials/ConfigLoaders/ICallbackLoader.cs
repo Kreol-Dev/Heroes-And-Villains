@@ -19,9 +19,9 @@ namespace Demiurg.Essentials
 			return type.IsAssignableFrom (targetType);
 		}
 
-		public object Load (object fromObject, Type targetType, Demiurg.Core.ConfigLoaders loaders)
+		public object Load (ITable fromTable, object id, Type targetType, Demiurg.Core.ConfigLoaders loaders)
 		{
-			return fromObject as ICallback;
+			return fromTable.GetCallback (id);
 
 		}
 

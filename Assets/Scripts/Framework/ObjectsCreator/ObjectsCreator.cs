@@ -40,7 +40,7 @@ public class ObjectsCreator : Root
 			if (type == null)
 				continue;
 			EntityComponent cmp = go.AddComponent (type) as EntityComponent;
-			cmp.LoadFromTable (fromTable.Get (cmpName) as ITable);
+			cmp.LoadFromTable (fromTable.GetTable (cmpName) as ITable);
 		}
 		return go;
 	}

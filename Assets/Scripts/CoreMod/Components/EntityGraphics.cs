@@ -21,9 +21,9 @@ namespace CoreMod
 
 		public override void LoadFromTable (ITable table)
 		{
-			ITable spriteTable = table.Get ("sprite") as ITable;
-			spriteName = (string)spriteTable.Get (2);
-			packName = (string)spriteTable.Get (1);
+			ITable spriteTable = table.GetTable ("sprite");
+			spriteName = spriteTable.GetString (2);
+			packName = spriteTable.GetString (1);
 			//Debug.LogWarningFormat ("{0} | {1}", packName, spriteName);
 			SpriteRenderer renderer = gameObject.AddComponent<SpriteRenderer> ();
 			renderer.sprite = Find.Root<Sprites> ().GetSprite (packName, spriteName);

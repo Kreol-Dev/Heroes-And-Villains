@@ -60,7 +60,7 @@ public class PlanetsGenerator : Root
 
 		wiring = Find.Root<ModsManager> ().GetTable ("wiring");
 
-		int seed = (int)(double)Find.Root<ModsManager> ().GetTable ("defines").Get ("SEED");
+		int seed = Find.Root<ModsManager> ().GetTable ("defines").GetInt ("SEED");
 		DemiurgEntity dem = new DemiurgEntity (FindAvatarTypes (), PrepareAvatarsTables (), LoadConverters (), LoadLoaders (), seed);
 		Fulfill.Dispatch ();
 	}
@@ -69,7 +69,8 @@ public class PlanetsGenerator : Root
 	{
 		Dictionary<string, Type> nodes = new Dictionary<string, Type> ();
 		Assembly asm = Assembly.GetExecutingAssembly ();
-		foreach (var type in asm.GetTypes()) {
+		foreach (var type in asm.GetTypes())
+		{
 			if (type.IsSubclassOf (typeof(Demiurg.Core.Avatar)) && !type.IsAbstract && !type.IsGenericType)
 				nodes.Add (type.FullName, type);
 		}
@@ -79,11 +80,14 @@ public class PlanetsGenerator : Root
 	Dictionary<string, ITable> PrepareAvatarsTables ()
 	{
 		Dictionary<string, Demiurg.Core.Extensions.ITable> tables = new Dictionary<string, Demiurg.Core.Extensions.ITable> ();
-		foreach (var avatarKey in wiring.GetKeys()) {
-            
-			ITable avatarTable = wiring.Get (avatarKey) as ITable;
+		foreach (var avatarKey in wiring.GetKeys())
+		{
+			if (avatarKey == "global")
+				continue;
+			ITable avatarTable = wiring.GetTable (avatarKey) as ITable;
 			if (avatarTable != null)
-			if (avatarTable.Get ("global") == null || ((bool)avatarTable.Get ("global")) != true) {
+			if (!avatarTable.Contains ("global"))
+			{
 				Debug.Log (avatarKey.GetType ());
 				tables.Add ((string)avatarKey, avatarTable);
 				scribe.LogFormat ("{0} has been added ", avatarKey);
@@ -98,7 +102,8 @@ public class PlanetsGenerator : Root
 		List<IConverter> convs = new List<IConverter> ();
 		Assembly asm = Assembly.GetExecutingAssembly ();
 		Type convType = typeof(IConfigLoader);
-		foreach (var type in asm.GetTypes()) {
+		foreach (var type in asm.GetTypes())
+		{
 			if (convType.IsAssignableFrom (type) && !type.IsAbstract && !type.IsGenericType)
 				convs.Add (Activator.CreateInstance (type) as IConverter);
 		}
@@ -110,7 +115,8 @@ public class PlanetsGenerator : Root
 		List<IConfigLoader> loads = new List<IConfigLoader> ();
 		Assembly asm = Assembly.GetExecutingAssembly ();
 		Type loaderType = typeof(IConfigLoader);
-		foreach (var type in asm.GetTypes()) {
+		foreach (var type in asm.GetTypes())
+		{
 			if (loaderType.IsAssignableFrom (type) && !type.IsAbstract && !type.IsGenericType)
 				loads.Add (Activator.CreateInstance (type) as IConfigLoader);
 		}

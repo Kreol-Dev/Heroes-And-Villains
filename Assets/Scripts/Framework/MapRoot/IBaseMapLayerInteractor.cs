@@ -12,7 +12,6 @@ namespace MapRoot
 
 		bool OnClick (Transform target, Vector3 point);
 
-		void OnAltClick (Transform target, Vector3 point);
 
 		void OnUpdate ();
 	}
@@ -49,7 +48,6 @@ namespace MapRoot
 
 		public abstract bool OnClick (Transform obj, Vector3 point);
 
-		public abstract void OnAltClick (Transform obj, Vector3 point);
 
 		public abstract void OnUpdate ();
 	}

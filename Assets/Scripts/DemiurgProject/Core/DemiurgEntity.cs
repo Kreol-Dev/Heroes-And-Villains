@@ -15,24 +15,27 @@ namespace Demiurg.Core
 		int seed;
 
 		public DemiurgEntity (Dictionary<string, Type> possibleAvatars, Dictionary<string, ITable> avatarsTables, 
-		                            List<IConverter> converters, List<IConfigLoader> loaders, int seed)
+		                      List<IConverter> converters, List<IConfigLoader> loaders, int seed)
 		{
 			this.seed = seed;
 			this.converters = new Converters (converters);
 			this.loaders = new ConfigLoaders (loaders);
 			foreach (var avatarType in possibleAvatars)
 				Avatar.UseAvatarType (avatarType.Value);
-			foreach (var avatar in avatarsTables) {
+			foreach (var avatar in avatarsTables)
+			{
 				Avatar newAvatar = NewAvatar (avatar.Key, avatar.Value, possibleAvatars);
 				if (newAvatar == null)
 					continue;
 				avatars.Add (newAvatar.Name, newAvatar);
 			}
-			foreach (var avatar in avatars) {
+			foreach (var avatar in avatars)
+			{
 				ITable init = avatarsTables [avatar.Key];
-				avatar.Value.Configure (this, (ITable)init.Get ("inputs"), (ITable)init.Get ("configs"));
+				avatar.Value.Configure (this, init.GetTable ("inputs", null), init.GetTable ("configs", null));
 			}
-			foreach (var avatar in avatars) {
+			foreach (var avatar in avatars)
+			{
 				avatar.Value.TryWork ();
 			}
 		}
@@ -40,14 +43,16 @@ namespace Demiurg.Core
 		Avatar NewAvatar (string name, ITable init, Dictionary<string, Type> possibleAvatars)
 		{
 			Type type = null;
-			object avType = init.Get ("avatar_type");
-			if (avType == null) {
+			string avType = init.GetString ("avatar_type");
+			if (avType == null)
+			{
 				scribe.LogFormatError ("{0} has no avatar type field while being considered an avatar", name);
 				return null;
 			}
                 
-			possibleAvatars.TryGetValue ((string)avType, out type);
-			if (type == null) {
+			possibleAvatars.TryGetValue (avType, out type);
+			if (type == null)
+			{
 				scribe.LogFormatError ("{0} avatar type {1} is unaccessible", name, (string)avType);
 				return null;
 			}

@@ -24,7 +24,8 @@ namespace CoreMod
 			           select new SlotPair (){ Name = cmp.Name, Type = type };
 			ITable table = MM.GetTable ("component");
 			types = new List<Type> ();
-			foreach (var cmp in cmps) {
+			foreach (var cmp in cmps)
+			{
 
 				cmp.ID = ID++;
 				types.Add (cmp.Type);
@@ -32,8 +33,6 @@ namespace CoreMod
 			}
 
 			MM.SetTableAsGlobal ("component");
-			foreach (var key in table.GetKeys())
-				Debug.LogFormat ("{0} | {1}", key, table.Get (key));
 
 			Fulfill.Dispatch ();
 		}

@@ -22,25 +22,15 @@ namespace CoreMod
 		IConfigLoader floatLoader = null;
 		Type floatType = typeof(float);
 
-		public object Load (object fromObject, System.Type targetType, Demiurg.Core.ConfigLoaders loaders)
+		public object Load (ITable fromTable, object id, System.Type targetType, Demiurg.Core.ConfigLoaders loaders)
 		{
-			ITable table = fromObject as ITable;
+			ITable table = fromTable.GetTable (id) as ITable;
 			if (table == null)
 				return Color.clear;
-			object red = table.Get (1);
-			object green = table.Get (2);
-			object blue = table.Get (3);
-			if (red == null)
-			{
-				red = table.Get ("red");
-				green = table.Get ("green");
-				blue = table.Get ("blue");
-			}
-			if (floatLoader == null)
-				floatLoader = loaders.FindLoader (floatType);
-			Color color = new Color ((float)floatLoader.Load (red, floatType, loaders), 
-			                         (float)floatLoader.Load (green, floatType, loaders), 
-			                         (float)floatLoader.Load (blue, floatType, loaders));
+			float red = table.GetFloat (1);
+			float green = table.GetFloat (2);
+			float blue = table.GetFloat (3);
+			Color color = new Color (red, green, blue);
 			Debug.LogFormat ("COLOR LOADED {0}", color);
 			return color;
 		}

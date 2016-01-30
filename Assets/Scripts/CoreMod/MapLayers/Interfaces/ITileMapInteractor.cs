@@ -3,16 +3,28 @@ using System.Collections;
 
 namespace CoreMod
 {
-	public delegate void TileDelegate<T> (TileHandle tile, T obj);
-	public interface ITileMapInteractor<TObject, TLayerObject, TLayer> where TLayer : ITileMapLayer<TLayerObject>
+	public delegate void TileDelegate (TileHandle tile);
+	public interface ITileMapInteractor
 	{
-		event TileDelegate<TObject> TileSelected;
+		event TileDelegate TileSelected;
 
-		event TileDelegate<TObject> TileDeselected;
+		event TileDelegate TileDeselected;
 
-		event TileDelegate<TObject> TileHovered;
+		event TileDelegate TileHovered;
 
-		event TileDelegate<TObject> TileDeHovered;
+		event TileDelegate TileDeHovered;
+	}
+
+	public delegate void ObjectDelegate<T> (T obj);
+	public interface IObjectsInteractor<TObject, TLayer>
+	{
+		event ObjectDelegate<TObject> ObjectSelected;
+
+		event ObjectDelegate<TObject> ObjectDeSelected;
+
+		event ObjectDelegate<TObject> ObjectHovered;
+
+		event ObjectDelegate<TObject> ObjectDeHovered;
 	}
 }
 

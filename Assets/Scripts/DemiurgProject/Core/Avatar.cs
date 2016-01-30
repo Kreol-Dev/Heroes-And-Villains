@@ -72,14 +72,14 @@ namespace Demiurg.Core
 			Debug.LogFormat ("{0} started wiring inputs {1}", Name, Inputs.Count);
 			foreach (var input in Inputs)
 			{
-				ITable table = wiringTable.Get (input.Name) as ITable;
+				ITable table = wiringTable.GetTable (input.Name);
 				if (table == null)
 				{
 					scribe.LogFormatError ("INPUT DATA MISSING: Can't find wiring reference for avatar {0} input {1}", Name, input.Name);
 					continue;
 				}
-				string targetAvatarName = table.Get (1) as String;
-				string targetOutputName = table.Get (2) as String;
+				string targetAvatarName = table.GetString (1);
+				string targetOutputName = table.GetString (2);
 				if (targetAvatarName == null || targetOutputName == null)
 				{
 					scribe.LogFormatError ("INPUT DATA MISSING: Can't retrieve wiring reference data for avatar {0} input {1}\n Retrieved: {2} | {3}", Name, input.Name, targetAvatarName, targetOutputName);
@@ -114,22 +114,22 @@ namespace Demiurg.Core
 			{
 				IConfigLoader loader = loaders.FindLoader (config.FieldType ());
 
-				object cfg = configs.Get (config.Name);
-				if (cfg == null)
-				{
-					scribe.LogFormatError ("Config not found {0} {1} {2} {3} {4}", Name, config.Name, config.FieldType (), loader, cfg);
-					if (configs.Get (config.Name) == null)
-					{
-						foreach (var key in configs.GetKeys())
-							scribe.LogError (key.ToString ());
-					}
-					continue;
-				}
-				object value = loader.Load (cfg, config.FieldType (), loaders);
+//				object cfg = configs.GetTable (config.Name);
+//				if (cfg == null)
+//				{
+//					scribe.LogFormatError ("Config not found {0} {1} {2} {3} {4}", Name, config.Name, config.FieldType (), loader, cfg);
+//					if (!configs.Contains (config.Name))
+//					{
+//						foreach (var key in configs.GetKeys())
+//							scribe.LogError (key.ToString ());
+//					}
+//					continue;
+//				}
+				object value = loader.Load (configs, config.Name, config.FieldType (), loaders);
 				if (value == null)
 				{
-					scribe.LogFormatError ("Value not loaded properly {0} {1} {2} {3} {4}", Name, config.Name, config.FieldType (), loader, cfg);
-					if (configs.Get (config.Name) == null)
+					scribe.LogFormatError ("Value not loaded properly {0} {1} {2} {3}", Name, config.Name, config.FieldType (), loader);
+					if (!configs.Contains (config.Name))
 					{
 						foreach (var key in configs.GetKeys())
 							scribe.LogError (key.ToString ());

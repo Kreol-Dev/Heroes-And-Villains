@@ -6,64 +6,105 @@ using UnityEngine;
 
 namespace Demiurg.Essentials
 {
-    public class PrimitivesLoader : IConfigLoader
-    {
-        static Type intType = typeof(int);
-        static Type stringType = typeof(string);
-        static Type boolType = typeof(bool);
-        static Type floatType = typeof(float);
+	public class IntLoader : IConfigLoader
+	{
+		Type intType = typeof(int);
 
-        #region IConfigLoader implementation
+		public bool IsSpecific ()
+		{
+			return true;
+		}
 
-        public bool IsSpecific ()
-        {
-            return true;
-        }
+		public bool Check (Type targetType)
+		{
+			return targetType == intType;
+		}
 
-        public bool Check (Type targetType)
-        {
-            return (targetType == intType || targetType == stringType || targetType == boolType || targetType == floatType);
-        }
+		public object Load (ITable fromTable, object id, Type targetType, Demiurg.Core.ConfigLoaders loaders)
+		{
+			return fromTable.GetInt (id);
+		}
+	}
 
-        public object Load (object fromObject, Type targetType, Demiurg.Core.ConfigLoaders loaders)
-        {
-            if (fromObject is DynValue)
-            {
-                if (targetType == stringType)
-                {
-                    return ((DynValue)fromObject).ToPrintString ();
-                }
-                if (targetType == intType)
-                {
+	public class FloatLoader : IConfigLoader
+	{
+		Type type = typeof(float);
 
-                    return (int)((DynValue)fromObject).CastToNumber ().Value;
-                }
-                if (targetType == boolType)
-                {
-                    return ((DynValue)fromObject).CastToBool ();
-                }
-                if (targetType == floatType)
-                {
-                    return (float)((DynValue)fromObject).CastToNumber ().Value;
-                }
-            }
-            else
-            {
-                if (targetType == intType)
-                {
-                    return Convert.ToInt32 (fromObject);
-                }
-                if (targetType == floatType)
-                {
-                    return Convert.ToSingle (fromObject);
-                }
-            }
-            Debug.Log (targetType.ToString () + " " + fromObject.GetType ().ToString ());
-            return fromObject;
-        }
+		public bool IsSpecific ()
+		{
+			return true;
+		}
 
-        #endregion
+		public bool Check (Type targetType)
+		{
+			return targetType == type;
+		}
 
-    }
+		public object Load (ITable fromTable, object id, Type targetType, Demiurg.Core.ConfigLoaders loaders)
+		{
+			return fromTable.GetFloat (id);
+		}
+	}
+
+	public class DoubleLoader : IConfigLoader
+	{
+		Type type = typeof(double);
+
+		public bool IsSpecific ()
+		{
+			return true;
+		}
+
+		public bool Check (Type targetType)
+		{
+			return targetType == type;
+		}
+
+		public object Load (ITable fromTable, object id, Type targetType, Demiurg.Core.ConfigLoaders loaders)
+		{
+			return fromTable.GetDouble (id);
+		}
+	}
+
+	public class BoolLoader : IConfigLoader
+	{
+		Type type = typeof(bool);
+
+		public bool IsSpecific ()
+		{
+			return true;
+		}
+
+		public bool Check (Type targetType)
+		{
+			return targetType == type;
+		}
+
+		public object Load (ITable fromTable, object id, Type targetType, Demiurg.Core.ConfigLoaders loaders)
+		{
+			return fromTable.GetBool (id);
+		}
+	}
+
+	public class StringLoader : IConfigLoader
+	{
+		Type type = typeof(string);
+
+		public bool IsSpecific ()
+		{
+			return true;
+		}
+
+		public bool Check (Type targetType)
+		{
+			return targetType == type;
+		}
+
+		public object Load (ITable fromTable, object id, Type targetType, Demiurg.Core.ConfigLoaders loaders)
+		{
+			return fromTable.GetString (id);
+		}
+	}
+
 }
 

@@ -3,88 +3,303 @@ using System.Collections;
 using MoonSharp.Interpreter;
 using Demiurg.Core.Extensions;
 using System.Collections.Generic;
+using System;
 
 namespace DemiurgBinding
 {
-    public class BindingTable : ITable
-    {
-        public Table Table { get; set; }
+	public class BindingTable : ITable
+	{
+		
 
-        public string Name { get; set; }
 
-        public BindingTable (Table table)
-        {
-            this.Table = table;
-        }
 
-        public IEnumerable GetKeys ()
-        {
-            List<object> keys = new List<object> ();
-            foreach (var key in Table.Keys)
-                keys.Add (key.ToObject ());
-            return keys;
-        }
+		public Table Table { get; internal set; }
 
-        object ITable.Get (object id)
-        {
-            /*cachedValue = Table.Get (id);
-            if (cachedValue == null)
-            {
-                Debug.LogFormat ("id {0} returned null", id);
-                return null;
-            }
-            Debug.LogFormat ("id {0} returned value {1} with type {2}", id, cachedValue, cachedValue.Type);
-                
-            switch (cachedValue.Type)
-            {
-            case DataType.Boolean:
-                return cachedValue.CastToBool ();
-            case DataType.Nil:
-                return null;
-            case DataType.Function:
-                return new BindingFunction (cachedValue.Function);
-            case DataType.Number:
-                return cachedValue.CastToNumber ();
-            case DataType.String:
-                return cachedValue.CastToString ();
-            case DataType.Table:
-                return new BindingTable (cachedValue.Table);
-            default:
-                return null;
-            }
-            return cachedValue;*/
-            object obj = Table [id];
-            if (obj == null)
-            {
-                Debug.LogFormat ("key {0} value NULL", id);
-                return null;
+		public object Name { get; internal set; }
 
-            }
-            Table table = obj as Table;
+		public BindingTable (Table table, object name)
+		{
+			this.Table = table;
+			this.Name = name;
+		}
 
-            if (table != null)
-                return new BindingTable (table);
-            else
-            {
-                Closure closure = obj as Closure;
-                if (closure != null)
-                    return new BindingFunction (closure);
-            }
+		#region get
 
-            Debug.LogFormat ("key {0} value {1} type {2}", id, obj, obj.GetType ());
-            return obj;
-        }
+		public int GetInt (object id)
+		{
+			object content = Table [id];
+			if (content == null)
+				throw new ITableMissingID (this.Name, id);
+			else
+				try
+				{
+					int value = (int)(double)content;
+					return value;
+				} catch (InvalidCastException e)
+				{
+					throw new ITableTypesMismatch (this.Name, id, content.GetType (), typeof(int));
+				}
+		}
 
-        void ITable.Set (object id, object o)
-        {
-            if (o is BindingTable)
-                Table [id] = ((BindingTable)o).Table;
-            else
-            if (o is BindingFunction)
-                Table [id] = ((BindingFunction)o).Closure;
-            else
-                Table [id] = o;
-        }
-    }
+		public float GetFloat (object id)
+		{
+			object content = Table [id];
+			if (content == null)
+				throw new ITableMissingID (this.Name, id);
+			else
+				try
+				{
+					float value = (float)(double)content;
+					return value;
+				} catch (InvalidCastException e)
+				{
+					throw new ITableTypesMismatch (this.Name, id, content.GetType (), typeof(float));
+				}
+		}
+
+		public double GetDouble (object id)
+		{
+			object content = Table [id];
+			if (content == null)
+				throw new ITableMissingID (this.Name, id);
+			else
+				try
+				{
+					double value = (double)content;
+					return value;
+				} catch (InvalidCastException e)
+				{
+					throw new ITableTypesMismatch (this.Name, id, content.GetType (), typeof(double));
+				}
+		}
+
+		public bool GetBool (object id)
+		{
+			object content = Table [id];
+			if (content == null)
+				throw new ITableMissingID (this.Name, id);
+			else
+				try
+				{
+					bool value = (bool)content;
+					return value;
+				} catch (InvalidCastException e)
+				{
+					throw new ITableTypesMismatch (this.Name, id, content.GetType (), typeof(bool));
+				}
+		}
+
+		public string GetString (object id)
+		{
+			object content = Table [id];
+			if (content == null)
+				throw new ITableMissingID (this.Name, id);
+			else
+				try
+				{
+					string value = (string)content;
+					return value;
+				} catch (InvalidCastException e)
+				{
+					throw new ITableTypesMismatch (this.Name, id, content.GetType (), typeof(string));
+				}
+		}
+
+		public ITable GetTable (object id)
+		{
+			object content = Table [id];
+			if (content == null)
+				throw new ITableMissingID (this.Name, id);
+			else
+				try
+				{
+					Table table = (Table)content;
+					BindingTable value = new BindingTable (table, id);
+					return value;
+				} catch (InvalidCastException e)
+				{
+					throw new ITableTypesMismatch (this.Name, id, content.GetType (), typeof(ITable));
+				}
+		}
+
+		public ICallback GetCallback (object id)
+		{
+			object content = Table [id];
+			if (content == null)
+				throw new ITableMissingID (this.Name, id);
+			else
+				try
+				{
+					Closure closure = (Closure)content;
+					BindingFunction value = new BindingFunction (closure, id);
+					return value;
+				} catch (InvalidCastException e)
+				{
+					throw new ITableTypesMismatch (this.Name, id, content.GetType (), typeof(ICallback));
+				}
+		}
+
+		#endregion
+
+		#region nothrow
+
+		public int GetInt (object id, int defaultValue)
+		{
+			try
+			{
+				return GetInt (id);
+			} catch (ITableTypesMismatch e)
+			{
+				return defaultValue;
+			} catch (ITableMissingID e)
+			{
+				return defaultValue;
+			}
+		}
+
+		public float GetFloat (object id, float defaultValue)
+		{
+			try
+			{
+				return GetFloat (id);
+			} catch (ITableTypesMismatch e)
+			{
+				return defaultValue;
+			} catch (ITableMissingID e)
+			{
+				return defaultValue;
+			}
+		}
+
+		public double GetDouble (object id, double defaultValue)
+		{
+			try
+			{
+				return GetDouble (id);
+			} catch (ITableTypesMismatch e)
+			{
+				return defaultValue;
+			} catch (ITableMissingID e)
+			{
+				return defaultValue;
+			}
+		}
+
+		public bool GetBool (object id, bool defaultValue)
+		{
+			try
+			{
+				return GetBool (id);
+			} catch (ITableTypesMismatch e)
+			{
+				return defaultValue;
+			} catch (ITableMissingID e)
+			{
+				return defaultValue;
+			}
+		}
+
+		public string GetString (object id, string defaultValue)
+		{
+			try
+			{
+				return GetString (id);
+			} catch (ITableTypesMismatch e)
+			{
+				return defaultValue;
+			} catch (ITableMissingID e)
+			{
+				return defaultValue;
+			}
+		}
+
+		public ITable GetTable (object id, ITable defaultValue)
+		{
+			try
+			{
+				return GetTable (id);
+			} catch (ITableTypesMismatch e)
+			{
+				return defaultValue;
+			} catch (ITableMissingID e)
+			{
+				return defaultValue;
+			}
+		}
+
+		public ICallback GetCallback (object id, ICallback defaultValue)
+		{
+			try
+			{
+				return GetCallback (id);
+			} catch (ITableTypesMismatch e)
+			{
+				return defaultValue;
+			} catch (ITableMissingID e)
+			{
+				return defaultValue;
+			}
+		}
+
+		#endregion
+
+		#region set
+
+		public void Set (object id, int value)
+		{
+			Table [id] = value;
+		}
+
+		public void Set (object id, float value)
+		{
+			Table [id] = value;
+		}
+
+		public void Set (object id, double value)
+		{
+			Table [id] = value;
+		}
+
+		public void Set (object id, string value)
+		{
+			Table [id] = value;
+		}
+
+		public void Set (object id, bool value)
+		{
+			Table [id] = value;
+		}
+
+		public void Set (object id, ITable value)
+		{
+			BindingTable table = value as BindingTable;
+			Table [id] = table.Table;
+		}
+
+		public void Set (object id, ICallback value)
+		{
+			BindingFunction callback = value as BindingFunction;
+			Table [id] = callback.Closure;
+		}
+
+		#endregion
+
+		#region else
+
+		public IEnumerable GetKeys ()
+		{
+			List<object> keys = new List<object> ();
+			foreach (var key in Table.Keys)
+				keys.Add (key.ToObject ());
+			return keys;
+		}
+
+		public bool Contains (object id)
+		{
+			return Table [id] != null;
+		}
+
+		#endregion
+	}
 
 }

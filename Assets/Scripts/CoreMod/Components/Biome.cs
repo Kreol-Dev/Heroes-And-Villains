@@ -24,12 +24,12 @@ namespace CoreMod
 		public override void LoadFromTable (ITable table)
 		{
 			SharedData = new BiomeSharedData ();
-			string graphicsLayerName = (string)Find.Root<ModsManager> ().GetTable ("defines").Get ("BIOMES_GRAPHICS_LAYER");
+			string graphicsLayerName = Find.Root<ModsManager> ().GetTable ("defines").GetString ("BIOMES_GRAPHICS_LAYER");
 			SharedData.layer = Find.Root<MapRoot.Map> ().GetLayer (graphicsLayerName) as ITileMapLayer<GraphicsTile>;
-			SharedData.movementCost = (int)(double)table.Get ("tile_movement_cost");
-			int priority = (int)(double)table.Get ("priority");
-			string spriteName = (string)table.Get ("tile_graphics");
-			SharedData.biomeName = (string)table.Get ("name");
+			SharedData.movementCost = table.GetInt ("tile_movement_cost");
+			int priority = table.GetInt ("priority");
+			string spriteName = table.GetString ("tile_graphics");
+			SharedData.biomeName = table.GetString ("name");
 			SharedData.graphicsTile = new GraphicsTile (Find.Root<Sprites> ().GetSprite ("map_tiles", spriteName), priority, SharedData.biomeName + " tile");
 				
 
