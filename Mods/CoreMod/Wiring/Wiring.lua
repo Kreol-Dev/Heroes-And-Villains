@@ -172,8 +172,6 @@ surface_extractor =
 
 ocean_extractor =
 {
-
-
 	avatar_type = "CoreMod.ExtractSurfaceFromChunks",
 	configs =
 	{
@@ -189,7 +187,6 @@ ocean_extractor =
 
 random_points = 
 {
-
 	avatar_type = "CoreMod.RandomPointsOnTiles",
 	configs =
 	{
@@ -278,8 +275,6 @@ cities_creator =
 		available_replacers = { "replacers_collection", "replacers"}
 	}
 }
-
-
 
 tags_collection =
 {
