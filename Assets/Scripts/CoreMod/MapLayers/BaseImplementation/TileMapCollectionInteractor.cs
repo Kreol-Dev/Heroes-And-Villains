@@ -7,8 +7,7 @@ using System.Text;
 
 namespace CoreMod
 {
-	public abstract class TileMapLayerInteractor<TLayer> : BaseMapLayerInteractor<TLayer>, 
-	ITileMapInteractor where TLayer : class, IMapLayer
+	public class TileMapCollectionInteractor : BaseMapCollectionInteractor<TileMapCollection>, ITileMapInteractor
 	{
 		public event TileDelegate TileSelected;
 
@@ -24,12 +23,9 @@ namespace CoreMod
 
 
 
-		TilesRoot tilesRoot;
-
-
 		public override bool OnHover (Transform obj, Vector3 point)
 		{
-			TileHandle handle = tilesRoot.MapHandle.GetHandle (point);
+			TileHandle handle = Collection.MapHandle.GetHandle (point);
 			if (handle == null)
 			{
 				if (hoveredTile != null)
@@ -53,7 +49,7 @@ namespace CoreMod
 
 		public override bool OnClick (Transform obj, Vector3 point)
 		{
-			TileHandle handle = tilesRoot.MapHandle.GetHandle (point);
+			TileHandle handle = Collection.MapHandle.GetHandle (point);
 			if (handle == null)
 			{
 				if (selectedTile != null)
@@ -77,22 +73,15 @@ namespace CoreMod
 			return true;
 		}
 
-		public override void OnUpdate ()
-		{
-			
-		}
-
-
 		protected override void Setup (ITable definesTable)
 		{
 			
-			tilesRoot = Find.Root<TilesRoot> ();
 			GameObject go = GameObject.Find ("MapCollider");
-			LayerHandle handle = go.AddComponent<LayerHandle> ();
-			handle.Layer = Find.Root<MapRoot.Map> ().GetLayer (Layer.Name);
+			CollectionHandle handle = go.AddComponent<CollectionHandle> ();
+			//	handle.Layer = Find.Root<MapRoot.Map> ().GetLayer (Layer.Name);
 			Transform transform = go.transform;
-			transform.position = new Vector3 (tilesRoot.MapHandle.SizeX / 2, tilesRoot.MapHandle.SizeY / 2, 0);
-			transform.localScale = new Vector3 (tilesRoot.MapHandle.SizeX, tilesRoot.MapHandle.SizeY, 0);
+			transform.position = new Vector3 (Collection.MapHandle.SizeX / 2, Collection.MapHandle.SizeY / 2, 0);
+			transform.localScale = new Vector3 (Collection.MapHandle.SizeX, Collection.MapHandle.SizeY, 0);
 
 		}
 

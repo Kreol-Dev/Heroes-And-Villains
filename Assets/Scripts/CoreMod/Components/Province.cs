@@ -6,20 +6,18 @@ using System.Collections.Generic;
 namespace CoreMod
 {
 	[ECompName ("province")]
-	public class Province : EntityComponent, ISlotted<RegionSlot>
+	public class Province : EntityComponent
 	{
+		public override void PostCreate ()
+		{
+			
+		}
+
 		public override void CopyTo (GameObject go)
 		{
 			Province prov = go.AddComponent<Province> ();
-			prov.tiles = this.tiles;
 		}
 
-		List<TileHandle> tiles;
-
-		public void Receive (RegionSlot data)
-		{
-			tiles = data.Tiles;
-		}
 
 		public override void LoadFromTable (ITable table)
 		{

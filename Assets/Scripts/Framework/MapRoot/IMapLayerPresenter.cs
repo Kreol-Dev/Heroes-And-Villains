@@ -1,12 +1,13 @@
 ﻿using UnityEngine;
 using System.Collections;
 using Demiurg.Core.Extensions;
+using System;
 
 namespace MapRoot
 {
 	public interface IMapLayerPresenter
 	{
-		void Setup (IMapLayer layer, IMapLayerInteractor interactor, IObjectPresenter objectPresenter, RepresenterState defaultState);
+		void Setup (IMapLayer layer, IMapCollectionInteractor interactor, Type objectPresenter, RepresenterState defaultState);
 
 		void ChangeState (RepresenterState state);
 
@@ -36,17 +37,26 @@ namespace MapRoot
 	}
 
 	public abstract class BaseMapLayerPresenter<TObject, TLayer, TInteractor> : IMapLayerPresenter
-        where TLayer : class, IMapLayer where TInteractor : BaseMapLayerInteractor<TLayer>
+		where TLayer : class, IMapLayer where TInteractor : class, IMapCollectionInteractor
 	{
 		Scribe scribe = Scribes.Find ("LAYER PRESENTER");
 
-		protected ObjectPresenter<TObject> ObjectPresenter { get; private set; }
+		Type objectPresenter;
 
 		protected TLayer Layer { get; private set; }
 
 		protected TInteractor Interactor { get; private set; }
 
-		public void Setup (IMapLayer layer, IMapLayerInteractor interactor, IObjectPresenter objectPresenter, RepresenterState defaultState)
+		ITable definesTable = Find.Root<ModsManager> ().GetTable ("defines");
+
+		protected ObjectPresenter<TObject> NewPresenter ()
+		{
+			ObjectPresenter<TObject> presenter = Activator.CreateInstance (objectPresenter) as ObjectPresenter<TObject>;
+			presenter.Setup (definesTable);
+			return presenter;
+		}
+
+		public void Setup (IMapLayer layer, IMapCollectionInteractor interactor, Type objectPresenter, RepresenterState defaultState)
 		{
 			Layer = layer as TLayer;
 			if (Layer == null)
@@ -60,16 +70,12 @@ namespace MapRoot
 				scribe.LogFormatError ("Interactor provided to presenter is of wrong type {0} while assumed {1}", interactor.GetType (), typeof(TInteractor));
 				return;
 			}
-			this.ObjectPresenter = objectPresenter as ObjectPresenter<TObject>; 
-			if (this.ObjectPresenter == null)
+			this.objectPresenter = objectPresenter;
+			if (!typeof(ObjectPresenter<TObject>).IsAssignableFrom (objectPresenter))
 			{
-				scribe.LogFormatError ("Object presenter provided to presenter is of wrong type {0} while assumed {1}", objectPresenter.GetType (), typeof(ObjectPresenter<TObject>));
+				scribe.LogFormatError ("Object presenter provided to presenter is of wrong type {0} while assumed {1}", objectPresenter, typeof(ObjectPresenter<TObject>));
 				return;
 			}
-			ITable table = Find.Root<ModsManager> ().GetTable ("defines");
-			if (table == null)
-				return;
-			objectPresenter.Setup (table);
 			ChangeState (defaultState);
 
 		}

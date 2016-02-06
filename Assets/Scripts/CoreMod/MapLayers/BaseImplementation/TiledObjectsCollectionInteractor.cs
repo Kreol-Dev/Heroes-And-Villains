@@ -6,25 +6,23 @@ using Demiurg.Core.Extensions;
 namespace CoreMod
 {
 
-	public abstract class TiledObjectsLayerInteractor<TObject, TLayerObject, TLayer> : BaseMapLayerInteractor<TLayer>, 
-	IObjectsInteractor<TObject, TLayer> where TLayer : class, IMapLayer, ITileMapLayer<TLayerObject> where TObject: class
+	public abstract class TiledObjectsCollectionInteractor<TCollectionObject, TCollection> : BaseMapCollectionInteractor<TCollection>, 
+	IObjectsInteractor<TCollectionObject> where TCollectionObject: class where TCollection : TiledObjectsMapCollection<TCollectionObject>
 	{
-		public event ObjectDelegate<TObject> ObjectSelected;
+		public event ObjectDelegate<TCollectionObject> ObjectSelected;
 
-		public event ObjectDelegate<TObject> ObjectDeSelected;
+		public event ObjectDelegate<TCollectionObject> ObjectDeSelected;
 
-		public event ObjectDelegate<TObject> ObjectHovered;
+		public event ObjectDelegate<TCollectionObject> ObjectHovered;
 
-		public event ObjectDelegate<TObject> ObjectDeHovered;
+		public event ObjectDelegate<TCollectionObject> ObjectDeHovered;
 
 		
 
 
-		TObject hoveredObject;
-		TObject selectedObject;
+		TCollectionObject hoveredObject;
+		TCollectionObject selectedObject;
 
-
-		public abstract bool ObjectFromLayerObject (TLayerObject obj, out TObject outObject);
 
 		TilesRoot tilesRoot;
 
@@ -42,8 +40,8 @@ namespace CoreMod
 				return false;
 			}
 
-			TObject tileContent;
-			if (!ObjectFromLayerObject (handle.Get (Layer.Tiles), out tileContent))
+			TCollectionObject tileContent = Collection.GetObjectID (handle);
+			if (tileContent == null)
 			{
 				if (hoveredObject != null)
 				{
@@ -80,8 +78,8 @@ namespace CoreMod
 			}
 
 
-			TObject tileContent;
-			if (!ObjectFromLayerObject (handle.Get (Layer.Tiles), out tileContent))
+			TCollectionObject tileContent = Collection.GetObjectID (handle);
+			if (tileContent == null)
 			{
 				if (selectedObject != null)
 				{
@@ -107,10 +105,6 @@ namespace CoreMod
 		}
 
 
-		public override void OnUpdate ()
-		{
-
-		}
 
 
 		protected override void Setup (ITable definesTable)
@@ -118,8 +112,8 @@ namespace CoreMod
 
 			tilesRoot = Find.Root<TilesRoot> ();
 			GameObject go = GameObject.Find ("MapCollider");
-			LayerHandle handle = go.AddComponent<LayerHandle> ();
-			handle.Layer = Find.Root<MapRoot.Map> ().GetLayer (Layer.Name);
+			CollectionHandle handle = go.AddComponent<CollectionHandle> ();
+			//	handle.Layer = Find.Root<MapRoot.Map> ().GetLayer (Layer.Name);
 			Transform transform = go.transform;
 			transform.position = new Vector3 (tilesRoot.MapHandle.SizeX / 2, tilesRoot.MapHandle.SizeY / 2, 0);
 			transform.localScale = new Vector3 (tilesRoot.MapHandle.SizeX, tilesRoot.MapHandle.SizeY, 0);

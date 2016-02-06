@@ -6,7 +6,7 @@ using System;
 
 namespace CoreMod
 {
-	public class MapGraphicsLayer : MapLayer, ITileMapLayer<GraphicsTile>
+	public class MapGraphicsLayer : MapLayer<TileMapCollection>, ITileMapLayer<GraphicsTile>
 	{
 		public MapHandle MapHandle { get; internal set; }
 

@@ -7,6 +7,7 @@ TILES_CONNECTIVITY = "Four"
 SEED = 1488
 
 
-BIOMES_GRAPHICS_LAYER = "graphics_layer"
+TILE_MAP_COLLECTION_NAME = "tile_map_collection"
 
-STATIC_OBJECTS_LAYER = "static_go_layer"
+TILED_OBJECTS_COLLECTION_NAME = "tiled_objects_collection"
+

@@ -6,26 +6,23 @@ using System.Collections.Generic;
 namespace CoreMod
 {
 	[ECompName ("biome")]
-	public class Biome : EntityComponent<BiomeSharedData>, ISlotted<RegionSlot>
+	public class Biome : EntityComponent
 	{
+		public BiomeSharedData SharedData { get; private set; }
+
 		List<TileHandle> tiles;
 
-		public void Receive (RegionSlot data)
-		{
-			tiles = data.Tiles;
-			gameObject.AddComponent<TilesComponent> ().tiles = tiles;
-			foreach (var tile in tiles)
-			{
-				tile.Set (SharedData.layer.Tiles, SharedData.graphicsTile);
-				SharedData.layer.TileUpdated.Dispatch (tile, SharedData.graphicsTile);
-			}
-		}
+		const string collectionName = "biomes_tiled_collection";
+		const string layerName = "biomes_layer";
 
 		public override void LoadFromTable (ITable table)
 		{
 			SharedData = new BiomeSharedData ();
-			string graphicsLayerName = Find.Root<ModsManager> ().GetTable ("defines").GetString ("BIOMES_GRAPHICS_LAYER");
-			SharedData.layer = Find.Root<MapRoot.Map> ().GetLayer (graphicsLayerName) as ITileMapLayer<GraphicsTile>;
+			var layCo = gameObject.AddComponent<LayerCollectionComponent> ();
+			layCo.Collection = collectionName;
+			layCo.Layer = layerName;
+			//gameObject.AddComponent
+//			SharedData.layer = Find.Root<MapRoot.Map> ().GetLayer (graphicsLayerName) as ITileMapLayer<GraphicsTile>;
 			SharedData.movementCost = table.GetInt ("tile_movement_cost");
 			int priority = table.GetInt ("priority");
 			string spriteName = table.GetString ("tile_graphics");
@@ -40,9 +37,18 @@ namespace CoreMod
 			Biome biome = go.AddComponent<Biome> ();
 			biome.SharedData = SharedData;
 		}
+
+		public override void PostCreate ()
+		{
+			TilesComponent tilesCmp = GetComponent<TilesComponent> ();
+			tiles = new List<TileHandle> (tilesCmp.Tiles);
+		}
 	}
 
-
+	public class TiledBiomesLayer : GOLayer<Biome>
+	{
+		
+	}
 
 
 }

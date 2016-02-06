@@ -30,8 +30,51 @@ public class ObjectsCreator : Root
 
 	}
 
-	public GameObject CreateObject (string name, ITable fromTable)
+	public GameObject CreateObject (GameObject prototype)
 	{
+		GameObject obj = new GameObject ();
+		foreach (var cmp in prototype.GetComponents<EntityComponent>())
+			cmp.CopyTo (obj);
+	}
+
+	public GameObject GetPrototype (string packName, string name)
+	{
+		Dictionary<string, GameObject> pack = null;
+		prototypes.TryGetValue (packName, out pack);
+		if (pack == null)
+			return null;
+		GameObject prototype = null;
+		pack.TryGetValue (name);
+		return prototype;
+	}
+
+	public GameObject CreateObject (string packName, string name)
+	{
+		Dictionary<string, GameObject> pack = null;
+		prototypes.TryGetValue (packName, out pack);
+		if (pack == null)
+			return null;
+		GameObject prototype = null;
+		pack.TryGetValue (name);
+		if (prototype == null)
+			return null;
+		GameObject obj = new GameObject ();
+		foreach (var cmp in prototype.GetComponents<EntityComponent>())
+			cmp.CopyTo (obj);
+		return obj;
+	}
+
+
+	public GameObject RegisterObject (string packName, string name, ITable fromTable)
+	{
+		Dictionary<string, GameObject> pack = null;
+		prototypes.TryGetValue (packName, out pack);
+		if (pack == null)
+		{
+			pack = new Dictionary<string, GameObject> ();
+			prototypes.Add (packName, pack);
+		}
+
 		GameObject go = new GameObject (name);
 		foreach (var cmpName in fromTable.GetKeys())
 		{
@@ -40,8 +83,10 @@ public class ObjectsCreator : Root
 			if (type == null)
 				continue;
 			EntityComponent cmp = go.AddComponent (type) as EntityComponent;
-			cmp.LoadFromTable (fromTable.GetTable (cmpName) as ITable);
+			cmp.LoadFromTable (fromTable.GetTable (cmpName));
 		}
+		pack.Add (name, go);
+		go.SetActive (false);
 		return go;
 	}
 
@@ -59,7 +104,7 @@ public class ObjectsCreator : Root
 
 	protected override void PreSetup ()
 	{
-        
+		prototypes = new Dictionary<string, Dictionary<string, GameObject>> ();
 	}
 
 }
@@ -74,18 +119,31 @@ public class ECompName : Attribute
 	}
 }
 
+
+public delegate void GenericSenderDelegate<T> (T sender);
 public abstract class EntityComponent : MonoBehaviour
 {
 	public abstract void LoadFromTable (ITable table);
 
-
 	public abstract void CopyTo (GameObject go);
 
-}
+	public abstract void PostCreate ();
 
-public abstract class EntityComponent<TSharedData> : EntityComponent
-{
-	protected TSharedData SharedData { get; set; }
+	public event GenericSenderDelegate<EntityComponent> NotifyUpdate;
 
+	bool Updated = false;
 
+	protected void GotUpdated ()
+	{
+		Updated = true;
+	}
+
+	void Update ()
+	{
+		if (Updated)
+		{
+			Updated = false;
+			NotifyUpdate (this);
+		}
+	}
 }

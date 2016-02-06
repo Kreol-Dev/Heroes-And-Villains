@@ -1,4 +1,6 @@
 
-graphics_layer_interactor = {"CoreMod.GraphicsLayerInteractor", "Active"}
+tile_map_collection_interactor = {"CoreMod.TileMapCollectionInteractor", "Active"}
 
-static_go_layer_interactor = {"CoreMod.GOInteractor", "Active"}
+tiled_objects_collection_interactor = {"CoreMod.GOInteractor", "Active"}
+
+biomes_tiled_collection_interactor = {"CoreMod.GOInteractor", "Active"}
