@@ -19,8 +19,6 @@ namespace CoreMod
 		[AConfig ("replacers_namespace")]
 		string replacersNamespace;
 
-		ObjectsCreator oCreator = Find.Root<ObjectsCreator> ();
-
 		class Replacer
 		{
 			public GameObject GO;
@@ -68,8 +66,7 @@ namespace CoreMod
 
 				for (int i = 0; i < components.Length; i++)
 					components [i].FillComponent (slot.Replacer);
-				foreach (var cmp in slot.Replacer.GetComponents<EntityComponent>())
-					cmp.PostCreate ();
+
 				slot.Replacer.SetActive (true);
 				OutputObjects.Add (slot.Replacer);
 			}
@@ -137,7 +134,10 @@ namespace CoreMod
 			}
 			GameObject replacer = possibleSlotReplacers [Random.Next () % possibleSlotReplacers.Count].GO;
 			slot.Similarity = maxSimilarity;
-			return oCreator.CreateObject (replacer);
+			GameObject go = new GameObject (replacer.name);
+			foreach (var comp in replacer.GetComponents<EntityComponent>())
+				comp.CopyTo (go);
+			return go;
 
 
 		}

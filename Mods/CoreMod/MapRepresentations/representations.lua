@@ -1,27 +1,12 @@
 
-tile_map_collection_representation =
+graphics_layer_representations =
 {
-	graphics_layer =
-	{
-		simple = { "CoreMod.GraphicsLayerRenderer", "CoreMod.GraphicsLayerPresenter", "CoreMod.GraphicsObjectPresenter" , "Active" }
-	}
+	sprite = { "CoreMod.GraphicsLayerRenderer", "CoreMod.GraphicsLayerPresenter", "CoreMod.GraphicsObjectPresenter" , "Active"}
 }
 
-tiled_objects_collection_representation =
+static_go_layer_representations =
 {
-	base_layer = 
-	{
-		settlement = { "CoreMod.DefaultRenderer", "CoreMod.SettlementLayerPresenter", "CoreMod.SettlementPresenter", "Active"},
-		encounter = { "CoreMod.DefaultRenderer", "CoreMod.EncounterLayerPresenter", "CoreMod.EncounterPresenter", "Active"}
-	}
-	
+	settlement = { "CoreMod.GORenderer", "CoreMod.SettlementLayerPresenter", "CoreMod.SettlementPresenter", "Active"},
+	encounter = { "CoreMod.GORenderer", "CoreMod.EncounterLayerPresenter", "CoreMod.EncounterPresenter", "Active"}
 }
 
-biomes_tiled_collection_representation =
-{
-	biomes_layer = 
-	{
-		graphics = { "CoreMod.BiomesRenderer", "CoreMod.BiomesLayerPresenter", "CoreMod.SettlementPresenter", "Active"}
-	}
-	
-}

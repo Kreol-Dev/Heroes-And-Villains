@@ -48,7 +48,7 @@ namespace CoreMod
 			{
                 
 				ITable repTable = table.GetTable (repKey);
-				GameObject go = creator.RegisterObject (namespaceName, repKey as string, repTable);
+				GameObject go = creator.CreateObject (repKey as string, repTable);
 				go.transform.SetParent (namespaceFolder);
 				go.SetActive (false);
 

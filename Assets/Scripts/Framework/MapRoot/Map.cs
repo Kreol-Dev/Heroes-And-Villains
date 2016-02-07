@@ -10,62 +10,34 @@ namespace MapRoot
 	public class Map : Root
 	{
 		Scribe scribe = Scribes.Find ("MAP");
-		ModsManager mm = Find.Root<ModsManager> ();
-
-		Dictionary<string, IMapCollection> collections = new Dictionary<string, IMapCollection> ();
+		Dictionary<string, IMapLayer> layers = new Dictionary<string, IMapLayer> ();
 
 		protected override void CustomSetup ()
 		{
-			ITable layersTable = mm.GetTable ("map_layers");
-			foreach (var collectionKey in layersTable.GetKeys())
+			ITable layersTable = Find.Root<ModsManager> ().GetTable ("map_layers");
+			foreach (var key in layersTable.GetKeys())
 			{
-				IMapCollection collection = ReadCollection (layersTable, collectionKey as string);
-				if (collection == null)
-					continue;
-				collections.Add (collection.Name, collection);
+				try
+				{
+					string layerName = (string)key;
+					string layerTypeName = layersTable.GetString (layerName);
+					Type type = Type.GetType (layerTypeName);
+					IMapLayer layer = Activator.CreateInstance (type) as IMapLayer;
+					if (layer == null)
+					{
+						scribe.LogFormatError ("Layer {0} is not a subclass of IMapLayer", layerName);
+						continue;
+					}
+					layer.Setup (layerName);
+					layers.Add (layerName, layer);
+				} catch (ITableTypesMismatch e)
+				{
+					
+				}
+
 			}
 			Fulfill.Dispatch ();
 
-		}
-
-		IMapCollection ReadCollection (ITable table, string collectionName)
-		{
-			try
-			{
-				ITable colTable = table.GetTable ("collection");
-				var collectionTypeName = table.GetString ("collection_type");
-				Type type = mm.GetType (collectionTypeName);
-				IMapCollection collection = Activator.CreateInstance (type) as IMapCollection;
-				var layers = ReadLayers (table.GetTable ("layers"));
-				foreach (var layer in layers)
-					collection.AddLayer (layer, layer.Name);
-				return collection;
-			} catch (MissingFieldException e)
-			{
-				return null;
-			}
-
-		}
-
-		List<IMapLayer> ReadLayers (ITable table)
-		{
-			List<IMapLayer> collectionLayers = new List<IMapLayer> ();
-			foreach (var key in table.GetKeys())
-			{
-				string layerName = (string)key;
-				string layerTypeName = table.GetString (layerName);
-				Type type = Type.GetType (layerTypeName);
-				IMapLayer layer = Activator.CreateInstance (type) as IMapLayer;
-				if (layer == null)
-				{
-					scribe.LogFormatError ("Layer {0} is not a subclass of IMapLayer", layerName);
-					continue;
-				}
-				layer.Setup (layerName);
-				collectionLayers.Add (layer);
-
-			}
-			return collectionLayers;
 		}
 
 		protected override void PreSetup ()
@@ -74,60 +46,57 @@ namespace MapRoot
 		}
 
 
-
-
-
-
-		void RegisterMapCollection (string name, Type collectionType)
+		public void RegisterMapLayer (string name, Type layerType)
 		{
-			IMapCollection collection = Activator.CreateInstance (collectionType) as IMapCollection;
-			if (collections.ContainsKey (name))
+			IMapLayer layer = Activator.CreateInstance (layerType) as IMapLayer;
+			if (layers.ContainsKey (name))
 			{
-				scribe.LogFormatError ("Map already contains collection with the name {0} and type {1} (duplicate has the type {2})", 
-				                       name, collections [name].GetType (), collectionType);
+				scribe.LogFormatError ("Map already contains layer with the name {0} and type {1} (duplicate has the type {2})", 
+				                       name, layers [name].GetType (), layerType);
 				return;
 			}
-			collections.Add (name, collection);
+			layers.Add (name, layer);
 		}
 
-		public T GetCollection<T> (string name) where T : class, IMapCollection, new()
+		public T GetLayer<T> (string name) where T : class, IMapLayer, new()
 		{
-			T collection;
-			if (!collections.ContainsKey (name))
+			T layer;
+			if (!layers.ContainsKey (name))
 			{
-				scribe.LogFormatWarning ("Map had no collection with the name {0} and type {1}, so it was added during GetCollectionr<T> call", name, typeof(T));
-				RegisterMapCollection (name, typeof(T));
-				return collections [name] as T;
+				scribe.LogFormatWarning ("Map had no layer with the name {0} and type {1}, so it was added during GetLayer<T> call", name, typeof(T));
+				RegisterMapLayer (name, typeof(T));
+				return layers [name] as T;
 			}
-			collection = collections [name] as T;
-			if (collection == null)
+			layer = layers [name] as T;
+			if (layer == null)
 			{
-				scribe.LogFormatError ("Map had a collection with the name {0} but the assumed type {1} was incorrect {2}, so it was returned during GetCollection call"
-				                       , name, typeof(T), collections [name].GetType ());
+				scribe.LogFormatError ("Map had a layer with the name {0} but the assumed type {1} was incorrect {2}, so it was returned during GetLayer call"
+                    , name, typeof(T), layers [name].GetType ());
 				return new T ();
 			}
-			return collection;
+			return layer;
 		}
 
-		public IMapCollection GetCollection (string name)
+		public IMapLayer GetLayer (string name)
 		{
-			IMapCollection collection;
-			if (!collections.ContainsKey (name))
+			IMapLayer layer;
+			if (!layers.ContainsKey (name))
 			{
-				scribe.LogFormatWarning ("Map had no collection with the name {0}, so null was returned", 
+				scribe.LogFormatWarning ("Map had no layer with the name {0}, so DefaultMapLayer was added during GetLayer call", 
 				                         name);
-				return null;
+				layer = new DefaultMapLayer ();
+				layer.Setup (name);
 			} else
-				collection = collections [name];
-			return collection;
+				layer = layers [name];
+			return layer;
 		}
 
-		public List<IMapCollection> GetAllCollections ()
+		public string[] GetAllLayerNames ()
 		{
-			List<IMapCollection> collectionsList = new List<IMapCollection> ();
-			foreach (var collection in collections)
-				collectionsList.Add (collection.Value);
-			return collectionsList;
+			List<string> names = new List<string> ();
+			foreach (var layer in layers)
+				names.Add (layer.Key);
+			return names.ToArray ();
 		}
 	}
 

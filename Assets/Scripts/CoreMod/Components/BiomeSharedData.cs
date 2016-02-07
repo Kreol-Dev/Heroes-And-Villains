@@ -10,6 +10,7 @@ namespace CoreMod
 		public GraphicsTile graphicsTile;
 		public int movementCost;
 		public string biomeName;
+		public ITileMapLayer<GraphicsTile> layer;
 	}
 
 

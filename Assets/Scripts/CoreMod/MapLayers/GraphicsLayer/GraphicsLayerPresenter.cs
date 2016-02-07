@@ -3,13 +3,12 @@ using System.Collections;
 
 namespace CoreMod
 {
-	public class GraphicsLayerPresenter : TileMapLayerPresenter<GraphicsTile, GraphicsTile, MapGraphicsLayer, TileMapCollectionInteractor, TileMapCollection>
+	public class GraphicsLayerPresenter : TileMapLayerPresenter<GraphicsTile, GraphicsTile, MapGraphicsLayer, GraphicsLayerInteractor>
 	{
-		protected override GraphicsTile GetObjectFromLayer (GraphicsTile obj)
+		public override GraphicsTile ObjectFromLayer (GraphicsTile obj)
 		{
 			return obj;
 		}
-
 
 
 

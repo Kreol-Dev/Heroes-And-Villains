@@ -16,7 +16,7 @@ namespace CoreMod
 	}
 
 	public delegate void ObjectDelegate<T> (T obj);
-	public interface IObjectsInteractor<TObject>
+	public interface IObjectsInteractor<TObject, TLayer>
 	{
 		event ObjectDelegate<TObject> ObjectSelected;
 

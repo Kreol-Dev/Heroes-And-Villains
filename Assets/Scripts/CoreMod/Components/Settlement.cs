@@ -10,15 +10,14 @@ using System.Collections.Generic;
 namespace CoreMod
 {
 	[ECompName ("settlement")]
-	public class Settlement : EntityComponent
+	public class Settlement : EntityComponent<SettlementSharedData>, ISlotted<SlotTile>
 	{
-		public override void PostCreate ()
+		public void Receive (SlotTile data)
 		{
-			
+			(gameObject.AddComponent<TilesComponent> ().tiles = new List<TileHandle> ()).Add (Find.Root<TilesRoot> ().MapHandle.GetHandle (data.X, data.Y));
+			SharedData.layer.ObjectAdded.Dispatch (gameObject);
+
 		}
-
-
-		public SettlementSharedData SharedData { get; internal set; }
 
 		public override void CopyTo (GameObject go)
 		{
@@ -37,9 +36,9 @@ namespace CoreMod
 			string spriteName = table.GetString ("race");
 			Race = Find.Root<Sprites> ().GetSprite ("races", spriteName);
 			SharedData = new SettlementSharedData ();
-//
-//			string graphicsLayerName = Find.Root<ModsManager> ().GetTable ("defines").GetString ("STATIC_OBJECTS_LAYER");
-//			SharedData.layer = Find.Root<MapRoot.Map> ().GetLayer (graphicsLayerName) as IListMapLayer<GameObject>;
+
+			string graphicsLayerName = Find.Root<ModsManager> ().GetTable ("defines").GetString ("STATIC_OBJECTS_LAYER");
+			SharedData.layer = Find.Root<MapRoot.Map> ().GetLayer (graphicsLayerName) as IListMapLayer<GameObject>;
 
 			//SharedData.layer.ObjectAdded.Dispatch (this.gameObject);
 
@@ -54,9 +53,17 @@ namespace CoreMod
 
 
 
-	public class SettlementLayerPresenter : ConvertedLayerPresenter<Encounter>
+	public class SettlementLayerPresenter : ObjectLayerPresenter<Settlement, GameObject, GOLayer, GOInteractor>
 	{
+		public override Settlement ObjectFromLayer (GameObject obj)
+		{
+			if (obj != null)
+				return obj.GetComponent<Settlement> ();
+			return null;
+		}
+		
 	}
+
 
 
 

@@ -34,12 +34,12 @@ namespace MapRoot
 			}
 			for (int i = 0; i < collidersCount; i++)
 			{
-				CollectionHandle[] handles = hits [i].transform.gameObject.GetComponents<CollectionHandle> ();
+				LayerHandle[] handles = hits [i].transform.gameObject.GetComponents<LayerHandle> ();
 				foreach (var handle in handles)
 				{
-					if (interactor.GetCollectionState (handle.Collection) == InteractorState.Active)
+					if (interactor.GetLayerState (handle.Layer) == InteractorState.Active)
 					{
-						objectHits [objectHitsCount++] = new ObjectHit (hits [i].transform, hits [i].point, interactor.GetInteractor (handle.Collection));
+						objectHits [objectHitsCount++] = new ObjectHit (hits [i].transform, hits [i].point, interactor.GetInteractor (handle.Layer));
 					}
 				}
 				
