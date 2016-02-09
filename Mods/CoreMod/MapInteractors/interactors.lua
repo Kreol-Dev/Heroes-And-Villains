@@ -1,4 +1,20 @@
+biomes_interactor =
+{
+	interactor_type = "CoreMod.GOInteractor",
+	default_state = "Active",
+	layer = "biomes_layer"
+}
 
-graphics_layer_interactor = {"CoreMod.GraphicsLayerInteractor", "Active"}
+statics_interactor =
+{
+	interactor_type = "CoreMod.GOInteractor",
+	default_state = "Active",
+	layer = "static_go_layer"
+}
 
-static_go_layer_interactor = {"CoreMod.GOInteractor", "Active"}
+tiles_interactor =
+{
+	interactor_type = "CoreMod.TileMapLayerInteractor",
+	default_state = "Active",
+	layer = "tile_map_layer"
+}

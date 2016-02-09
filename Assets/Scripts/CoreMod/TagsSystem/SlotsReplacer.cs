@@ -66,7 +66,10 @@ namespace CoreMod
 
 				for (int i = 0; i < components.Length; i++)
 					components [i].FillComponent (slot.Replacer);
-
+				EntityComponent[] entComponents = slot.Replacer.GetComponents<EntityComponent> ();
+				for (int i = 0; i < entComponents.Length; i++)
+					entComponents [i].PostCreate ();
+				
 				slot.Replacer.SetActive (true);
 				OutputObjects.Add (slot.Replacer);
 			}

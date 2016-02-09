@@ -1,23 +1,42 @@
 ﻿using UnityEngine;
 using System.Collections;
 using Demiurg.Core.Extensions;
+using System.Collections.Generic;
 
 namespace MapRoot
 {
 	public interface IMapLayerInteractor
 	{
-		void Setup (IMapLayer layer, InteractorState defaultState);
+		int Priority { get; }
 
-		bool OnHover (Transform target, Vector3 point);
+		void Setup (IMapLayer layer, InteractorState defaultState, int priority);
 
-		bool OnClick (Transform target, Vector3 point);
+		IEnumerable<object> OnHover (Vector2 point, HashSet<Transform> encounters);
 
+		object OnSelect (Vector2 point, HashSet<object> selectables);
 
-		void OnUpdate ();
+		object OnDeSelect (Vector2 point);
+
+		IEnumerable<object> OnDeselectAll ();
+
+		IEnumerable<object> OnMassSelect (Vector2 minCorner, Vector2 maxCorner);
 	}
 
 	public abstract class BaseMapLayerInteractor<TLayer> : IMapLayerInteractor where TLayer : class, IMapLayer
 	{
+		public int Priority { get; internal set; }
+
+		public abstract IEnumerable<object> OnHover (Vector2 point, HashSet<Transform> encounters);
+
+		public abstract object OnSelect (Vector2 point, HashSet<object> selectables);
+
+		public abstract object OnDeSelect (Vector2 point);
+
+		public abstract IEnumerable<object> OnDeselectAll ();
+
+		public abstract IEnumerable<object> OnMassSelect (Vector2 minCorner, Vector2 maxCorner);
+
+		
 
 		protected Scribe Scribe = Scribes.Find ("INTERACTORS");
 		TLayer layer;
@@ -26,9 +45,9 @@ namespace MapRoot
 
 		MapInteractor mapInteractor;
 
-		public void Setup (IMapLayer layer, InteractorState defaultState)
+		public void Setup (IMapLayer layer, InteractorState defaultState, int priority)
 		{
-
+			Priority = priority;
 			Scribe.LogFormat ("Interactor {0} start working with a layer {1}", this.GetType (), layer.Name);
 			this.layer = layer as TLayer;
 			if (this.layer == null)
@@ -43,13 +62,6 @@ namespace MapRoot
 		}
 
 		protected abstract void Setup (ITable definesTable);
-
-		public abstract bool OnHover (Transform obj, Vector3 point);
-
-		public abstract bool OnClick (Transform obj, Vector3 point);
-
-
-		public abstract void OnUpdate ();
 	}
 }
 

@@ -7,92 +7,109 @@ using System.Text;
 
 namespace CoreMod
 {
-	public abstract class TileMapLayerInteractor<TLayer> : BaseMapLayerInteractor<TLayer>, 
-	ITileMapInteractor where TLayer : class, IMapLayer
+	public class TileMapLayerInteractor : BaseMapLayerInteractor<TileMapLayer>, IObjectsInteractor<TileHandle>
 	{
-		public event TileDelegate TileSelected;
 
-		public event TileDelegate TileDeselected;
+		HashSet<TileHandle> selectedTiles = new HashSet<TileHandle> ();
 
-		public event TileDelegate TileHovered;
+		public event ObjectDelegate<TileHandle> ObjectSelected;
 
-		public event TileDelegate TileDeHovered;
+		public event ObjectDelegate<TileHandle> ObjectDeSelected;
 
+		TileHandle hoveredTile = null;
 
-		TileHandle hoveredTile;
-		TileHandle selectedTile;
+		public event ObjectDelegate<TileHandle> ObjectHovered;
 
+		public event ObjectDelegate<TileHandle> ObjectDeHovered;
 
+		TileHandle[] cachedHoverArray = new TileHandle[1];
+		TileHandle[] clearHoverArray = new TileHandle[0];
 
-		TilesRoot tilesRoot;
-
-
-		public override bool OnHover (Transform obj, Vector3 point)
+		public override IEnumerable<object> OnHover (Vector2 point, HashSet<Transform> encounters)
 		{
-			TileHandle handle = tilesRoot.MapHandle.GetHandle (point);
-			if (handle == null)
+			TileHandle handle = Layer.MapHandle.GetHandle (point);
+			cachedHoverArray [0] = handle;
+			if (handle != null)
 			{
-				if (hoveredTile != null)
+				if (hoveredTile != handle)
 				{
-					TileDeHovered (hoveredTile);
-					hoveredTile = null;
-				}
-				return false;
-			}
-
-			if (handle != hoveredTile)
-			{
-				if (hoveredTile != null)
-					TileDeHovered (hoveredTile);
-				hoveredTile = handle;
-				TileHovered (hoveredTile);
-			}
-			return true;
-		}
-
-
-		public override bool OnClick (Transform obj, Vector3 point)
-		{
-			TileHandle handle = tilesRoot.MapHandle.GetHandle (point);
-			if (handle == null)
-			{
-				if (selectedTile != null)
-				{
-					TileDeselected (selectedTile);
-					selectedTile = null;
-				}
-				return false;
-			}
-			if (handle == selectedTile)
-			{
-				TileDeselected (selectedTile);
-				selectedTile = null;
-				return false;
+					if (hoveredTile != null)
+						ObjectDeHovered (hoveredTile);
+					hoveredTile = handle;
+					ObjectHovered (hoveredTile);
+				}					
+				return cachedHoverArray;
 			} else
 			{
-				TileSelected (handle);
-				selectedTile = handle;
+				if (hoveredTile != null)
+				{
+					ObjectDeHovered (hoveredTile);
+					hoveredTile = null;
+				}
+				return clearHoverArray;
 			}
-
-			return true;
 		}
 
-		public override void OnUpdate ()
+		public override object OnSelect (Vector2 point, HashSet<object> selectables)
 		{
-			
+			TileHandle handle = Layer.MapHandle.GetHandle (point);
+			if (handle == null)
+				return null;
+			else if (!selectables.Contains (handle))
+				return null;
+			else if (selectedTiles.Add (handle))
+			{
+				ObjectSelected (handle);
+				return handle;
+			} 		
+			return null;
+		}
+
+		public override object OnDeSelect (Vector2 point)
+		{
+			TileHandle handle = Layer.MapHandle.GetHandle (point);
+			if (selectedTiles.Remove (handle))
+			{
+				ObjectDeSelected (handle);
+				return handle;
+			}
+			return null;
+		}
+
+		HashSet<TileHandle> cachedSet = new HashSet<TileHandle> ();
+
+		public override IEnumerable<object> OnDeselectAll ()
+		{
+			cachedSet.Clear ();
+			HashSet<TileHandle> tempSet = selectedTiles;
+			selectedTiles = cachedSet;
+			cachedSet = tempSet;
+			foreach (var tile in cachedSet)
+				ObjectDeSelected (tile);
+			return cachedSet as IEnumerable<object>;
+		}
+
+		public override IEnumerable<object> OnMassSelect (Vector2 minCorner, Vector2 maxCorner)
+		{
+			return null;
 		}
 
 
 		protected override void Setup (ITable definesTable)
 		{
-			
-			tilesRoot = Find.Root<TilesRoot> ();
+			ObjectSelected += (obj) => Debug.LogFormat ("TILE SElECTED: {0} {1}", obj.X, obj.Y);
+
+			ObjectDeSelected += (obj) => Debug.LogFormat ("TILE DESELECTED: {0} {1}", obj.X, obj.Y);
+
+			ObjectHovered += (obj) => Debug.LogFormat ("TILE HOVERED: {0} {1}", obj.X, obj.Y);
+
+			ObjectDeHovered += (obj) => Debug.LogFormat ("TILE DEHOVERED: {0} {1}", obj.X, obj.Y);
 			GameObject go = GameObject.Find ("MapCollider");
-			LayerHandle handle = go.AddComponent<LayerHandle> ();
-			handle.Layer = Find.Root<MapRoot.Map> ().GetLayer (Layer.Name);
+			InteractorRealm handle = go.AddComponent<InteractorRealm> ();
+			handle.Interactor = this;
 			Transform transform = go.transform;
-			transform.position = new Vector3 (tilesRoot.MapHandle.SizeX / 2, tilesRoot.MapHandle.SizeY / 2, 0);
-			transform.localScale = new Vector3 (tilesRoot.MapHandle.SizeX, tilesRoot.MapHandle.SizeY, 0);
+			transform.position = new Vector3 (Layer.MapHandle.SizeX / 2, Layer.MapHandle.SizeY / 2, 0);
+			transform.localScale = new Vector3 (Layer.MapHandle.SizeX, Layer.MapHandle.SizeY, 0);
 
 		}
 

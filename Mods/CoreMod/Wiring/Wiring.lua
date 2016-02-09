@@ -206,6 +206,10 @@ random_points =
 cities_placer =
 {
 	avatar_type = "CoreMod.SlotsPlacer",
+	configs =
+	{
+		target_layer = defines.STATIC_OBJECTS_LAYER
+	},
 	inputs = 
 	{
 		points = {"random_points", "main"}
@@ -305,7 +309,8 @@ regions_slots_creator =
 	configs =
 	{
 		name = "Land",
-		density = 100
+		density = 100,
+		target_layer = defines.BIOMES_GO_LAYER
 	},
 	inputs =
 	{
@@ -319,7 +324,8 @@ ocean_slots_creator =
 	configs =
 	{
 		name = "Ocean",
-		density = 1000
+		density = 1000,
+		target_layer = defines.BIOMES_GO_LAYER
 	},
 	inputs =
 	{
@@ -416,6 +422,10 @@ encounter_points =
 encounter_placer =
 {
 	avatar_type = "CoreMod.SlotsPlacer",
+	configs =
+	{
+		target_layer = defines.STATIC_OBJECTS_LAYER
+	},
 	inputs = 
 	{
 		points = {"encounter_points", "main"}

@@ -1,67 +1,54 @@
 ﻿using UnityEngine;
 using System.Collections;
 using MapRoot;
-using System.Collections.Generic;
 
 namespace CoreMod
 {
-	public abstract class TileMapLayerPresenter<TObject, TLayerObject, TLayer, TInteractor> : BaseMapLayerPresenter<TObject, TLayer, TInteractor>
-		where TLayer : class, IMapLayer, ITileMapLayer<TLayerObject> where TInteractor : BaseMapLayerInteractor<TLayer>, ITileMapInteractor
+	public class TileMapLayerPresenter<TObject, TLayer> : ObjectLayerPresenter<TObject, TileHandle, TLayer, TileMapLayerInteractor>
+		where TLayer : class, IMapLayer, ITileMapLayer<TObject>
 	{
-		HashSet<TileHandle> selectedTiles = new HashSet<TileHandle> ();
-		HashSet<TileHandle> hoveredTiles = new HashSet<TileHandle> ();
-
 		public override void ChangeState (RepresenterState state)
 		{
+			base.ChangeState (state);
 			switch (state)
 			{
 			case RepresenterState.Active:
-				Interactor.TileSelected += Clicked;
-				Interactor.TileDeselected += DeClicked;
-				Interactor.TileHovered += Hovered;
-				Interactor.TileDeHovered += DeHovered;
-				Layer.MassUpdate.AddListener (ObjectPresenter.Update);
-				Layer.TileUpdated.AddListener (TileUpdated);
+				Layer.TileUpdated.AddListener (OnTileUpdated);
 				break;
 			case RepresenterState.NotActive:
-				Interactor.TileSelected -= Clicked;
-				Interactor.TileDeselected -= DeClicked;
-				Interactor.TileHovered -= Hovered;
-				Interactor.TileDeHovered -= DeHovered;
-				Layer.MassUpdate.RemoveListener (ObjectPresenter.Update);
-				Layer.TileUpdated.RemoveListener (TileUpdated);
+				Layer.TileUpdated.RemoveListener (OnTileUpdated);
 				break;
 			}
 		}
 
-		public abstract TObject ObjectFromLayer (TLayerObject obj);
-
-		void Clicked (TileHandle tile)
+		public override TObject ObjectFromLayer (TileHandle obj)
 		{
-			ObjectPresenter.ShowObjectDesc (ObjectFromLayer (tile.Get (Layer.Tiles)));
+			return obj.Get (Layer.Tiles);
 		}
 
-		void DeClicked (TileHandle tile)
-		{
-			ObjectPresenter.HideObjectDesc ();
-		}
 
-		void Hovered (TileHandle tile)
+		void OnTileUpdated (TileHandle handle)
 		{
-			ObjectPresenter.ShowObjectShortDesc (ObjectFromLayer (tile.Get (Layer.Tiles)));
+			TObject obj = handle.Get (Layer.Tiles);
+			ObjectPresenter<TObject> oPresenter = null;
+			hoverPresenters.TryGetValue (handle, out oPresenter);
+			if (oPresenter != null)
+			{
+				if (obj == null)
+					oPresenter.HideObjectShortDesc ();
+				else
+					oPresenter.ShowObjectShortDesc (obj);
+			}
+			oPresenter = null;
+			selectionPresenters.TryGetValue (handle, out oPresenter);
+			if (oPresenter != null)
+			{
+				if (obj == null)
+					oPresenter.HideObjectDesc ();
+				else
+					oPresenter.ShowObjectDesc (obj);
+			}
 		}
-
-		void DeHovered (TileHandle tile)
-		{
-			ObjectPresenter.HideObjectShortDesc ();
-		}
-
-		void TileUpdated (TileHandle tile, TLayerObject obj)
-		{
-            
-			ObjectPresenter.Update ();
-		}
-
 	}
 
 }

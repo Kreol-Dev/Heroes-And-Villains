@@ -18,11 +18,6 @@ namespace CoreMod
 		{
 			this.transform.position = new Vector3 (X, Y, 0);
 			go.GetComponent<Transform> ().position = new Vector3 (X, Y, 0);
-			var slots = go.GetComponents<ISlotted<SlotTile>> ();
-			foreach (var slot in slots)
-			{
-				slot.Receive (this);
-			}
 		}
 	}
 

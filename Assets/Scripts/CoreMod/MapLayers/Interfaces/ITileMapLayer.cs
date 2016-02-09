@@ -7,12 +7,11 @@ namespace CoreMod
 {
 	public interface ITileMapLayer<T>
 	{
+		MapHandle MapHandle { get; }
+
 		T[,] Tiles { get; }
 
-		Signal<TileHandle, T> TileUpdated { get; }
-
-		Signal MassUpdate { get; }
-
+		Signal<TileHandle> TileUpdated { get; }
 	}
 
 }

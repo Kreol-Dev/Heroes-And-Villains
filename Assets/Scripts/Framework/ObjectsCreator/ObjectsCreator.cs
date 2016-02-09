@@ -81,6 +81,8 @@ public abstract class EntityComponent : MonoBehaviour
 
 	public abstract void CopyTo (GameObject go);
 
+	public abstract void PostCreate ();
+
 }
 
 public abstract class EntityComponent<TSharedData> : EntityComponent

@@ -17,8 +17,7 @@ namespace MapRoot
 		{
 			interactors = Find.Root<MapInteractor> ();
 			map = Find.Root<Map> ();
-			var layerNames = map.GetAllLayerNames ();
-			ReadRepresenters (layerNames);
+			ReadRepresenters ();
 			Fulfill.Dispatch ();
 		}
 
@@ -32,7 +31,7 @@ namespace MapRoot
 				{
 					state = value;
 					Presenter.ChangeState (state);
-					//Renderer.ChangeState(state);
+					Renderer.ChangeState (state);
 				}
 			}
 
@@ -40,12 +39,12 @@ namespace MapRoot
 
 			public IMapLayerRenderer Renderer { get; internal set; }
 
-			public RepresenterHandle (IMapLayer layer, IMapLayerInteractor interactor, IMapLayerPresenter presenter, IMapLayerRenderer renderer, IObjectPresenter objectPresenter, RepresenterState defaultState)
+			public RepresenterHandle (IMapLayer layer, IMapLayerInteractor interactor, IMapLayerPresenter presenter, IMapLayerRenderer renderer, Type objectPresenterType, RepresenterState defaultState)
 			{
 				Presenter = presenter;
 				Renderer = renderer;
 				state = defaultState;
-				Presenter.Setup (layer, interactor, objectPresenter, state);
+				Presenter.Setup (layer, interactor, objectPresenterType, state);
 				Renderer.Setup (layer, interactor, state);
 			}
 		}
@@ -76,51 +75,50 @@ namespace MapRoot
 			binding.State = state;
 		}
 
-		void ReadRepresenters (string[] layerNames)
+		void ReadRepresenters ()
 		{
-			ITable table = Find.Root<ModsManager> ().GetTable ("representations");
-			foreach (var key in table.GetKeys())
-				Debug.Log (key);
-			foreach (var layerName in layerNames)
+			var mm = Find.Root<ModsManager> ();
+			ITable table = mm.GetTable ("representations");
+			foreach (var repName in table.GetKeys())
 			{
-                
-				ITable representationsTable = table.GetTable (layerName + "_representations") as ITable;
-
-				if (representationsTable == null)
+				try
 				{
-					scribe.LogFormatWarning ("No representers for a layer {0} / {1}", layerName, layerName + "_representations");
+					ITable repTable = table.GetTable (repName);
+
+					string rendererTypeName = repTable.GetString ("renderer");
+					string presenterTypeName = repTable.GetString ("presenter");
+					string objectPresenterTypeName = repTable.GetString ("objectPresenter");
+
+					Type rendererType = mm.GetType (rendererTypeName);
+					Type presenterType = mm.GetType (presenterTypeName);
+					Type objectPresenterType = mm.GetType (objectPresenterTypeName);
+
+					IMapLayerRenderer repRenderer = Activator.CreateInstance (rendererType) as IMapLayerRenderer;
+					IMapLayerPresenter repPresenter = Activator.CreateInstance (presenterType) as IMapLayerPresenter;
+					ITable layersTable = repTable.GetTable ("layers");
+
+					RepresenterState state = (RepresenterState)Enum.Parse (typeof(RepresenterState), repTable.GetString ("default_state"));
+					string interactorName = repTable.GetString ("interactor");
+					var interactor = interactors.GetInteractor (interactorName);
+					foreach (var layerID in layersTable.GetKeys())
+					{
+						string layerName = layersTable.GetString (layerID);
+						var layer = map.GetLayer (layerName);
+						RepresenterHandle handle = new RepresenterHandle (layer, interactor, repPresenter, repRenderer, objectPresenterType, state);
+
+						representers.Add (repName as string, handle);
+					}
+				} catch (ITableTypesMismatch e)
+				{
+					continue;
+				} catch (ITableMissingID e)
+				{
 					continue;
 				}
-				foreach (var key in representationsTable.GetKeys())
-				{
-					string representerName = layerName + "_" + key;
 
-					ITable representerTable = representationsTable.GetTable (key.ToString ()) as ITable;
-					string rendererName = (string)representerTable.GetString (1);
-					string presenterName = (string)representerTable.GetString (2);
-					string objectPresenterName = (string)representerTable.GetString (3);
 
-					Type rendererType = Type.GetType (rendererName);
-					Type presenterType = Type.GetType (presenterName);
-					Type objectPresenterType = Type.GetType (objectPresenterName);
-					Debug.LogFormat ("{0} {1} {2}", rendererName, presenterName, objectPresenterName);
-					IMapLayerRenderer renderer = Activator.CreateInstance (rendererType) as IMapLayerRenderer;
-					IMapLayerPresenter presenter = Activator.CreateInstance (presenterType) as IMapLayerPresenter;
-					IObjectPresenter objectPresenter = Activator.CreateInstance (objectPresenterType) as IObjectPresenter;
 
-					string representerDefaultStateName = (string)representerTable.GetString (4);
-					RepresenterState state = (RepresenterState)Enum.Parse (typeof(RepresenterState), representerDefaultStateName);
-					var layer = map.GetLayer (layerName);
-					var interactor = interactors.GetInteractor (layer);
-					if (interactor == null)
-					{
-						scribe.LogFormatError ("No interactor for a layer {0} could be found (representation {1})", layer.Name, representerName);
-						continue;
-					}
-					RepresenterHandle handle = new RepresenterHandle (layer, interactor, presenter, renderer, objectPresenter, state);
 
-					representers.Add (representerName, handle);
-				}
 
 			}
 		}

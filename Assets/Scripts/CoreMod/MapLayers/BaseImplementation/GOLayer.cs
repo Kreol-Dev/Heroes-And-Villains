@@ -6,17 +6,12 @@ using System.Collections.Generic;
 
 namespace CoreMod
 {
-	public class GOLayer : MapLayer, ITileMapLayer<GameObject>, IListMapLayer<GameObject>
+	public class GOLayer : MapLayer, ITileMapLayer<GameObject>
 	{
-		public Signals.Signal<GameObject> ObjectAdded { get; internal set; }
-
-		public Signals.Signal<GameObject> ObjectRemoved { get; internal set; }
-
-		public Signals.Signal<GameObject> ObjectUpdated { get; internal set; }
 
 		public MapHandle MapHandle { get; internal set; }
 
-		public Signals.Signal<TileHandle, GameObject> TileUpdated { get; internal set; }
+		public Signals.Signal<TileHandle> TileUpdated { get; internal set; }
 
 		public Signals.Signal MassUpdate { get; internal set; }
 
@@ -24,61 +19,13 @@ namespace CoreMod
 
 		public HashSet<GameObject> gos = new HashSet<GameObject> ();
 
-		protected void OnObjectAdded (GameObject obj)
-		{
-			var cmp = obj.GetComponent<TilesComponent> ();
-			if (cmp == null)
-				return;
-			var tiles = cmp.tiles;
-			if (!gos.Add (obj))
-				return;
-			if (tiles == null)
-				return;
-			foreach (var tile in tiles)
-				tile.Set (Tiles, obj);
-			
-		}
-
-		protected void OnObjectRemoved (GameObject obj)
-		{
-			var cmp = obj.GetComponent<TilesComponent> ();
-			if (cmp == null)
-				return;
-			var tiles = cmp.tiles;
-			if (!gos.Remove (obj))
-				return;
-			if (tiles == null)
-				return;
-			foreach (var tile in tiles)
-				tile.Set (Tiles, null);
-		}
-
-		protected void OnObjectUpdated (GameObject obj)
-		{
-			var cmp = obj.GetComponent<TilesComponent> ();
-			if (cmp == null)
-				return;
-			var tiles = cmp.tiles;
-			if (!gos.Add (obj))
-				return;
-			if (tiles == null)
-				return;
-			foreach (var tile in tiles)
-				tile.Set (Tiles, obj);
-		}
 
 		protected override void Setup (ITable definesTable)
 		{
-			ObjectAdded = new Signals.Signal<GameObject> ();
-			ObjectAdded.AddListener (OnObjectAdded);
-			ObjectRemoved = new Signals.Signal<GameObject> ();
-			ObjectRemoved.AddListener (OnObjectRemoved);
-			ObjectUpdated = new Signals.Signal<GameObject> ();
-			ObjectUpdated.AddListener (OnObjectUpdated);
-			TileUpdated = new Signals.Signal<TileHandle, GameObject> ();
+			TileUpdated = new Signals.Signal<TileHandle> ();
 			MassUpdate = new Signals.Signal ();
 			var map = Find.Root<TilesRoot> ().MapHandle;
-
+			MapHandle = map;
 			Tiles = new GameObject[map.SizeX, map.SizeY];
 			for (int i = 0; i < map.SizeX; i++)
 				for (int j = 0; j < map.SizeY; j++)
@@ -92,16 +39,9 @@ namespace CoreMod
 
 	}
 
-	public class GOInteractor : TiledObjectsLayerInteractor<GameObject, GameObject, GOLayer>
+	public class GOInteractor : TiledObjectsLayerInteractor<GameObject, GOLayer>
 	{
-		public override bool ObjectFromLayerObject (GameObject obj, out GameObject outObj)
-		{
-			if (obj != null)
-				Debug.Log ("GO " + obj.name);
-			outObj = obj;
-			return obj != null;
-		}
-
+		
 	}
 
 	public class GORenderer : BaseMapLayerRenderer<GOLayer, GOInteractor>

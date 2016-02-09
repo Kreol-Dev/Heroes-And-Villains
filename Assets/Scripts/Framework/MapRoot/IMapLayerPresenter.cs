@@ -1,12 +1,14 @@
 ﻿using UnityEngine;
 using System.Collections;
 using Demiurg.Core.Extensions;
+using System;
+using System.Collections.Generic;
 
 namespace MapRoot
 {
 	public interface IMapLayerPresenter
 	{
-		void Setup (IMapLayer layer, IMapLayerInteractor interactor, IObjectPresenter objectPresenter, RepresenterState defaultState);
+		void Setup (IMapLayer layer, IMapLayerInteractor interactor, Type objectPresenterType, RepresenterState defaultState);
 
 		void ChangeState (RepresenterState state);
 
@@ -15,16 +17,11 @@ namespace MapRoot
 	public interface IObjectPresenter
 	{
 		void Setup (ITable definesTable);
-
-		void Update ();
-
 	}
 
 	public abstract class ObjectPresenter<TObject> : IObjectPresenter
 	{
 		public abstract void Setup (ITable definesTable);
-
-		public abstract void Update ();
 
 		public abstract void ShowObjectDesc (TObject obj);
 
@@ -36,17 +33,41 @@ namespace MapRoot
 	}
 
 	public abstract class BaseMapLayerPresenter<TObject, TLayer, TInteractor> : IMapLayerPresenter
-        where TLayer : class, IMapLayer where TInteractor : BaseMapLayerInteractor<TLayer>
+		where TLayer : class, IMapLayer where TInteractor : class, IMapLayerInteractor
 	{
 		Scribe scribe = Scribes.Find ("LAYER PRESENTER");
 
-		protected ObjectPresenter<TObject> ObjectPresenter { get; private set; }
+		Type objectPresenterType;
 
 		protected TLayer Layer { get; private set; }
 
 		protected TInteractor Interactor { get; private set; }
 
-		public void Setup (IMapLayer layer, IMapLayerInteractor interactor, IObjectPresenter objectPresenter, RepresenterState defaultState)
+		ITable defines;
+
+		Stack<ObjectPresenter<TObject>> freePresenters = new Stack<ObjectPresenter<TObject>> ();
+
+		protected ObjectPresenter<TObject> BorrowPresenter ()
+		{
+			ObjectPresenter<TObject> objectPresenter = null; 
+			if (freePresenters.Count == 0)
+			{
+				objectPresenter = Activator.CreateInstance (objectPresenterType) as ObjectPresenter<TObject>;
+				objectPresenter.Setup (defines);
+			} else
+				objectPresenter = freePresenters.Pop ();
+			return objectPresenter;
+
+		}
+
+		protected void FreePresenter (ObjectPresenter<TObject> presenter)
+		{
+			freePresenters.Push (presenter);
+			presenter.HideObjectDesc ();
+			presenter.HideObjectShortDesc ();
+		}
+
+		public void Setup (IMapLayer layer, IMapLayerInteractor interactor, Type objectPresenterType, RepresenterState defaultState)
 		{
 			Layer = layer as TLayer;
 			if (Layer == null)
@@ -60,16 +81,13 @@ namespace MapRoot
 				scribe.LogFormatError ("Interactor provided to presenter is of wrong type {0} while assumed {1}", interactor.GetType (), typeof(TInteractor));
 				return;
 			}
-			this.ObjectPresenter = objectPresenter as ObjectPresenter<TObject>; 
-			if (this.ObjectPresenter == null)
+			if (!objectPresenterType.IsSubclassOf (typeof(ObjectPresenter<TObject>)))
 			{
-				scribe.LogFormatError ("Object presenter provided to presenter is of wrong type {0} while assumed {1}", objectPresenter.GetType (), typeof(ObjectPresenter<TObject>));
+				scribe.LogFormatError ("Object presenter provided to presenter is of wrong type {0} while assumed {1}", objectPresenterType, typeof(ObjectPresenter<TObject>));
 				return;
 			}
-			ITable table = Find.Root<ModsManager> ().GetTable ("defines");
-			if (table == null)
-				return;
-			objectPresenter.Setup (table);
+			this.objectPresenterType = objectPresenterType;
+			defines = Find.Root<ModsManager> ().GetTable ("defines");
 			ChangeState (defaultState);
 
 		}

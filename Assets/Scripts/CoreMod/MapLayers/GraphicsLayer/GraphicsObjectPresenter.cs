@@ -78,7 +78,7 @@ namespace CoreMod
 			hoverObj = null;
 		}
 
-		public override void Update ()
+		void Update ()
 		{
 			if (selectObj != null)
 				ShowObjectDesc (selectObj);

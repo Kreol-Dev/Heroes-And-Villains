@@ -30,6 +30,10 @@ namespace CoreMod
 			renderer.sortingOrder = 1;
 		}
 
+		public override void PostCreate ()
+		{
+
+		}
 	}
 }
 

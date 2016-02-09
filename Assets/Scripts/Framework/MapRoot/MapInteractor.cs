@@ -4,6 +4,7 @@ using System.Collections.Generic;
 using Demiurg.Core.Extensions;
 using System.Reflection;
 using System;
+using System.Linq;
 
 namespace MapRoot
 {
@@ -19,20 +20,20 @@ namespace MapRoot
 		InputManager manager;
 		HitsGetter hitsGetter;
 
-
-
+		HashSet<object> nonSelectables = new HashSet<object> ();
+		HashSet<object> hoveredObjects = new HashSet<object> ();
 
 		protected override void CustomSetup ()
 		{
 			manager = Find.Root<InputManager> ();
 			manager.Hover += OnRawHover;
 			manager.LeftClick += OnRawClick;
-			manager.WheelScroll += OnRawWheel;
 			manager.RightClick += OnRightClick;
-			hitsGetter = new HitsGetter (this);
 			map = Find.Root<MapRoot.Map> ();
 			var layerNames = map.GetAllLayerNames ();
 			ReadInteractors (layerNames);
+			hitsGetter = new HitsGetter ((from bind in interactors
+			                              select bind.Value.Interactor).Distinct ());
 			Fulfill.Dispatch ();
 		}
 
@@ -41,126 +42,56 @@ namespace MapRoot
 		}
 
 
-		void Update ()
-		{
-			foreach (var interactor in interactors)
-				interactor.Value.Interactor.OnUpdate ();
-		}
-
-
-
-		public int currentTargetID = 0;
-		ObjectHit currentTarget;
-		ObjectHit lastTarget;
-
-		void SwitchCurrentTargetTo (ObjectHit hit, int currentObjectID)
-		{
-			if (currentTarget.Transform != null)
-				lastTarget = currentTarget;
-			currentTarget = hit;
-			currentTargetID = currentObjectID;
-		}
-
-
-		void TrySwitchToTarget (ObjectHit target, int objectHitsCount, ObjectHit[] objectHits)
-		{
-			ObjectHit newTargetHit = new ObjectHit (null, Vector3.zero, null);
-			int targetID = 0;
-			for (int i = 0; i < objectHitsCount; i++)
-			{
-
-				if (objectHits [i].Interactor.OnHover (objectHits [i].Transform, objectHits [i].Position))
-				{
-					if (newTargetHit.Transform == null)
-					{
-						newTargetHit = objectHits [i];
-						targetID = i;
-					}
-
-					if (newTargetHit.Interactor != target.Interactor && objectHits [i].Interactor == target.Interactor)
-					{
-						newTargetHit = objectHits [i];
-						targetID = i;
-					}
-
-					if (objectHits [i].Transform == target.Transform && objectHits [i].Interactor == target.Interactor)
-					{
-						newTargetHit = objectHits [i];
-						targetID = i;
-					}
-				}
-
-					
-
-			}
-			SwitchCurrentTargetTo (newTargetHit, targetID);
-		}
 
 		void OnRawHover (Vector2 screenPoint)
 		{
-			ObjectHit[] objectHits = null;
-			int objectHitsCount = hitsGetter.GetHits (screenPoint, out objectHits);
-			if (objectHitsCount == 0)
+			hoveredObjects.Clear ();
+			hitsGetter.GetHits (screenPoint);
+			for (int i = 0; i < hitsGetter.ObjectHitsCount; i++)
 			{
-				SwitchCurrentTargetTo (new ObjectHit (null, Vector3.zero, null), -1);
-				return;
+				var realmHit = hitsGetter.RealmHits [i];
+				foreach (var hoveredObj in realmHit.Interactor.OnHover (realmHit.Position, hitsGetter.AllegianceHits [realmHit.Interactor]))
+					hoveredObjects.Add (hoveredObj);
 			}
-
-			if (currentTarget.Transform == null)
+			if (nonSelectables.Count > 0)
 			{
-				if (lastTarget.Transform != null)
-				{
-					TrySwitchToTarget (lastTarget, objectHitsCount, objectHits);
-				} else
-				{
-					SwitchCurrentTargetTo (objectHits [0], 0);
-				}
-				return;
-			}
+				nonSelectables.IntersectWith (hoveredObjects);
+				if (nonSelectables.Count == hoveredObjects.Count)
+					nonSelectables.Clear ();
+				else
+					hoveredObjects.ExceptWith (nonSelectables);
 
-			TrySwitchToTarget (currentTarget, objectHitsCount, objectHits);
-
-		}
-
-
-		void OnRawWheel (WheelScrollDir dir)
-		{
-			Debug.Log (dir);
-			if (hitsGetter.ObjectHitsCount > 1)
-			{
-				switch (dir)
-				{
-				case WheelScrollDir.Up:
-					currentTargetID++;
-					currentTargetID %= hitsGetter.ObjectHitsCount;
-					break;
-				case WheelScrollDir.Down:
-					currentTargetID--;
-					if (currentTargetID < 0)
-						currentTargetID = hitsGetter.ObjectHitsCount + currentTargetID;
-					break;
-				}
-				SwitchCurrentTargetTo (hitsGetter.ObjectHits [currentTargetID], currentTargetID);
 			}
 				
 		}
 
+
 		void OnRightClick (Vector2 point)
 		{
+			foreach (var interactor in interactors)
+				interactor.Value.Interactor.OnDeselectAll ();
 		}
 
-		ObjectHit selectedObject;
 
 		void OnRawClick (Vector2 screenPoint)
 		{
-			
-			if (currentTarget.Interactor != null && currentTarget.Transform != null)
-				currentTarget.Interactor.OnClick (currentTarget.Transform, currentTarget.Position);
+			foreach (var interactor in interactors)
+				interactor.Value.Interactor.OnDeselectAll ();
+			for (int i = 0; i < hitsGetter.ObjectHitsCount; i++)
+			{
+				var realmHit = hitsGetter.RealmHits [i];
+				object selectedObject = realmHit.Interactor.OnSelect (realmHit.Position, hoveredObjects);
+				if (selectedObject == null)
+					continue;
+				nonSelectables.Add (selectedObject);
+				break;
+			}
 		}
 
 		class InteractorBinding
 		{
 			InteractorState state;
+			static int id = 0;
 
 			public InteractorState State {
 				get { return state; }
@@ -173,11 +104,12 @@ namespace MapRoot
 			{
 				Interactor = interactor;
 				state = defaultState;
-				interactor.Setup (layer, defaultState);
+				interactor.Setup (layer, defaultState, id++);
 			}
 		}
 
 		Dictionary<IMapLayer, InteractorBinding> interactors = new Dictionary<IMapLayer, InteractorBinding> ();
+		Dictionary<string, InteractorBinding> interactorsByName = new Dictionary<string, InteractorBinding> ();
 
 		public InteractorState GetLayerState (IMapLayer layer)
 		{
@@ -210,37 +142,53 @@ namespace MapRoot
 				return interactor.Interactor;
 			else
 			{
-				scribe.LogFormatWarning ("Can't get interactor {0} ({1}) - it isn't registered in interactors dictionary", layer, layer.GetType ());
+				scribe.LogFormatWarning ("Can't get interactor for a layer {0} ({1}) - it isn't registered in interactors dictionary", layer.Name, layer.GetType ());
+				return null;
+			}
+		}
+
+		public IMapLayerInteractor GetInteractor (string name)
+		{
+			InteractorBinding interactor;
+			if (interactorsByName.TryGetValue (name, out interactor))
+				return interactor.Interactor;
+			else
+			{
+				scribe.LogFormatWarning ("Can't get interactor {0}  - it isn't registered in interactors dictionary", name);
 				return null;
 			}
 		}
 
 		void ReadInteractors (string[] layerNames)
 		{
-			ITable table = Find.Root<ModsManager> ().GetTable ("interactors");
-			foreach (var layerName in layerNames)
-			{
-				string interactorName = layerName + "_interactor";
-				ITable interactorTable = table.GetTable (interactorName) as ITable;
-				if (interactorTable == null)
-				{
-					scribe.LogFormatWarning ("Can't find table named {0}", interactorName);
-					continue;
-				}
-				string interactorTypeName = (string)interactorTable.GetString (1);
-				Type interactorType = Type.GetType (interactorTypeName);
-				IMapLayerInteractor interactor = Activator.CreateInstance (interactorType) as IMapLayerInteractor;
-				if (interactor == null)
-				{
-					scribe.LogFormatWarning ("Interactor with the name {0} and type {1} doesn't inherit IMapLayerInteractor, while it should", interactorName, interactorTypeName);
-					continue;
-				}
-				string interactorDefaultState = (string)interactorTable.GetString (2);
-				InteractorState state = (InteractorState)Enum.Parse (typeof(InteractorState), interactorDefaultState);
-				var layer = map.GetLayer (layerName);
-				InteractorBinding binding = new InteractorBinding (layer, interactor, state);
-				interactors.Add (layer, binding);
+			var mm = Find.Root<ModsManager> ();
+			ITable table = mm.GetTable ("interactors");
 
+			foreach (var interactorName in table.GetKeys())
+			{
+				try
+				{
+					ITable interactorTable = table.GetTable (interactorName);
+
+					string typeName = interactorTable.GetString ("interactor_type");
+					Type type = mm.GetType (typeName);
+					IMapLayerInteractor interactor = Activator.CreateInstance (type) as IMapLayerInteractor;
+
+					string defaultState = interactorTable.GetString ("default_state");
+					InteractorState state = (InteractorState)Enum.Parse (typeof(InteractorState), defaultState);
+
+					string targetLayerName = interactorTable.GetString ("layer");
+
+					var layer = map.GetLayer (targetLayerName);
+
+					InteractorBinding binding = new InteractorBinding (layer, interactor, state);
+					interactors.Add (layer, binding);
+					interactorsByName.Add (interactorName as string, binding);
+					Debug.LogWarning ("Added interactor " + interactorName);
+				} catch
+				{
+					continue;
+				}
 			}
 		}
 

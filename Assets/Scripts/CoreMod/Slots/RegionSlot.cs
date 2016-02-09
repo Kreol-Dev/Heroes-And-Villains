@@ -10,14 +10,12 @@ namespace CoreMod
 	public class RegionSlot : SlotComponent
 	{
 		public List<TileHandle> Tiles;
+		public string TargetLayerName;
 
 		public override void FillComponent (GameObject go)
 		{
-			var slots = go.GetComponents<ISlotted<RegionSlot>> ();
-			foreach (var slot in slots)
-			{
-				slot.Receive (this);
-			}
+			var tiles = go.AddComponent<TilesComponent> ();
+			tiles.Receive (this);
 
 		}
 	}

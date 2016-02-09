@@ -115,8 +115,6 @@ namespace CoreMod
 	[System.Serializable]
 	public class TileHandle
 	{
-		public int x;
-		public int y;
 
 		public int X { get; internal set; }
 
@@ -126,8 +124,6 @@ namespace CoreMod
 
 		public TileHandle (int x, int y, MapHandle map)
 		{
-			this.x = x;
-			this.y = y;
 			X = x; 
 			Y = y;
 			Map = map;

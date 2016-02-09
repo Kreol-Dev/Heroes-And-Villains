@@ -5,8 +5,8 @@ using System.Collections.Generic;
 
 namespace CoreMod
 {
-	public abstract class ObjectLayerPresenter<TObject, TLayerObject, TLayer, TInteractor> : BaseMapLayerPresenter<TObject, TLayer, TInteractor>
-		where TLayer : class, IMapLayer, ITileMapLayer<TLayerObject> where TInteractor : BaseMapLayerInteractor<TLayer>, IObjectsInteractor<TLayerObject, TLayer>
+	public abstract class ObjectLayerPresenter<TObject, TInteractorObject, TLayer, TInteractor> : BaseMapLayerPresenter<TObject, TLayer, TInteractor>
+		where TLayer : class, IMapLayer, ITileMapLayer<TObject> where TInteractor : class, IMapLayerInteractor, IObjectsInteractor<TInteractorObject> where TInteractorObject : class
 	{
 		HashSet<TileHandle> selectedTiles = new HashSet<TileHandle> ();
 		HashSet<TileHandle> hoveredTiles = new HashSet<TileHandle> ();
@@ -16,55 +16,66 @@ namespace CoreMod
 			switch (state)
 			{
 			case RepresenterState.Active:
-				Interactor.ObjectSelected += Clicked;
-				Interactor.ObjectDeSelected += DeClicked;
+				Interactor.ObjectSelected += Selected;
+				Interactor.ObjectDeSelected += DeSelected;
 				Interactor.ObjectHovered += Hovered;
 				Interactor.ObjectDeHovered += DeHovered;
-				Layer.MassUpdate.AddListener (ObjectPresenter.Update);
-				Layer.TileUpdated.AddListener (TileUpdated);
 				break;
 			case RepresenterState.NotActive:
-				Interactor.ObjectSelected -= Clicked;
-				Interactor.ObjectDeSelected -= DeClicked;
+				Interactor.ObjectSelected -= Selected;
+				Interactor.ObjectDeSelected -= DeSelected;
 				Interactor.ObjectHovered -= Hovered;
 				Interactor.ObjectDeHovered -= DeHovered;
-				Layer.MassUpdate.RemoveListener (ObjectPresenter.Update);
-				Layer.TileUpdated.RemoveListener (TileUpdated);
 				break;
 			}
 		}
 
-		public abstract TObject ObjectFromLayer (TLayerObject obj);
+		public abstract TObject ObjectFromLayer (TInteractorObject obj);
 
-		void Clicked (TLayerObject tile) 
+		protected Dictionary<TInteractorObject, ObjectPresenter<TObject>> hoverPresenters = new Dictionary<TInteractorObject, ObjectPresenter<TObject>> ();
+		protected Dictionary<TInteractorObject, ObjectPresenter<TObject>> selectionPresenters = new Dictionary<TInteractorObject, ObjectPresenter<TObject>> ();
+
+		void Selected (TInteractorObject obj)
 		{ 
-			TObject o = ObjectFromLayer (tile); 
-			if (o != null) 
-			ObjectPresenter.ShowObjectDesc (o); 
-		} 
-
-		void DeClicked (TLayerObject tile) 
-		{ 
-			ObjectPresenter.HideObjectDesc (); 
-		} 
-
-		void Hovered (TLayerObject tile) 
-		{ 
-			TObject o = ObjectFromLayer (tile); 
-			if (o != null) 
-				ObjectPresenter.ShowObjectShortDesc (o); 
-		} 
-
-		void DeHovered (TLayerObject tile) 
-		{ 
-			ObjectPresenter.HideObjectShortDesc (); 
-		} 
-
-		void TileUpdated (TileHandle tile, TLayerObject obj) 
-		{ 
-
-			ObjectPresenter.Update (); 
+			if (selectionPresenters.ContainsKey (obj))
+				return;
+			ObjectPresenter<TObject> objectPresenter = BorrowPresenter ();
+			objectPresenter.ShowObjectDesc (ObjectFromLayer (obj));
+			selectionPresenters.Add (obj, objectPresenter);
 		}
+
+		void DeSelected (TInteractorObject obj)
+		{ 
+			ObjectPresenter<TObject> objectPresenter = null;
+			selectionPresenters.TryGetValue (obj, out objectPresenter);
+			if (objectPresenter == null)
+				return;
+			objectPresenter.HideObjectDesc ();
+			selectionPresenters.Remove (obj);
+			FreePresenter (objectPresenter);
+		}
+
+		void Hovered (TInteractorObject obj)
+		{ 
+			if (hoverPresenters.ContainsKey (obj))
+				return;
+			ObjectPresenter<TObject> objectPresenter = BorrowPresenter ();
+			objectPresenter.ShowObjectShortDesc (ObjectFromLayer (obj));
+			hoverPresenters.Add (obj, objectPresenter);
+		}
+
+		void DeHovered (TInteractorObject obj)
+		{ 
+			ObjectPresenter<TObject> objectPresenter = null;
+			hoverPresenters.TryGetValue (obj, out objectPresenter);
+			if (objectPresenter == null)
+				return;
+			objectPresenter.HideObjectShortDesc ();
+			hoverPresenters.Remove (obj);
+			FreePresenter (objectPresenter);
+		}
+
+
 
 	}
 

@@ -6,21 +6,8 @@ using System.Collections.Generic;
 namespace CoreMod
 {
 	[ECompName ("biome")]
-	public class Biome : EntityComponent<BiomeSharedData>, ISlotted<RegionSlot>
+	public class Biome : EntityComponent<BiomeSharedData>
 	{
-		List<TileHandle> tiles;
-
-		public void Receive (RegionSlot data)
-		{
-			tiles = data.Tiles;
-			gameObject.AddComponent<TilesComponent> ().tiles = tiles;
-			foreach (var tile in tiles)
-			{
-				tile.Set (SharedData.layer.Tiles, SharedData.graphicsTile);
-				SharedData.layer.TileUpdated.Dispatch (tile, SharedData.graphicsTile);
-			}
-		}
-
 		public override void LoadFromTable (ITable table)
 		{
 			SharedData = new BiomeSharedData ();
@@ -39,6 +26,29 @@ namespace CoreMod
 		{
 			Biome biome = go.AddComponent<Biome> ();
 			biome.SharedData = SharedData;
+		}
+
+
+		public override void PostCreate ()
+		{
+			foreach (var handle in gameObject.GetComponent<TilesComponent> ().Tiles)
+			{
+				handle.Set (SharedData.layer.Tiles, SharedData.graphicsTile);
+				SharedData.layer.TileUpdated.Dispatch (handle);
+			}
+
+		}
+
+		void OnTileAdded (TileHandle handle)
+		{
+			handle.Set (SharedData.layer.Tiles, SharedData.graphicsTile);
+			SharedData.layer.TileUpdated.Dispatch (handle);
+		}
+
+		void OnTileRemoved (TileHandle handle)
+		{
+			handle.Set (SharedData.layer.Tiles, null);
+			SharedData.layer.TileUpdated.Dispatch (handle);
 		}
 	}
 

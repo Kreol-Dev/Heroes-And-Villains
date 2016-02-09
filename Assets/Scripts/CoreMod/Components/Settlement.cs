@@ -10,21 +10,14 @@ using System.Collections.Generic;
 namespace CoreMod
 {
 	[ECompName ("settlement")]
-	public class Settlement : EntityComponent<SettlementSharedData>, ISlotted<SlotTile>
+	public class Settlement : EntityComponent
 	{
-		public void Receive (SlotTile data)
-		{
-			(gameObject.AddComponent<TilesComponent> ().tiles = new List<TileHandle> ()).Add (Find.Root<TilesRoot> ().MapHandle.GetHandle (data.X, data.Y));
-			SharedData.layer.ObjectAdded.Dispatch (gameObject);
-
-		}
 
 		public override void CopyTo (GameObject go)
 		{
 			Settlement settlement = go.AddComponent<Settlement> ();
 			settlement.Population = Population;
 			settlement.Race = Race;
-			settlement.SharedData = this.SharedData;
 		}
 
 		public int Population;
@@ -35,33 +28,13 @@ namespace CoreMod
 			Population = table.GetInt ("population");
 			string spriteName = table.GetString ("race");
 			Race = Find.Root<Sprites> ().GetSprite ("races", spriteName);
-			SharedData = new SettlementSharedData ();
-
-			string graphicsLayerName = Find.Root<ModsManager> ().GetTable ("defines").GetString ("STATIC_OBJECTS_LAYER");
-			SharedData.layer = Find.Root<MapRoot.Map> ().GetLayer (graphicsLayerName) as IListMapLayer<GameObject>;
-
-			//SharedData.layer.ObjectAdded.Dispatch (this.gameObject);
 
 		}
-	}
 
-	public class SettlementSharedData
-	{
-		public IListMapLayer<GameObject> layer;
-	}
-
-
-
-
-	public class SettlementLayerPresenter : ObjectLayerPresenter<Settlement, GameObject, GOLayer, GOInteractor>
-	{
-		public override Settlement ObjectFromLayer (GameObject obj)
+		public override void PostCreate ()
 		{
-			if (obj != null)
-				return obj.GetComponent<Settlement> ();
-			return null;
+
 		}
-		
 	}
 
 
@@ -145,7 +118,7 @@ namespace CoreMod
 			hoverObj = null;
 		}
 
-		public override void Update ()
+		void Update ()
 		{
 			if (selectObj != null)
 				ShowObjectDesc (selectObj);

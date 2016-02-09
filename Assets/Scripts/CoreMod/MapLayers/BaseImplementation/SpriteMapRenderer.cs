@@ -5,27 +5,25 @@ using Demiurg.Core.Extensions;
 
 namespace CoreMod
 {
-	public abstract class SpriteMapRenderer<TObject, TLayerObject, TLayer, TInteractor> : BaseMapLayerRenderer<TLayer, TInteractor>
-		where TLayer: class, IMapLayer, ITileMapLayer<TLayerObject> where TInteractor : TileMapLayerInteractor<TLayer>
+	public abstract class SpriteMapRenderer<TObject, TLayerObject, TLayer> : BaseMapLayerRenderer<TLayer, TileMapLayerInteractor>
+		where TLayer: class, IMapLayer, ITileMapLayer<TLayerObject>
 	{
 		public override void ChangeState (RepresenterState state)
 		{
 			switch (state)
 			{
 			case RepresenterState.Active:
-				Interactor.TileSelected += Clicked;
-				Interactor.TileDeselected += DeClicked;
-				Interactor.TileHovered += Hovered;
-				Interactor.TileDeHovered += DeHovered;
-				Layer.MassUpdate.AddListener (UpdateAll);
+				Interactor.ObjectSelected += Clicked;
+				Interactor.ObjectDeSelected += DeClicked;
+				Interactor.ObjectHovered += Hovered;
+				Interactor.ObjectDeHovered += DeHovered;
 				Layer.TileUpdated.AddListener (TileUpdated);
 				break;
 			case RepresenterState.NotActive:
-				Interactor.TileSelected -= Clicked;
-				Interactor.TileDeselected -= DeClicked;
-				Interactor.TileHovered -= Hovered;
-				Interactor.TileDeHovered -= DeHovered;
-				Layer.MassUpdate.RemoveListener (UpdateAll);
+				Interactor.ObjectSelected -= Clicked;
+				Interactor.ObjectDeSelected -= DeClicked;
+				Interactor.ObjectHovered -= Hovered;
+				Interactor.ObjectDeHovered -= DeHovered;
 				Layer.TileUpdated.RemoveListener (TileUpdated);
 				break;
 			}
@@ -49,7 +47,7 @@ namespace CoreMod
 		{
 		}
 
-		void TileUpdated (TileHandle tile, TLayerObject obj)
+		void TileUpdated (TileHandle tile)
 		{
 
 			SetTile (tile.X, tile.Y, GetSprite (tile.Get<TLayerObject> (Layer.Tiles)));

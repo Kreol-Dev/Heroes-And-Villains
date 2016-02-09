@@ -12,6 +12,8 @@ namespace CoreMod
 		int density;
 		[AConfig ("name")]
 		string slotName;
+		[AConfig ("target_layer")]
+		string targetLayerName;
 		System.Random random;
 		MapHandle map;
 		Deck<TileDirection> dirs;
@@ -94,7 +96,9 @@ namespace CoreMod
 			foreach (var region in regions)
 			{
 				GameObject go = new GameObject (slotName + " Region " + region.ID);
-				go.AddComponent<RegionSlot> ().Tiles = region.Tiles;
+				RegionSlot regionSlot = go.AddComponent<RegionSlot> ();
+				regionSlot.Tiles = region.Tiles;
+				regionSlot.TargetLayerName = targetLayerName;
 				go.AddComponent<Slot> ();
 				OutputObjects.Add (go);
 			}

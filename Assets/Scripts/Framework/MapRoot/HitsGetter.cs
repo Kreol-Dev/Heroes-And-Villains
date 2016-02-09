@@ -1,51 +1,64 @@
 ﻿using UnityEngine;
 using System.Collections;
+using System.Collections.Generic;
 
 namespace MapRoot
 {
 	public class HitsGetter
 	{
-		MapInteractor interactor;
 
-		public HitsGetter (MapInteractor interactor)
+		public HitsGetter (IEnumerable<IMapLayerInteractor> interactors)
 		{
-			this.interactor = interactor;
+			foreach (var interactor in interactors)
+				allegianceDict.Add (interactor, new HashSet<Transform> ());
 		}
 
 		RaycastHit[] hits = new RaycastHit[10];
-		ObjectHit[] objectHits = new ObjectHit[10];
+		ObjectHit[] realmHits = new ObjectHit[10];
+		Dictionary<IMapLayerInteractor, HashSet<Transform>> allegianceDict = new Dictionary<IMapLayerInteractor, HashSet<Transform>> ();
 
-		public ObjectHit[] ObjectHits { get { return objectHits; } }
+		public ObjectHit[] RealmHits { get { return realmHits; } }
 
-		public int ObjectHitsCount { get { return objectHitsCount; } }
+		public Dictionary<IMapLayerInteractor, HashSet<Transform>> AllegianceHits { get { return allegianceDict; } }
 
-		int objectHitsCount = 0;
+		public int ObjectHitsCount { get { return realmHitsCount; } }
 
-		public int GetHits (Vector2 screenPoint, out ObjectHit[] providedHits)
+
+		int realmHitsCount = 0;
+
+		public void GetHits (Vector2 screenPoint)
 		{
-			objectHitsCount = 0;
+			foreach (var allegianceSet in allegianceDict)
+				allegianceSet.Value.Clear ();
+			
+			realmHitsCount = 0;
 			Ray ray = Camera.main.ScreenPointToRay (screenPoint);
 			int collidersCount = Physics.RaycastNonAlloc (ray, hits, 30);
 			if (collidersCount >= hits.Length)
 			{
-				hits = new RaycastHit[collidersCount + 10];
-				objectHits = new ObjectHit[collidersCount + 10];
+				hits = new RaycastHit[collidersCount + 2];
+				realmHits = new ObjectHit[collidersCount + 2];
 				collidersCount = Physics.RaycastNonAlloc (ray, hits, 30);
 			}
 			for (int i = 0; i < collidersCount; i++)
 			{
-				LayerHandle[] handles = hits [i].transform.gameObject.GetComponents<LayerHandle> ();
-				foreach (var handle in handles)
+				InteractorRealm[] realms = hits [i].transform.gameObject.GetComponents<InteractorRealm> ();
+				if (realms.Length != 0)
 				{
-					if (interactor.GetLayerState (handle.Layer) == InteractorState.Active)
+					foreach (var realm in realms)
 					{
-						objectHits [objectHitsCount++] = new ObjectHit (hits [i].transform, hits [i].point, interactor.GetInteractor (handle.Layer));
+						realmHits [realmHitsCount++] = new ObjectHit (hits [i].transform, hits [i].point, realm.Interactor);
 					}
+				} else
+				{
+					InteractorAllegiance allegiance = hits [i].transform.gameObject.GetComponent<InteractorAllegiance> ();
+					if (allegiance == null)
+						continue;
+					HashSet<Transform> transforms = allegianceDict [allegiance.Interactor];
+					transforms.Add (hits [i].transform);
 				}
 				
 			}
-			providedHits = objectHits;
-			return objectHitsCount;
 		}
 	}
 
