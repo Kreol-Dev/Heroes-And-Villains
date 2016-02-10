@@ -44,7 +44,7 @@ public abstract class Root : MonoBehaviour, IDependency
 
     void Setup ()
     {
-        Debug.LogWarning ("Setup: " + gameObject.name);
+        Debug.LogWarning ("Setup: " + gameObject.name);       
         CustomSetup ();
     }
 

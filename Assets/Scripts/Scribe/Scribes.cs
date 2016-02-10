@@ -6,7 +6,6 @@ using System.Collections.Generic;
 public static class Scribes
 {
     static Dictionary<string, Scribe> scribes = new Dictionary<string, Scribe> ();
-    static Scribe scribe = new Scribe ("Logs\\Scribes.txt");
     public static Scribe Find (string scribeName)
     {
         Scribe scribe = null;
@@ -25,17 +24,22 @@ public static class Scribes
         {
             pair.Value.Save ();
         }
-        scribe.Save ();
     }
-
+    static MessagePool Console;
+    public static void RegisterSelf(MessagePool console)
+    {
+        Console = console;
+    }
     public static Scribe Register (string scribeName)
     {
         if (scribes.ContainsKey (scribeName))
         {
-            scribe.Log ("Duplicate scribe: " + scribeName);
+            Debug.Log ("Duplicate scribe: " + scribeName);
             return scribes [scribeName];
         }
-        Scribe newScribe = new Scribe ("Logs\\" + scribeName + ".txt");
+        
+        Scribe newScribe = new Scribe (scribeName);
+        newScribe.RegisterSelf(Console);
         scribes.Add (scribeName, newScribe);
         return newScribe;
     }

@@ -7,6 +7,7 @@ public class FrameworkRoots : MonoBehaviour
 {
     void Awake ()
     {
+        Find.Register<ConsoleRoot>();
         Find.Register<PlanetsGenerator> ();
         Find.Register<ModsManager> ();
         Find.Register<LuaContext> ();
