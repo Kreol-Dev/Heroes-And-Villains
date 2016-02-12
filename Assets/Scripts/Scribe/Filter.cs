@@ -5,7 +5,8 @@ using UnityEngine.UI;
 
 public class Filter : MonoBehaviour {
     public Category cat;
-    public MessagePool console;
+    public TypeMes type;
+    public MessagePool console ;
 	// Use this for initialization
 	void Start () {
 	
@@ -16,12 +17,28 @@ public class Filter : MonoBehaviour {
 	
 	}
 
-    public void ChageFilter(bool isOn)
+    public void ChageFilter()
     {
-        if (isOn)
-            console.ShowCategory(cat);
+        if (this.GetComponent<Toggle>().isOn)
+        {
+            if (cat != null)
+                console.ShowCategory(cat);
+            if (type != null)
+            {
+                console.activeTypes[type.ID] = true;
+                console.FilterByType();
+            }
+        }
         else
-            console.HideCategory(cat);
+        {
+            if(cat!=null)
+                console.HideCategory(cat);
+            if (type != null)
+            {
+                console.activeTypes[type.ID] = false;
+                console.FilterByType();
+            }
+        }
 
     }
 }

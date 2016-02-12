@@ -14,14 +14,13 @@ public class Scribe
     // Category cat = null;
     Category cat;
     MessagePool console;
+    int n = 1;
     public Scribe (string logName)
     {
 
         this.logName = logName;
         logPath = "Logs\\" + logName + ".txt";
-       // MessagePool console = GameObject.Find("MessagePool").GetComponent<MessagePool>();
-       // cat= console.RegisterCategory(logPath);
-        //Debug.LogError("QWERTY");
+      
 
 
     }
@@ -43,10 +42,9 @@ public class Scribe
 	
     public void SaveLog(string log, string type)
     {
-        //console.messages.Add(new InternalMessage(new Category(0,"LOL"), log, "Error"));
-        //console.RegisterMessage(log, "Error");
        
-        console.RegisterMessage(cat, log, type);
+       
+        console.RegisterMessage(cat, log,new TypeMes( console.RegisterType(type),type));
 
     }
   
@@ -70,9 +68,18 @@ public class Scribe
         Debug.LogFormat (format, objects);
         #endif
         builder.AppendLine (string.Format (format, objects));
-        SaveLog(string.Format(format, objects),"LOL");
-        
-       
+        if (n == 1)
+        {
+            SaveLog(string.Format(format, objects), "LOL" + n.ToString());
+            n++;
+        }
+        if (n == 2)
+        {
+            SaveLog(string.Format(format, objects), "LOL" + n.ToString());
+            n--;
+        }
+
+
     }
     public void LogWarning (string record)
     {
@@ -90,7 +97,7 @@ public class Scribe
         Debug.LogWarningFormat (format, objects);
         #endif
         builder.AppendLine ("[WARNING] " + string.Format (format, objects));
-       // SaveLog(string.Format(format, objects));
+        SaveLog(string.Format(format, objects),"Warning");
 
     }
     public void LogError (string record)
@@ -108,7 +115,7 @@ public class Scribe
         Debug.LogErrorFormat (format, objects);
         #endif
         builder.AppendLine ("[ERROR] " + string.Format (format, objects));
-       // SaveLog(string.Format(format, objects));
+        SaveLog(string.Format(format, objects),"Error");
     }
 }
 
@@ -119,7 +126,22 @@ public class Category
 {
     public int ID;
     public string Name;
-    public Category(int _id,string name)
+    public Color color;
+    public Category(int _id,string name, Color col)
+    {
+        ID = _id;
+        Name = name;
+        color = col;
+    }
+}
+
+public class TypeMes
+{
+    public string Name;
+    public int ID;
+    
+
+    public TypeMes(int _id, string name)
     {
         ID = _id;
         Name = name;

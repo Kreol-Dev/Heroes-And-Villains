@@ -22,10 +22,33 @@ public class scroling : MonoBehaviour {
 	
 	}
     
-    public void Change_view(float value)
+    public void Change_view()
     {
-        g.ShowFrom(value);
+        g.ShowFrom(this.GetComponent<Scrollbar>().value);
+       
         
+    }
+
+    public void scrolUP()
+    {
+        if (g.slider >= 1)
+        {
+            g.slider--;
+            this.GetComponent<Scrollbar>().value -= 1 / g.ShownMessages.Count;
+            g.ShowMessagePool();
+        }
+
+    }
+    public void scrolDown()
+    {
+        if (g.slider < g.ShownMessages.Count-6)
+        {
+            g.slider++;
+            this.GetComponent<Scrollbar>().value += 1 / g.ShownMessages.Count;
+            g.ShowMessagePool();
+            
+        }
+
     }
 
 }

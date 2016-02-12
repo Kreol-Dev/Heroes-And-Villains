@@ -6,24 +6,24 @@ using System.Collections;
 public class Addmessege : MonoBehaviour {
 
 
-    GameObject messageGo = Resources.Load("ConsoleMessege") as GameObject;
+    GameObject messageGo = Resources.Load("ConsoleMessage") as GameObject;
 
     public int DefaultSize = 5;
     int consolePoolSize = 0;
     public Transform parent;//parent of messeges
     public Sprite custom_sprite;// sprite of messeges
 
-    ConsoleMessege mes ;
+    ConsoleMessage mes ;
     public List<InternalMessage> messages = new List<InternalMessage>();// All messeges
-    List<ConsoleMessege> messagesPool = new List<ConsoleMessege>();
+    List<ConsoleMessage> messagesPool = new List<ConsoleMessage>();
 
-    List<ConsoleMessege> ShownMessages = new List<ConsoleMessege>();
+    List<ConsoleMessage> ShownMessages = new List<ConsoleMessage>();
     int startOffset = 0;
     int delPool=0;// number of shown messeges
     int i =1;
 	// Use this for initialization
 	void Start () {
-        // messege = Instantiate(Resources.Load("C:\\Users\\Вадим\\Documents\\GitHub\\Heroes-And-Villains\\Assets\\Resources\\UI\\consolemessege.prefab",typeof(GameObject))) as GameObject;
+        // messege = Instantiate(Resources.Load("C:\\Users\\Вадим\\Documents\\GitHub\\Heroes-And-Villains\\Assets\\Resources\\UI\\ConsoleMessage.prefab",typeof(GameObject))) as GameObject;
         
 	}
 	
@@ -40,7 +40,7 @@ public class Addmessege : MonoBehaviour {
     {
         for (int i = 0; i < delta; i++)
         {
-            ConsoleMessege messege = GameObject.Instantiate<GameObject>(messageGo).GetComponent<ConsoleMessege>();
+            ConsoleMessage messege = GameObject.Instantiate<GameObject>(messageGo).GetComponent<ConsoleMessage>();
             messagesPool.Add(messege);
             messege.gameObject.transform.SetParent(parent, false);
             messege.gameObject.SetActive(false);
@@ -62,7 +62,7 @@ public class Addmessege : MonoBehaviour {
             GameObject newmessege = null;
             newmessege = GameObject.Instantiate(messege, new Vector3(messege.transform.position.x, messege.transform.position.y - 20 * i++, messege.transform.position.z), transform.rotation) as GameObject;
             newmessege.transform.SetParent(this.transform);
-            newmessege.name = "ConsoleMessege" + (i - 1).ToString();
+            newmessege.name = "ConsoleMessage" + (i - 1).ToString();
 
             newmessege.GetComponent<Image>().sprite = custom_sprite;
            // newmessege.GetComponentsInChildren<Text>()[1].text = "LOL";
@@ -79,12 +79,12 @@ public class Addmessege : MonoBehaviour {
     }
     public void testFunc()
     {
-        ConsoleMessege mes = new ConsoleMessege("  1", " 2 ", "3  ");
+        ConsoleMessage mes = new ConsoleMessage("  1", " 2 ", "3  ");
         AddMessege(mes);
     }
     public void ShowListOfMesseges()
     {
-        List<ConsoleMessege> c = MessegePool;
+        List<ConsoleMessage> c = MessegePool;
         ClearConsoleView(delPool);
         Debug.LogError(c.Count.ToString());
        
@@ -93,7 +93,7 @@ public class Addmessege : MonoBehaviour {
             GameObject mes = null;
             mes = GameObject.Instantiate(messege, new Vector3(messege.transform.position.x, messege.transform.position.y - 28* i, messege.transform.position.z), messege.transform.rotation) as GameObject;
             mes.transform.SetParent(this.transform);
-            mes.name = "ConsoleMessege" + i.ToString();
+            mes.name = "ConsoleMessage" + i.ToString();
             mes.GetComponent<Image>().sprite = custom_sprite;
 
             mes.GetComponentsInChildren<Text>()[0].text = c[i-1].GetCategory();
@@ -105,7 +105,7 @@ public class Addmessege : MonoBehaviour {
         delPool = c.Count;
 
     }
-    public void AddMessege(ConsoleMessege mes)
+    public void AddMessege(ConsoleMessage mes)
     {
         MessegePool.Add(mes);
     }
@@ -115,7 +115,7 @@ public class Addmessege : MonoBehaviour {
         {
             for(int i=1;i<=delPool;i++)
             {
-                GameObject g = GameObject.Find("ConsoleMessege" + i.ToString());
+                GameObject g = GameObject.Find("ConsoleMessage" + i.ToString());
                 Destroy(g);
             }
 
