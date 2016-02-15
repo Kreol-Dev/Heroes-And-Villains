@@ -63,20 +63,27 @@ namespace CoreMod
 
 		public void AddTag (Tag tag)
 		{
-			if (assignedTags.Count == 0) {
+			if (assignedTags.Count == 0)
+			{
 				TagAdded (tag);
 				assignedTags.Add (tag);
-			} else {
-				if (assignedTags [0].ID > tag.ID) {
+			} else
+			{
+				if (assignedTags [0].ID > tag.ID)
+				{
 					TagAdded (tag);
 					assignedTags.Insert (0, tag);
-				} else if (assignedTags [0].ID < tag.ID && assignedTags.Count == 1) {
+				} else if (assignedTags [0].ID < tag.ID && assignedTags.Count == 1)
+				{
 					TagAdded (tag);
 					assignedTags.Insert (0, tag);
-				} else {
+				} else
+				{
 					for (int i = 1; i < assignedTags.Count; i++)
-						if (assignedTags [i].ID > tag.ID) {
-							if (assignedTags [i - 1].ID != tag.ID) {
+						if (assignedTags [i].ID > tag.ID)
+						{
+							if (assignedTags [i - 1].ID != tag.ID)
+							{
 								TagAdded (tag);
 								assignedTags.Insert (i, tag);
 							}
@@ -92,7 +99,8 @@ namespace CoreMod
 		public void RemoveTag (Tag tag)
 		{
 			int index = assignedTags.BinarySearch (tag, Comparator.Instance);
-			if (index >= 0) {
+			if (index >= 0)
+			{
 				assignedTags.RemoveAt (index);
 				TagRemoved (tag);
 			}
@@ -103,12 +111,19 @@ namespace CoreMod
 			return assignedTags.BinarySearch (tag, Comparator.Instance) >= 0;
 		}
 
+		public bool CheckTags (TagsCollection tags)
+		{
+			return CheckTags (tags.assignedTags);
+		}
+
 		public bool CheckTags (List<Tag> tags)
 		{
 			int tagIndex = 0;
-			for (int i = 0; i < tags.Count; i++) {
+			for (int i = 0; i < tags.Count; i++)
+			{
 				Tag tag = null;
-				do {
+				do
+				{
 					if (tagIndex == assignedTags.Count)
 						return false;
 					tag = assignedTags [tagIndex++];
@@ -132,13 +147,16 @@ namespace CoreMod
 			int similarity = 0;
 			IEnumerable<Tag> otherTags = collection.Tags () as IEnumerable<Tag>;
 			int tagIndex = 0;
-			foreach (var tag in otherTags) {
+			foreach (var tag in otherTags)
+			{
 				for (int t = tagIndex; t < assignedTags.Count; t++)
-					if (assignedTags [t].ID == tag.ID) {
+					if (assignedTags [t].ID == tag.ID)
+					{
 						tagIndex = t;
 						similarity++;
 						break;
-					} else if (assignedTags [t].ID > tag.ID) {
+					} else if (assignedTags [t].ID > tag.ID)
+					{
 						tagIndex = t;
 						break;
 					}
@@ -151,15 +169,18 @@ namespace CoreMod
 			int similarity = 0;
 			IEnumerable<Tag> otherTags = collection.Tags () as IEnumerable<Tag>;
 			int tagIndex = 0;
-			foreach (var tag in otherTags) {
+			foreach (var tag in otherTags)
+			{
 				for (int t = tagIndex; t < assignedTags.Count; t++)
-					if (assignedTags [t].ID == tag.ID) {
+					if (assignedTags [t].ID == tag.ID)
+					{
 						tagIndex = t;
 						int weight = 0;
 						weights.TryGetValue (tag, out weight);
 						similarity += weight;
 						break;
-					} else if (assignedTags [t].ID > tag.ID) {
+					} else if (assignedTags [t].ID > tag.ID)
+					{
 						tagIndex = t;
 						break;
 					}

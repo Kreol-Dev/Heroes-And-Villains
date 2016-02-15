@@ -22,24 +22,22 @@ namespace CoreMod
 
 		public event ObjectDelegate<TLayerObject> ObjectDeHovered;
 
-		TLayerObject[] cachedHoverArray = new TLayerObject[1];
-		TLayerObject[] clearHoverArray = new TLayerObject[0];
 
 
-		public override IEnumerable<object> OnHover (Vector2 point, HashSet<Transform> encounters)
+		public override void OnHover (Vector2 point, HashSet<Transform> encounters, ref HashSet<object> hoveredObjects)
 		{
 			TileHandle handle = Layer.MapHandle.GetHandle (point);
 			if (handle != null)
 			{
-				cachedHoverArray [0] = handle.Get (Layer.Tiles);
-				if (hoveredObject != cachedHoverArray [0])
+				TLayerObject obj = handle.Get (Layer.Tiles);
+				if (hoveredObject != obj)
 				{
 					if (hoveredObject != null)
 						ObjectDeHovered (hoveredObject);
-					hoveredObject = cachedHoverArray [0];
+					hoveredObject = obj;
 					ObjectHovered (hoveredObject);
-				}					
-				return cachedHoverArray;
+				}
+				hoveredObjects.Add (obj);
 			} else
 			{
 				if (hoveredObject != null)
@@ -47,7 +45,6 @@ namespace CoreMod
 					ObjectDeHovered (hoveredObject);
 					hoveredObject = null;
 				}
-				return clearHoverArray;
 			}
 		}
 

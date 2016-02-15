@@ -15,9 +15,8 @@ public class ObjectsCreator : Root
 	protected override void CustomSetup ()
 	{
 		var modsManager = Find.Root<ModsManager> ();
-		var asm = modsManager.GetModAssembly ("Core mod");
 		List<Type> components = new List<Type> ();
-		foreach (var type in asm.GetTypes())
+		foreach (var type in modsManager.GetAllTypes())
 		{
 			if (type.IsSubclassOf (typeof(EntityComponent)) && !type.IsAbstract && !type.IsGenericType)
 				components.Add (type);
@@ -28,6 +27,14 @@ public class ObjectsCreator : Root
 		}
 		Fulfill.Dispatch ();
 
+	}
+
+	public Type GetRegisteredType (string name)
+	{
+		Type type = null;
+		registeredCmps.TryGetValue (name, out type);
+		return type;
+		
 	}
 
 	public GameObject CreateObject (string name, ITable fromTable)

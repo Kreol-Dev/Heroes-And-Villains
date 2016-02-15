@@ -5,6 +5,7 @@ using Demiurg.Core.Extensions;
 using System.Reflection;
 using System;
 using System.Linq;
+using System.Text;
 
 namespace MapRoot
 {
@@ -27,8 +28,8 @@ namespace MapRoot
 		{
 			manager = Find.Root<InputManager> ();
 			manager.Hover += OnRawHover;
-			manager.LeftClick += OnRawClick;
-			manager.RightClick += OnRightClick;
+//			manager.LeftClick += OnRawClick;
+//			manager.RightClick += OnRightClick;		
 			map = Find.Root<MapRoot.Map> ();
 			var layerNames = map.GetAllLayerNames ();
 			ReadInteractors (layerNames);
@@ -50,8 +51,8 @@ namespace MapRoot
 			for (int i = 0; i < hitsGetter.ObjectHitsCount; i++)
 			{
 				var realmHit = hitsGetter.RealmHits [i];
-				foreach (var hoveredObj in realmHit.Interactor.OnHover (realmHit.Position, hitsGetter.AllegianceHits [realmHit.Interactor]))
-					hoveredObjects.Add (hoveredObj);
+				realmHit.Interactor.OnHover (realmHit.Position, hitsGetter.AllegianceHits [realmHit.Interactor], ref hoveredObjects);
+					
 			}
 			if (nonSelectables.Count > 0)
 			{
@@ -75,6 +76,15 @@ namespace MapRoot
 
 		void OnRawClick (Vector2 screenPoint)
 		{
+			StringBuilder builder = new StringBuilder ();
+			foreach (var o in hoveredObjects)
+			{
+
+				builder.Append (o);
+				builder.Append (" ");
+			}
+			if (hoveredObjects.Count > 0)
+				Debug.Log (builder.ToString ());
 			foreach (var interactor in interactors)
 				interactor.Value.Interactor.OnDeselectAll ();
 			for (int i = 0; i < hitsGetter.ObjectHitsCount; i++)

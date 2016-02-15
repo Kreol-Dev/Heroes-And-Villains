@@ -10,14 +10,8 @@ namespace CoreMod
 {
 	public class SlotsReplacer : SlotsProcessor
 	{
-		[AInput ("available_tags")]
-		Dictionary<string, List<Tag>> tags;
-		[AInput ("available_replacers")]
-		Dictionary<string, List<GameObject>> avaliableReplacers;
-		[AConfig ("tags_namespace")]
-		string tagsNamespace;
-		[AConfig ("replacers_namespace")]
-		string replacersNamespace;
+		[AConfig ("replacers")]
+		List<string> replacersNamespace;
 
 		class Replacer
 		{
@@ -80,9 +74,12 @@ namespace CoreMod
 		{
             
 			Dictionary<string, Tag> tags = new Dictionary<string, Tag> ();
-			if (this.tagsNamespace != "")
-				foreach (var tag in this.tags[this.tagsNamespace])
-					tags.Add (tag.Name, tag);
+			foreach (var name in tagsNamespaces)
+			{
+				var tagsList = Find.Root<TagsRoot> ().GetTags (name);
+				foreach (var tagPair in tagsList)
+					tags.Add (tagPair.Key, tagPair.Value);
+			}
 			Dictionary<string, GameObject> replacerGOs = new Dictionary<string, GameObject> ();
 			foreach (var rep in this.avaliableReplacers[this.replacersNamespace])
 				replacerGOs.Add (rep.name, rep);

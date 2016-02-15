@@ -27,6 +27,21 @@ public class ModsManager : Root
 	List<Type> allTypes;
 	Dictionary<string, Type> typesByName;
 
+	public bool IsTechnical (ITable table, object key)
+	{
+		try
+		{
+			if ((string)key == "global")
+				return true;
+			if (table.GetTable (key).GetBool ("global") == true)
+				return true;
+			return false;
+		} catch
+		{
+			return false;
+		}
+	}
+
 	public ITable GetTable (string name)
 	{
 		ITable table = null;

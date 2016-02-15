@@ -11,7 +11,7 @@ namespace MapRoot
 
 		void Setup (IMapLayer layer, InteractorState defaultState, int priority);
 
-		IEnumerable<object> OnHover (Vector2 point, HashSet<Transform> encounters);
+		void OnHover (Vector2 point, HashSet<Transform> encounters, ref HashSet<object> hoveredObjects);
 
 		object OnSelect (Vector2 point, HashSet<object> selectables);
 
@@ -26,7 +26,7 @@ namespace MapRoot
 	{
 		public int Priority { get; internal set; }
 
-		public abstract IEnumerable<object> OnHover (Vector2 point, HashSet<Transform> encounters);
+		public abstract void OnHover (Vector2 point, HashSet<Transform> encounters, ref HashSet<object> hoveredObjects);
 
 		public abstract object OnSelect (Vector2 point, HashSet<object> selectables);
 
