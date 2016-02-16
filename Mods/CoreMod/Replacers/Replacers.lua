@@ -56,6 +56,10 @@ provinces = {}
 
 provinces.basic_province = 
 {
+	creation =
+	{
+		availability = { }
+	},
 	province = {}
 }
 

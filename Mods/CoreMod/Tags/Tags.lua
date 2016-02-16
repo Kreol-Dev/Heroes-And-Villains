@@ -94,3 +94,23 @@ climate.grassland =
 	},
 	expression = expressions.temp_hum__expression
 }
+
+
+surface = {}
+surface.land =
+{
+	criteria = 
+	{
+		slot_surface = defines.LAND_SURFACE
+	},
+	expression = expressions.surface_expression
+}
+
+surface.ocean =
+{
+	criteria =
+	{
+		slot_surface = defines.OCEAN_SURFACE
+	},
+	expression = expressions.surface_expression
+}

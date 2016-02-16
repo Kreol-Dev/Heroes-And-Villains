@@ -9,6 +9,7 @@ namespace CoreMod
 	[AShared]
 	public class RegionSlot : SlotComponent
 	{
+		public int Size;
 		public List<TileHandle> Tiles;
 		public string TargetLayerName;
 

@@ -12,6 +12,8 @@ public class ObjectsCreator : Root
 
 	Dictionary<string, Type> registeredCmps = new Dictionary<string, Type> ();
 
+	List<Type> typesByID = new List<Type> ();
+
 	protected override void CustomSetup ()
 	{
 		var modsManager = Find.Root<ModsManager> ();
@@ -21,10 +23,14 @@ public class ObjectsCreator : Root
 			if (type.IsSubclassOf (typeof(EntityComponent)) && !type.IsAbstract && !type.IsGenericType)
 				components.Add (type);
 		}
+		ITable componentsTable = modsManager.GetTable ("eComponent");
+		int id = 0;
 		foreach (var cmp in components)
 		{
+			componentsTable.Set (cmp.Name, id++);
 			RegisterComponent (cmp);
 		}
+		modsManager.SetTableAsGlobal ("eComponent");
 		Fulfill.Dispatch ();
 
 	}
@@ -35,6 +41,13 @@ public class ObjectsCreator : Root
 		registeredCmps.TryGetValue (name, out type);
 		return type;
 		
+	}
+
+	public Type GetTypeByID (int id)
+	{
+		if (typesByID.Count > id)
+			return typesByID [id];
+		return null;
 	}
 
 	public GameObject CreateObject (string name, ITable fromTable)
@@ -58,7 +71,7 @@ public class ObjectsCreator : Root
 	{
 		if (!cmp.IsDefined (eCompNameAttr, false))
 			return;
-        
+		typesByID.Add (cmp);
 		ECompName nameAttr = cmp.GetCustomAttributes (eCompNameAttr, false) [0] as ECompName;
 		Debug.Log ("Component registered: " + nameAttr.Name);
 		registeredCmps.Add (nameAttr.Name, cmp);

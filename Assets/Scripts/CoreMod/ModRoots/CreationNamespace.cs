@@ -30,13 +30,13 @@ namespace CoreMod
 			        select prototype) as IEnumerable<ObjectCreationHandle>;
 		}
 
-		public static IEnumerable<ObjectCreationHandle> FindSimilar (TagsCollection tags, out int maxSimilarity, IEnumerable<ObjectCreationHandle> availablePrototypes = null)
+		public IEnumerable<ObjectCreationHandle> FindSimilar (TagsCollection tags, out int maxSimilarity, IEnumerable<ObjectCreationHandle> availablePrototypes = null)
 		{
 			int maximum = int.MinValue;
 			List<ObjectCreationHandle> maxSimilar = new List<ObjectCreationHandle> ();
 			if (availablePrototypes == null)
 				availablePrototypes = (from prototype in prototypes
-				                       select prototype) as IEnumerable<ObjectCreationHandle>;
+				                       select prototype.Value) as IEnumerable<ObjectCreationHandle>;
 			foreach (var handle in availablePrototypes)
 			{
 				int similarity = handle.HowSimilar (tags);

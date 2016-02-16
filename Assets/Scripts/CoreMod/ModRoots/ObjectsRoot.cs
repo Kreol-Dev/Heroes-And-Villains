@@ -135,7 +135,7 @@ namespace CoreMod
 						{
 							ITable modifierTable = modifiersTable.GetTable (tagKey);
 							Tag tag = tagsRoot.GetTag (tagKey as string, tags);
-							Modifier mod = new Modifier (cmpType, modifierTable, tag);
+							Modifier mod = new Modifier (modifierTable, tag);
 							modifiersList.Add (mod);
 						}
 
@@ -170,7 +170,13 @@ namespace CoreMod
 		}
 
 
-
+		public IEnumerable<CreationNamespace> GetAllNamespaces ()
+		{
+			List<CreationNamespace> objectsList = new List<CreationNamespace> ();
+			foreach (var names in namespaces)
+				objectsList.Add (names.Value);
+			return objectsList;
+		}
 
 	}
 

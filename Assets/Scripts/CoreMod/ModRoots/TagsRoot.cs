@@ -49,6 +49,15 @@ namespace CoreMod
 			return tags;
 		}
 
+		public IEnumerable<Tag> GetAllTags ()
+		{
+			List<Tag> tagsList = new List<Tag> ();
+			foreach (var tagsDict in tags)
+				foreach (var tagPair in tagsDict.Value)
+					tagsList.Add (tagPair.Value);
+			return tagsList;
+		}
+
 		public Dictionary<string, Tag> GetTags (string tagsNamespace)
 		{
 			if (tags.ContainsKey (tagsNamespace))

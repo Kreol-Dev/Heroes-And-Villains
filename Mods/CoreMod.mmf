@@ -5,7 +5,7 @@ description = "This is the core mod of the Mythos Cult"
 assembly = "main_assembly"
 shared_libraries =
 {
-	tags = { dir = "Tags", deps = {"expressions"} },
+	tags = { dir = "Tags", deps = {"expressions","defines"} },
 	expressions = "Expressions",
 	replacers = "Replacers",
 	wiring = { dir = "Wiring", deps = {"defines"} },

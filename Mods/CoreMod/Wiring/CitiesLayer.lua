@@ -19,7 +19,7 @@ random_points =
 	configs =
 	{
 		density = 300,
-		min_count = 1
+		min_count = 0
 	},
 	inputs = 
 	{
@@ -46,7 +46,6 @@ cities_climate_tags =
 	avatar_type = "CoreMod.TagsAssigner",
 	configs =
 	{
-		tags_namespaces = {"climate"}
 	},
 	inputs =
 	{
@@ -59,33 +58,12 @@ cities_creator =
 	avatar_type = "CoreMod.SlotsReplacer",
 	configs =
 	{
-		replacers = 
-		{
-			{ 
-				ref = "desert",
-				tags = { { "desert", 10 }, { "mountains", -1 }, { "steppe", -5 } }
-			},
-			{ 
-				ref = "plains",
-				tags = { { "desert", -3 }, { "mountains", -1 }, { "plains" , 1 }, { "grassland", 4 }, { "irradiated", -5 } }
-			},
-			{ 
-				ref = "oasis",
-				tags = { { "desert", 1 },  { "mountains", -1 }, { "plains", 3 } }
-			},
-			{ 
-				ref = "mountains",
-				tags = { { "mountains", 1 }, { "hills", 3 }, { "swamp", -5 }, { "plains", -5 } }
-			}
-		},
-		tags_namespaces = {"climate"},
-		replacers_namespace = "cities"
+		
 		
 	},
 	inputs = 
 	{
-		main = { "cities_climate_tags", "main" },
-		available_replacers = { "replacers_collection", "replacers"}
+		main = { "cities_climate_tags", "main" }
 	}
 }
 
@@ -121,19 +99,10 @@ encounter_creator =
 	avatar_type = "CoreMod.SlotsReplacer",
 	configs =
 	{
-		replacers =
-		{
-			{
-				ref = "easy_encounter",
-				tags = {}
-			}
-		},
-		tags_namespaces = {},
-		replacers_namespace = "encounters"
+		
 	},
 	inputs = 
 	{
-		main = { "encounter_placer", "slots" },
-		available_replacers = { "replacers_collection", "replacers"}
+		main = { "encounter_placer", "slots" }
 	}
 }

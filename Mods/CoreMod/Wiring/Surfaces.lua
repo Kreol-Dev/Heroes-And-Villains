@@ -6,8 +6,8 @@ distinctor_module =
 	{
 		levels =
 		{
-		{ level = 0.3, val = 0},
-		{ level = 1, val = 1}
+		{ level = 0.3, val = defines.OCEAN_SURFACE},
+		{ level = 1, val = defines.LAND_SURFACE}
 	}
 		
 	},
@@ -34,7 +34,7 @@ surface_extractor =
 	avatar_type = "CoreMod.ExtractSurfaceFromChunks",
 	configs =
 	{
-		target_surface = 1,
+		target_surface = defines.LAND_SURFACE,
 		filter_less = 0
 	},
 	inputs =
@@ -50,7 +50,7 @@ ocean_extractor =
 	avatar_type = "CoreMod.ExtractSurfaceFromChunks",
 	configs =
 	{
-		target_surface = 0,
+		target_surface = defines.OCEAN_SURFACE,
 		filter_less = 0
 	},
 	inputs =

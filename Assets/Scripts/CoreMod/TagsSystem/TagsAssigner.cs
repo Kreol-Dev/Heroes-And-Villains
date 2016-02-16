@@ -9,18 +9,12 @@ namespace CoreMod
 {
 	public class TagsAssigner : SlotsProcessor
 	{
-
-		[AConfig ("tags_namespaces")]
-		List<string> tagsNamespaces;
-		List<Tag> tags;
+		IEnumerable<Tag> tags;
 
 		public override void Work ()
 		{
 			Debug.LogWarning ("ASSIGNING TAGS");
-			tags = new List<Tag> ();
-			foreach (var name in tagsNamespaces)
-				tags.AddRange (from pair in Find.Root<TagsRoot> ().GetTags (name)
-				               select pair.Value);
+			tags = Find.Root<TagsRoot> ().GetAllTags ();
 			foreach (var go in InputObjects)
 			{
                 

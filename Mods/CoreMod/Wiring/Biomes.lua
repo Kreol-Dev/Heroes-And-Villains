@@ -11,18 +11,19 @@ regions_climate =
 	}
 }
 
-regions_climate_tags =
+regions_tags =
 {
 	avatar_type = "CoreMod.TagsAssigner",
 	configs =
 	{
-		tags_namespaces = {"climate"}
 	},
 	inputs =
 	{
 		main = { "regions_climate", "main" }
 	}
 }
+
+
 
 regions_slots_creator = 
 {
@@ -54,25 +55,27 @@ ocean_slots_creator =
 	}
 }
 
+oceans_tags =
+{
+	avatar_type = "CoreMod.TagsAssigner",
+	configs =
+	{
+	},
+	inputs =
+	{
+		main = { "ocean_slots_creator", "main" }
+	}
+}
 oceans_creator = 
 {
 	avatar_type = "CoreMod.SlotsReplacer",
 	configs =
 	{
-		replacers = 
-		{
-			{ 
-				ref = "ocean_biome",
-				tags = { { "ocean", 0 } }
-			}
-		},
-		tags_namespace = "climate",
-		replacers_namespace = "biomes"
-		
+				
 	},
 	inputs = 
 	{
-		main = { "ocean_slots_creator", "main" }
+		main = { "oceans_tags", "main" }
 	}
 }
 
@@ -81,11 +84,9 @@ biomes_creator =
 	avatar_type = "CoreMod.SlotsReplacer",
 	configs =
 	{
-		replacers = { "biomes" }
-		
 	},
 	inputs = 
 	{
-		main = { "regions_climate_tags", "main" }
+		main = { "regions_tags", "main" }
 	}
 }
