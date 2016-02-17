@@ -5,15 +5,9 @@ using UnityEngine.UI;
 public class FilterPool : MonoBehaviour {
     public GameObject parent;
     public MessagePool Pool;
-	// Use this for initialization
-	void Start () {
+    public int size = 0;
+    public int FilterSize=0;
 	
-	}
-	
-	// Update is called once per frame
-	void Update () {
-	
-	}
     public void awaking()
     {
         var console = GameObject.Find("MessagePool").GetComponent<MessagePool>();
@@ -21,7 +15,8 @@ public class FilterPool : MonoBehaviour {
         List<TypeMes> ftype = console.Filtr2;
         GameObject panel = GameObject.Find("Panel");
 
-     
+
+        destroyfilter();
         for(int i=0;i<fcat.Count;i++)
         {
             GameObject f = GameObject.Instantiate(parent,new Vector3(parent.transform.position.x +90*(i+1),parent.transform.position.y,parent.transform.position.z),parent.transform.rotation) as GameObject;
@@ -30,7 +25,7 @@ public class FilterPool : MonoBehaviour {
             f.gameObject.name = "Toggle"+i.ToString();
             f.GetComponent<Filter>().cat = fcat[i];
             f.GetComponent<Filter>().console = console;
-           // GameObject.Find("MessagePool").GetComponent<MessagePool>().ActiveFilter.Add(fcat[i]);
+           
         }
 
         for (int i = fcat.Count; i <fcat.Count+ ftype.Count; i++)
@@ -41,8 +36,46 @@ public class FilterPool : MonoBehaviour {
             f.gameObject.name = "Toggle" + i.ToString();
             f.GetComponent<Filter>().type = ftype[i-fcat.Count];            
             f.GetComponent<Filter>().console = console;
-            // GameObject.Find("MessagePool").GetComponent<MessagePool>().ActiveFilter.Add(fcat[i]);
+            
+           
         }
+        size = fcat.Count + ftype.Count;
+    }
+    public void destroyfilter()
+    {
+        for(int i=0;i<size;i++)
+        {
+            Destroy(GameObject.Find("Toggle" + i.ToString()));
+        }
+        size = 0;
+    }
+
+    public void AddFilter(Category cat,TypeMes typ)
+    {
+        
+        /*if(cat!=null)
+        {
+            GameObject f = GameObject.Instantiate(parent, new Vector3(parent.transform.position.x + 90 * (FilterSize + 1), parent.transform.position.y, parent.transform.position.z), parent.transform.rotation) as GameObject;
+            f.transform.SetParent(panel.transform);
+            f.GetComponentInChildren<Text>().text = typ.Name;
+            f.gameObject.name = "Toggle" + FilterSize.ToString();
+            f.GetComponent<Filter>().cat = null;
+            f.GetComponent<Filter>().type = typ;
+            f.GetComponent<Filter>().console = console;
+            FilterSize++;
+        }
+        if(typ!=null)
+        {
+            GameObject f = GameObject.Instantiate(parent, new Vector3(parent.transform.position.x + 90 * (FilterSize + 1), parent.transform.position.y, parent.transform.position.z), parent.transform.rotation) as GameObject;
+            f.transform.SetParent(panel.transform);
+            f.GetComponentInChildren<Text>().text = cat.Name;
+            f.gameObject.name = "Toggle" + FilterSize.ToString();
+            f.GetComponent<Filter>().cat = cat;
+            f.GetComponent<Filter>().type = null;
+            f.GetComponent<Filter>().console = console;
+            FilterSize++;
+        }*/
+
     }
 
 }

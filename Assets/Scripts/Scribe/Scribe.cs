@@ -11,7 +11,6 @@ public class Scribe
     StringBuilder builder = new StringBuilder ();
     string logPath;
     string logName;
-    // Category cat = null;
     Category cat;
     MessagePool console;
     int n = 1;
@@ -27,8 +26,9 @@ public class Scribe
     
 	public void RegisterSelf(MessagePool console)
     {
-        this.console = console;
+        this.console = console;        
         cat = console.RegisterCategory(logName);
+        
     }
     public void Save ()
     {
