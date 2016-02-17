@@ -9,11 +9,12 @@ namespace MapRoot
 	[RootDependencies (typeof(ModsManager))]
 	public class Map : Root
 	{
-		Scribe scribe = Scribes.Find ("MAP");
+        Scribe scribe;
 		Dictionary<string, IMapLayer> layers = new Dictionary<string, IMapLayer> ();
 
 		protected override void CustomSetup ()
 		{
+
 			ITable layersTable = Find.Root<ModsManager> ().GetTable ("map_layers");
 			foreach (var key in layersTable.GetKeys())
 			{
@@ -42,8 +43,8 @@ namespace MapRoot
 
 		protected override void PreSetup ()
 		{
-            
-		}
+            scribe = Scribes.Find("MAP");
+        }
 
 
 		public void RegisterMapLayer (string name, Type layerType)

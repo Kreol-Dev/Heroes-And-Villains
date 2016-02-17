@@ -8,15 +8,22 @@ using System.IO;
 public class Scribe
 {
     StringBuilder builder = new StringBuilder ();
+    string name;
     string logPath;
-    public Scribe (string logPath)
+    ConsoleScript console;
+    object category;
+    public Scribe (string name)
     {
-        this.logPath = logPath;
+        logPath = "Logs//" + name + ".txt";
+        this.name = name;
+        console = Object.FindObjectOfType<ConsoleScript>();
+        category = console.RegisterCategory(name);
+
     }
 	
     public void Save ()
     {
-        if (File.Exists (logPath))
+        if (File.Exists (name))
             File.AppendAllText (logPath, builder.ToString (), Encoding.UTF8);
         else
             File.WriteAllText (logPath, builder.ToString (), Encoding.UTF8);
@@ -26,48 +33,39 @@ public class Scribe
 	
     public void Log (string record)
     {
-        #if UNITY_EDITOR
-        Debug.Log (record);
-        #endif
+        console.Log(record, category, ConsoleScript.MessageType.Notification);
         builder.AppendLine (record);
     }
 	
     public void LogFormat (string format, params object[] objects)
     {
-        #if UNITY_EDITOR
-        Debug.LogFormat (format, objects);
-        #endif
-        builder.AppendLine (string.Format (format, objects));
+        string record = string.Format(format, objects);
+        console.Log(record, category, ConsoleScript.MessageType.Notification);
+        builder.AppendLine (record);
     }
     public void LogWarning (string record)
     {
-        #if UNITY_EDITOR
-        Debug.LogWarning (record);
-        #endif
+        console.Log(record, category, ConsoleScript.MessageType.Warning);
         builder.AppendLine ("[WARNING] " + record);
     }
     
     public void LogFormatWarning (string format, params object[] objects)
     {
-        #if UNITY_EDITOR
-        Debug.LogWarningFormat (format, objects);
-        #endif
-        builder.AppendLine ("[WARNING] " + string.Format (format, objects));
+        string record = string.Format(format, objects);
+        console.Log(record, category, ConsoleScript.MessageType.Warning);
+        builder.AppendLine ("[WARNING] " + record);
     }
     public void LogError (string record)
     {
-        #if UNITY_EDITOR
-        Debug.LogError (record);
-        #endif
+        console.Log(record, category, ConsoleScript.MessageType.Error);
         builder.AppendLine ("[ERROR] " + record);
     }
     
     public void LogFormatError (string format, params object[] objects)
     {
-        #if UNITY_EDITOR
-        Debug.LogErrorFormat (format, objects);
-        #endif
-        builder.AppendLine ("[ERROR] " + string.Format (format, objects));
+        string record = string.Format(format, objects);
+        console.Log(record, category, ConsoleScript.MessageType.Error);
+        builder.AppendLine ("[ERROR] " + record);
     }
 }
 
