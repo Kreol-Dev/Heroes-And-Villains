@@ -6,13 +6,14 @@ assembly = "main_assembly"
 shared_libraries =
 {
 	tags = { dir = "Tags", deps = {"expressions","defines"} },
-	expressions = "Expressions",
-	replacers = "Replacers",
+	expressions = {dir = "Expressions", deps = {"defines"} },
+	replacers = {dir = "Replacers", deps = {"modifiers"} },
 	wiring = { dir = "Wiring", deps = {"defines"} },
 	map_layers = "MapLayers",
 	interactors = "MapInteractors",
 	representations = "MapRepresentations",
-	defines = "Defines"
+	defines = "Defines",
+	modifiers = { dir = "Modifiers", deps = {"expressions", "defines"}}
 }
 
 dependencies =

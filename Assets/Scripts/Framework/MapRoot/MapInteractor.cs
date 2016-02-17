@@ -28,8 +28,8 @@ namespace MapRoot
 		{
 			manager = Find.Root<InputManager> ();
 			manager.Hover += OnRawHover;
-//			manager.LeftClick += OnRawClick;
-//			manager.RightClick += OnRightClick;		
+			manager.LeftClick += OnRawClick;
+			manager.RightClick += OnRightClick;		
 			map = Find.Root<MapRoot.Map> ();
 			var layerNames = map.GetAllLayerNames ();
 			ReadInteractors (layerNames);

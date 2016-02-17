@@ -29,12 +29,13 @@ namespace CoreMod
 
 		}
 
-		public override void CopyTo (GameObject go)
+		public override EntityComponent CopyTo (GameObject go)
 		{
 			Encounter e = go.AddComponent<Encounter> ();
 			e.Description = this.Description;
 			e.Danger = this.Danger;
 			e.SharedData = this.SharedData;
+			return e;
 		}
 
 	}
@@ -109,7 +110,7 @@ namespace CoreMod
 			hoverObj = null;
 		}
 
-	    void Update ()
+		void Update ()
 		{
 			if (selectObj != null)
 				ShowObjectDesc (selectObj);

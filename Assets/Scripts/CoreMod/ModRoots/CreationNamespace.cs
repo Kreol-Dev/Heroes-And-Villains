@@ -27,16 +27,18 @@ namespace CoreMod
 		{
 			return (from prototype in prototypes
 			        where prototype.Value.IsAvailable (tags)
-			        select prototype) as IEnumerable<ObjectCreationHandle>;
+			        select prototype.Value) as IEnumerable<ObjectCreationHandle>;
 		}
 
-		public IEnumerable<ObjectCreationHandle> FindSimilar (TagsCollection tags, out int maxSimilarity, IEnumerable<ObjectCreationHandle> availablePrototypes = null)
+		public IEnumerable<ObjectCreationHandle> FindSimilar (TagsCollection tags, out int maxSimilarity, IEnumerable<ObjectCreationHandle> availablePrototypes)
 		{
 			int maximum = int.MinValue;
 			List<ObjectCreationHandle> maxSimilar = new List<ObjectCreationHandle> ();
 			if (availablePrototypes == null)
-				availablePrototypes = (from prototype in prototypes
-				                       select prototype.Value) as IEnumerable<ObjectCreationHandle>;
+			{
+				maxSimilarity = int.MinValue;
+				return maxSimilar;
+			}
 			foreach (var handle in availablePrototypes)
 			{
 				int similarity = handle.HowSimilar (tags);
@@ -53,6 +55,27 @@ namespace CoreMod
 			return maxSimilar;
 		}
 
+		public IEnumerable<ObjectCreationHandle> FindSimilar (TagsCollection tags, out int maxSimilarity)
+		{
+			int maximum = int.MinValue;
+			List<ObjectCreationHandle> maxSimilar = new List<ObjectCreationHandle> ();
+			IEnumerable<ObjectCreationHandle>	availablePrototypes = (from prototype in prototypes
+			                                                         select prototype.Value) as IEnumerable<ObjectCreationHandle>;
+			foreach (var handle in availablePrototypes)
+			{
+				int similarity = handle.HowSimilar (tags);
+				if (maximum < similarity)
+				{
+					maximum = similarity;
+					maxSimilar.Clear ();
+					maxSimilar.Add (handle);
+
+				} else if (maximum == similarity)
+					maxSimilar.Add (handle);
+			}
+			maxSimilarity = maximum;
+			return maxSimilar;
+		}
 
 	}
 
@@ -71,6 +94,8 @@ namespace CoreMod
 		{
 			availability = new TagsCollection ();
 			similarTags = new TagsCollection ();
+
+			go.AddComponent<TagsVisual> ().Setup (availability);
 			foreach (var tagPair in similarity)
 				similarTags.AddTag (tagPair.Key);
 			foreach (var tag in availabilityTags)
@@ -83,7 +108,7 @@ namespace CoreMod
 
 		public bool IsAvailable (TagsCollection tags)
 		{
-			return tags.CheckTags (availability);
+			return tags.Contains (availability);
 		}
 
 		public int HowSimilar (TagsCollection tags)
@@ -93,16 +118,16 @@ namespace CoreMod
 
 		public GameObject CreateObject (TagsCollection tags)
 		{
-			GameObject newGO = new GameObject ();
+			GameObject newGO = new GameObject (prototype.name);
 			EntityComponent[] cmps = prototype.GetComponents<EntityComponent> ();
 			foreach (var cmp in cmps)
 			{
-				cmp.CopyTo (newGO);
+				var addedCmp = cmp.CopyTo (newGO);
 				if (modifiers.ContainsKey (cmp.GetType ()))
 					foreach (var mod in modifiers[cmp.GetType()])
 					{
-						if (tags.CheckTag (mod.Tag))
-							mod.Apply (cmp);
+						if (tags.Contains (mod.Tag))
+							mod.Apply (addedCmp);
 					}
 			}
 			return newGO;

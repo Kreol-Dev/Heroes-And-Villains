@@ -5,6 +5,7 @@ using System.Collections.Generic;
 
 namespace CoreMod
 {
+	[AShared]
 	public class BiomeSharedData
 	{
 		public GraphicsTile graphicsTile;

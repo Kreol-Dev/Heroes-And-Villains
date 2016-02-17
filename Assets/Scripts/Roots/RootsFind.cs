@@ -14,6 +14,14 @@ public static class Find
 		roots.TryGetValue (typeof(T), out root);
 		if (root == null)
 			scribe.Log ("Couldn't find root: " + typeof(T).ToString ());
+		if (!root.Finished)
+		{
+			scribe.LogWarning ("Found unitialized root: " + typeof(T).ToString ());
+			if (root.TrySetup ())
+				scribe.LogWarning ("Succesfull initialization: " + typeof(T).ToString ());
+			else
+				scribe.LogError ("Unsuccesfull initialization: " + typeof(T).ToString ());
+		}
 		return root as T;
 	}
 
@@ -29,7 +37,8 @@ public static class Find
 	public static void Register<T> () where T : Root
 	{
 		Type rootType = typeof(T);
-		if (roots.ContainsKey (rootType)) {
+		if (roots.ContainsKey (rootType))
+		{
 			scribe.Log ("Duplicate root: " + rootType.ToString ());
 			return;
 		}
@@ -39,7 +48,8 @@ public static class Find
 
 	public static void Register (Type rootType)
 	{
-		if (roots.ContainsKey (rootType)) {
+		if (roots.ContainsKey (rootType))
+		{
 			scribe.Log ("Duplicate root: " + rootType.ToString ());
 			return;
 		}

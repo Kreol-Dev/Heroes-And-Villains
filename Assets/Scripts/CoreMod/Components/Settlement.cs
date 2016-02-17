@@ -13,11 +13,12 @@ namespace CoreMod
 	public class Settlement : EntityComponent
 	{
 
-		public override void CopyTo (GameObject go)
+		public override EntityComponent CopyTo (GameObject go)
 		{
 			Settlement settlement = go.AddComponent<Settlement> ();
 			settlement.Population = Population;
 			settlement.Race = Race;
+			return settlement;
 		}
 
 		public int Population;

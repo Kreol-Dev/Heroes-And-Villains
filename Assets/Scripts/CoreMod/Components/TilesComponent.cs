@@ -14,9 +14,9 @@ namespace CoreMod
 			
 		}
 
-		public override void CopyTo (GameObject go)
+		public override EntityComponent CopyTo (GameObject go)
 		{
-			go.AddComponent<TilesComponent> ();
+			return go.AddComponent<TilesComponent> ();
 		}
 
 		GOLayer layer;

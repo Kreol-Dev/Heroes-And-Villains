@@ -114,3 +114,52 @@ surface.ocean =
 	},
 	expression = expressions.surface_expression
 }
+
+object = {}
+object.region =
+{
+	criteria = 
+	{
+
+	},
+	expression = function (slot, criteria)
+		tiles = slot.Get(component.Region)
+		if tiles == nil then
+			return false
+		else
+			return tiles.IsRegion
+		end
+	end
+}
+
+object.singular =
+{
+	criteria = 
+	{
+
+	},
+	expression = function (slot, criteria)
+		tiles = slot.Get(component.Region)
+		if tiles == nil then
+			return false
+		else
+			return tiles.Size < 1.1 and tiles.Size > 0.9
+		end
+	end
+}
+
+object.multiple =
+{
+	criteria = 
+	{
+
+	},
+	expression = function (slot, criteria)
+		tiles = slot.Get(component.Region)
+		if tiles == nil then
+			return false
+		else
+			return tiles.Size > 1
+		end
+	end
+}

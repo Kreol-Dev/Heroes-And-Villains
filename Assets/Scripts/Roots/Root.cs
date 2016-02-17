@@ -6,59 +6,80 @@ using System;
 
 public abstract class Root : MonoBehaviour, IDependency
 {
-    Signal fullfill = new Signal ();
+	Signal fullfill = new Signal ();
 
-    public Signal Fulfill { get { return fullfill; } }
+	public Signal Fulfill { get { return fullfill; } }
 
-    Dependencies deps;
+	public bool Finished { get; internal set; }
 
-    void Awake ()
-    {
-        fullfill.AddOnce (() =>
+	Dependencies deps;
+
+	void Awake ()
+	{
+		fullfill.AddOnce (() =>
         {
-            Debug.LogWarning ("Setup finished: " + gameObject.name);
+			Debug.LogWarning ("Setup finished: " + gameObject.name);
+			Finished = true;
         });
-        PreSetup ();
-    }
+		PreSetup ();
+	}
 
-    void Start ()
-    {
-        SetupDependecies ();
-        StartCoroutine (DelayedSetup ());
-    }
+	void Start ()
+	{
+		SetupDependecies ();
+		StartCoroutine (DelayedSetup ());
+	}
 
-    void SetupDependecies ()
-    {
-        Debug.Log ("Setup deps: " + gameObject.name);
-        var type = this.GetType (); 
-        if (Attribute.IsDefined (type, typeof(RootDependencies)))
-        {
-            var attribDeps = Attribute.GetCustomAttribute (type, typeof(RootDependencies)) as RootDependencies;
-            if (attribDeps.NeededRoots.Length != 0)
-            {
-                deps = new Dependencies (attribDeps.NeededRoots);
-                deps.Fulfill.AddOnce (Setup);
-            }
-        }
-    }
+	void SetupDependecies ()
+	{
+		Debug.Log ("Setup deps: " + gameObject.name);
+		var type = this.GetType (); 
+		if (Attribute.IsDefined (type, typeof(RootDependencies)))
+		{
+			var attribDeps = Attribute.GetCustomAttribute (type, typeof(RootDependencies)) as RootDependencies;
+			if (attribDeps.NeededRoots.Length != 0)
+			{
+				deps = new Dependencies (attribDeps.NeededRoots);
+				deps.Fulfill.AddOnce (() => StartCoroutine (SetupCoroutine ()));
+			}
+		}
+	}
 
-    void Setup ()
-    {
-        Debug.LogWarning ("Setup: " + gameObject.name);
-        CustomSetup ();
-    }
+	bool fulfilled;
 
-    protected virtual void PreSetup ()
-    {
-    }
+	IEnumerator SetupCoroutine ()
+	{
+		fulfilled = true;
+		yield return null;
+		Setup ();
+	}
 
-    protected abstract void CustomSetup () ;
+	void Setup ()
+	{
+		if (Finished)
+			return;
+		Debug.LogWarning ("Setup: " + gameObject.name);
+		CustomSetup ();
+	}
 
-    IEnumerator DelayedSetup ()
-    {
-        yield return null;
-        if (deps == null)
-            Setup ();
-    }
+	protected virtual void PreSetup ()
+	{
+	}
+
+	protected abstract void CustomSetup () ;
+
+	IEnumerator DelayedSetup ()
+	{
+		yield return null;
+		if (deps == null)
+			Setup ();
+	}
+
+	public bool TrySetup ()
+	{
+		if (fulfilled)
+			Setup ();
+		return fulfilled;
+	}
 }
 

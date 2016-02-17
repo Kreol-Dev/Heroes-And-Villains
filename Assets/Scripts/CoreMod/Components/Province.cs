@@ -8,10 +8,11 @@ namespace CoreMod
 	[ECompName ("province")]
 	public class Province : EntityComponent
 	{
-		public override void CopyTo (GameObject go)
+		public override EntityComponent CopyTo (GameObject go)
 		{
 			Province prov = go.AddComponent<Province> ();
 			prov.tiles = this.tiles;
+			return prov;
 		}
 
 		List<TileHandle> tiles;

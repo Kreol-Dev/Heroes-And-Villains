@@ -9,7 +9,7 @@ using System.Linq.Expressions;
 
 namespace CoreMod
 {
-	[RootDependencies (typeof(ModsManager), typeof(TagsRoot))]
+	[RootDependencies (typeof(ModsManager), typeof(TagsRoot), typeof(ObjectsCreator))]
 	public class ObjectsRoot : ModRoot
 	{
 		Scribe scribe = Scribes.Find ("Objects root");
@@ -71,13 +71,14 @@ namespace CoreMod
 		{
 			var tagsRoot = Find.Root<TagsRoot> ();
 			List<Tag> tags = new List<Tag> ();
-			foreach (var tagsNamespace in availabilityTable.GetKeys())
+			foreach (var tagsNamespaceName in availabilityTable.GetKeys())
 			{
 				
-				var namespaceTags = tagsRoot.GetTags (tagsNamespace as string);
-				foreach (var tagKey in availabilityTable.GetTable(tagsNamespace).GetKeys())
+				var namespaceTags = tagsRoot.GetTags (tagsNamespaceName as string);
+				ITable tagsNamespaceTable = availabilityTable.GetTable (tagsNamespaceName);
+				foreach (var tagKey in tagsNamespaceTable.GetKeys())
 				{
-					Tag tag = tagsRoot.GetTag (tagKey as string, namespaceTags);
+					Tag tag = tagsRoot.GetTag (tagsNamespaceTable.GetString (tagKey), namespaceTags);
 					if (tag != null)
 						tags.Add (tag);
 					else

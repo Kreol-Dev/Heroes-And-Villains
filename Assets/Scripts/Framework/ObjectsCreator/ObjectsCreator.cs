@@ -5,7 +5,7 @@ using System;
 using Demiurg.Core.Extensions;
 using System.Linq.Expressions;
 
-[RootDependencies (typeof(ModsManager))]
+[RootDependencies (typeof(ModsManager), typeof(MapRoot.Map), typeof(Sprites))]
 public class ObjectsCreator : Root
 {
 	Dictionary<string, Dictionary<string, GameObject>> prototypes;
@@ -99,7 +99,7 @@ public abstract class EntityComponent : MonoBehaviour
 	public abstract void LoadFromTable (ITable table);
 
 
-	public abstract void CopyTo (GameObject go);
+	public abstract EntityComponent CopyTo (GameObject go);
 
 	public abstract void PostCreate ();
 

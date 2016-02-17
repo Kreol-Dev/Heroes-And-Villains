@@ -5,15 +5,19 @@ using System.Collections.Generic;
 
 namespace CoreMod
 {
+	[AShared]
 	[ECompName ("biome")]
 	public class Biome : EntityComponent<BiomeSharedData>
 	{
+		public int MovementCost;
+
 		public override void LoadFromTable (ITable table)
 		{
 			SharedData = new BiomeSharedData ();
 			string graphicsLayerName = Find.Root<ModsManager> ().GetTable ("defines").GetString ("BIOMES_GRAPHICS_LAYER");
 			SharedData.layer = Find.Root<MapRoot.Map> ().GetLayer (graphicsLayerName) as ITileMapLayer<GraphicsTile>;
 			SharedData.movementCost = table.GetInt ("tile_movement_cost");
+			MovementCost = SharedData.movementCost;
 			int priority = table.GetInt ("priority");
 			string spriteName = table.GetString ("tile_graphics");
 			SharedData.biomeName = table.GetString ("name");
@@ -22,10 +26,12 @@ namespace CoreMod
 
 		}
 
-		public override void CopyTo (GameObject go)
+		public override EntityComponent CopyTo (GameObject go)
 		{
 			Biome biome = go.AddComponent<Biome> ();
 			biome.SharedData = SharedData;
+			biome.MovementCost = this.MovementCost;
+			return biome;
 		}
 
 
