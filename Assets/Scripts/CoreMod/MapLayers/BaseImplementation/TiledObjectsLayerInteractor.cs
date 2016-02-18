@@ -104,13 +104,20 @@ namespace CoreMod
 
 		protected override void Setup (ITable definesTable)
 		{
-			ObjectSelected += (obj) => Debug.LogFormat ("OBJECT SElECTED: {0}", obj);
+//			ObjectSelected += (obj) => Debug.LogFormat ("OBJECT SElECTED: {0}", obj);
+//
+//			ObjectDeSelected += (obj) => Debug.LogFormat ("OBJECT DESELECTED: {0}", obj);
+//
+//			ObjectHovered += (obj) => Debug.LogFormat ("OBJECT HOVERED: {0}", obj);
+//
+//			ObjectDeHovered += (obj) => Debug.LogFormat ("OBJECT DEHOVERED: {0}", obj);
+			ObjectSelected += (obj) => {};
 
-			ObjectDeSelected += (obj) => Debug.LogFormat ("OBJECT DESELECTED: {0}", obj);
+			ObjectDeSelected += (obj) => {};
 
-			ObjectHovered += (obj) => Debug.LogFormat ("OBJECT HOVERED: {0}", obj);
+			ObjectHovered += (obj) => {};
 
-			ObjectDeHovered += (obj) => Debug.LogFormat ("OBJECT DEHOVERED: {0}", obj);
+			ObjectDeHovered += (obj) => {};
 			GameObject go = GameObject.Find ("MapCollider");
 			InteractorRealm handle = go.AddComponent<InteractorRealm> ();
 			handle.Interactor = this;

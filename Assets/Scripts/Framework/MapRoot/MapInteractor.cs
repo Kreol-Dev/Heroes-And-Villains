@@ -20,7 +20,6 @@ namespace MapRoot
 		MapRoot.Map map;
 		InputManager manager;
 		HitsGetter hitsGetter;
-
 		HashSet<object> nonSelectables = new HashSet<object> ();
 		HashSet<object> hoveredObjects = new HashSet<object> ();
 
@@ -44,6 +43,7 @@ namespace MapRoot
 
 
 
+
 		void OnRawHover (Vector2 screenPoint)
 		{
 			hoveredObjects.Clear ();
@@ -57,13 +57,7 @@ namespace MapRoot
 			if (nonSelectables.Count > 0)
 			{
 				nonSelectables.IntersectWith (hoveredObjects);
-				if (nonSelectables.Count == hoveredObjects.Count)
-					nonSelectables.Clear ();
-				else
-					hoveredObjects.ExceptWith (nonSelectables);
-
 			}
-				
 		}
 
 
@@ -76,15 +70,10 @@ namespace MapRoot
 
 		void OnRawClick (Vector2 screenPoint)
 		{
-			StringBuilder builder = new StringBuilder ();
-			foreach (var o in hoveredObjects)
-			{
-
-				builder.Append (o);
-				builder.Append (" ");
-			}
-			if (hoveredObjects.Count > 0)
-				Debug.Log (builder.ToString ());
+			if (nonSelectables.Count == hoveredObjects.Count)
+				nonSelectables.Clear ();
+			else
+				hoveredObjects.ExceptWith (nonSelectables);
 			foreach (var interactor in interactors)
 				interactor.Value.Interactor.OnDeselectAll ();
 			for (int i = 0; i < hitsGetter.ObjectHitsCount; i++)

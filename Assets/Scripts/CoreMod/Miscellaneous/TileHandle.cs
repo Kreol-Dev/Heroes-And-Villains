@@ -178,7 +178,7 @@ namespace CoreMod
 			layer [X, Y] = value;
 		}
 
-		public static bool operator == (TileHandle A, TileHandle B)
+		/*public static bool operator == (TileHandle A, TileHandle B)
 		{
 			if (System.Object.ReferenceEquals (A, B))
 				return true;
@@ -202,8 +202,13 @@ namespace CoreMod
 
 			return X == handle.X && Y == handle.Y;
 
-		}
+		}*/
 
+
+		public override string ToString ()
+		{
+			return string.Format ("[TileHandle: X={0}, Y={1}]", X, Y);
+		}
 		//		public override int GetHashCode ()
 		//		{
 		//			unchecked
