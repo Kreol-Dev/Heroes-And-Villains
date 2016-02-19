@@ -9,12 +9,24 @@ public class FilterScript : MonoBehaviour
     [SerializeField]
     Toggle toggle;
     [SerializeField]
-    Text text;
-    public void Set(string name, Action<bool> callback)
+    Text text;   
+    public MessagesScript messages;
+    public Category cat;
+
+    public void Set(string name, bool state)
     {
         text.text = name;
-        toggle.onValueChanged.RemoveAllListeners();
-        toggle.onValueChanged.AddListener(x => callback(x));
+        toggle.isOn = state;
     }
     
+    public void ChangeFilter()
+    {
+        if (this.GetComponentInChildren<Toggle>().isOn)       
+            messages.ShowCategory(cat);
+        else        
+            messages.HideCategory(cat);
+            
+       
+        
+    }
 }

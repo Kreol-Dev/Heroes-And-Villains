@@ -11,7 +11,7 @@ public class Scribe
     string name;
     string logPath;
     ConsoleScript console;
-    object category;
+    Category category;
     public Scribe (string name)
     {
         logPath = "Logs//" + name + ".txt";
@@ -33,38 +33,38 @@ public class Scribe
 	
     public void Log (string record)
     {
-        console.Log(record, category, ConsoleScript.MessageType.Notification);
+        console.Log(record, category, MessageType.Notification);
         builder.AppendLine (record);
     }
 	
     public void LogFormat (string format, params object[] objects)
     {
         string record = string.Format(format, objects);
-        console.Log(record, category, ConsoleScript.MessageType.Notification);
+        console.Log(record, category, MessageType.Notification);
         builder.AppendLine (record);
     }
     public void LogWarning (string record)
     {
-        console.Log(record, category, ConsoleScript.MessageType.Warning);
+        console.Log(record, category, MessageType.Warning);
         builder.AppendLine ("[WARNING] " + record);
     }
     
     public void LogFormatWarning (string format, params object[] objects)
     {
         string record = string.Format(format, objects);
-        console.Log(record, category, ConsoleScript.MessageType.Warning);
+        console.Log(record, category, MessageType.Warning);
         builder.AppendLine ("[WARNING] " + record);
     }
     public void LogError (string record)
     {
-        console.Log(record, category, ConsoleScript.MessageType.Error);
+        console.Log(record, category, MessageType.Error);
         builder.AppendLine ("[ERROR] " + record);
     }
     
     public void LogFormatError (string format, params object[] objects)
     {
         string record = string.Format(format, objects);
-        console.Log(record, category, ConsoleScript.MessageType.Error);
+        console.Log(record, category, MessageType.Error);
         builder.AppendLine ("[ERROR] " + record);
     }
 }

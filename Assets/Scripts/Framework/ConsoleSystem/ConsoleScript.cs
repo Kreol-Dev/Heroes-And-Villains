@@ -10,22 +10,34 @@ public class ConsoleScript : MonoBehaviour
     TypesScript types;
     [SerializeField]
     MessagesScript messages;
-    public enum MessageType { Notification, Warning, Error }
+   // public enum MessageType { Notification, Warning, Error }
     public void Init()
     {
         //categories.OnCategoryHided += OnCategoryHidedHandle;
-        throw new NotImplementedException();
+        //types.AddType(type, typeState => { if(typeState == true) вернуть в список сообщений сообщения типа type else изъять; });
+        //throw new NotImplementedException();
     }
 
-    public object RegisterCategory(string name)
-    {
-        throw new NotImplementedException();
+    public Category RegisterCategory(string name)
+    {       
+        Category c = new Category(messages.activeCategories.Count, name, messages.GetHash(name));
+        messages.activeCategories.Add(true);
+        messages.FilterCat.Add(c);        
+        categories.AddCategory(c);
+        return c;
     }
-    
 
-    public void Log(string mesage, object category, object type)
+    void OnChangeShownMessages(string catName)
     {
-        throw new NotImplementedException();
+        //пересобрать список видных сообщений
+        //messages.Show(ShownMessages)
+    }
+
+
+    public void Log(string message, Category category, MessageType type)
+    {
+        messages.RegisterMessage(category, message, type);
+        messages.ShowMessagePool();
     }
     
 
