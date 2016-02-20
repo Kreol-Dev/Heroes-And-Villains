@@ -1,4 +1,5 @@
 ﻿using UnityEngine;
+using UnityEngine.EventSystems;
 using System.Collections;
 using Signals;
 
@@ -94,6 +95,8 @@ public class InputManager : Root
 
 	void Update ()
 	{
+		if (EventSystem.current.IsPointerOverGameObject ())
+			return;
 		Hover ((Vector2)Input.mousePosition);
 		if (actualDrag)
 		{
