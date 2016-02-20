@@ -11,7 +11,7 @@ namespace MapRoot
 
 		void Setup (IMapLayer layer, InteractorState defaultState, int priority);
 
-		IEnumerable<object> OnHover (Vector2 point, HashSet<Transform> encounters);
+		void OnHover (Vector2 point, HashSet<Transform> encounters, ref HashSet<object> hoveredObjects);
 
 		object OnSelect (Vector2 point, HashSet<object> selectables);
 
@@ -26,7 +26,7 @@ namespace MapRoot
 	{
 		public int Priority { get; internal set; }
 
-		public abstract IEnumerable<object> OnHover (Vector2 point, HashSet<Transform> encounters);
+		public abstract void OnHover (Vector2 point, HashSet<Transform> encounters, ref HashSet<object> hoveredObjects);
 
 		public abstract object OnSelect (Vector2 point, HashSet<object> selectables);
 
@@ -43,7 +43,6 @@ namespace MapRoot
 
 		protected TLayer Layer { get { return layer; } }
 
-		MapInteractor mapInteractor;
 
 		public void Setup (IMapLayer layer, InteractorState defaultState, int priority)
 		{
@@ -55,7 +54,6 @@ namespace MapRoot
 				Scribe.LogFormatError ("Interactor doesn't match layer provided: interactor type is {0} while layer {1}", this.GetType (), layer.GetType ());
 				return;
 			}
-			mapInteractor = Find.Root<MapInteractor> ();
 			ITable table = Find.Root<ModsManager> ().GetTable ("defines");
 			if (table != null)
 				this.Setup (table);

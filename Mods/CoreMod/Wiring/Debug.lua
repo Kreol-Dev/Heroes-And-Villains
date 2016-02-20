@@ -38,13 +38,3 @@ regions_visualizer =
 		main = { "regions_slots_creator", "environment"}
 	}
 }
-
-points_visualizer = 
-{
-	avatar_type = "CoreMod.PointsVisualizer",
-	configs = { tile_color ={1, 1, 1}},
-	inputs = {
-		tiles = { "random_points", "main"},
-		texture = { "distinct_chunks_visualizer", "main"}
-}
-}

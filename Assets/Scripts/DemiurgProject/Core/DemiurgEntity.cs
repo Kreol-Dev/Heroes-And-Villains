@@ -32,7 +32,14 @@ namespace Demiurg.Core
 			foreach (var avatar in avatars)
 			{
 				ITable init = avatarsTables [avatar.Key];
-				avatar.Value.Configure (this, init.GetTable ("inputs", null), init.GetTable ("configs", null));
+				try
+				{
+
+					avatar.Value.Configure (this, init.GetTable ("inputs", null), init.GetTable ("configs", null));
+				} catch (ITableMissingID e)
+				{
+					scribe.LogError (e.ToString ());
+				}
 			}
 			foreach (var avatar in avatars)
 			{

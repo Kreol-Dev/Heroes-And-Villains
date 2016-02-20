@@ -12,7 +12,7 @@ namespace MapRoot
 
 		public Vector3 Position { get; internal set; }
 
-		public ObjectHit (Transform transform, Vector3 position, IMapLayerInteractor interactor)
+		public ObjectHit (Transform transform, Vector3 position, IMapLayerInteractor interactor) : this ()
 		{
 			Transform = transform;
 			Position = position;

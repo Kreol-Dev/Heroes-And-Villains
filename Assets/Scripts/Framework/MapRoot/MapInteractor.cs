@@ -5,6 +5,7 @@ using Demiurg.Core.Extensions;
 using System.Reflection;
 using System;
 using System.Linq;
+using System.Text;
 
 namespace MapRoot
 {
@@ -19,7 +20,6 @@ namespace MapRoot
 		MapRoot.Map map;
 		InputManager manager;
 		HitsGetter hitsGetter;
-
 		HashSet<object> nonSelectables = new HashSet<object> ();
 		HashSet<object> hoveredObjects = new HashSet<object> ();
 
@@ -28,7 +28,7 @@ namespace MapRoot
 			manager = Find.Root<InputManager> ();
 			manager.Hover += OnRawHover;
 			manager.LeftClick += OnRawClick;
-			manager.RightClick += OnRightClick;
+			manager.RightClick += OnRightClick;		
 			map = Find.Root<MapRoot.Map> ();
 			var layerNames = map.GetAllLayerNames ();
 			ReadInteractors (layerNames);
@@ -44,6 +44,7 @@ namespace MapRoot
 
 
 
+
 		void OnRawHover (Vector2 screenPoint)
 		{
 			hoveredObjects.Clear ();
@@ -51,19 +52,13 @@ namespace MapRoot
 			for (int i = 0; i < hitsGetter.ObjectHitsCount; i++)
 			{
 				var realmHit = hitsGetter.RealmHits [i];
-				foreach (var hoveredObj in realmHit.Interactor.OnHover (realmHit.Position, hitsGetter.AllegianceHits [realmHit.Interactor]))
-					hoveredObjects.Add (hoveredObj);
+				realmHit.Interactor.OnHover (realmHit.Position, hitsGetter.AllegianceHits [realmHit.Interactor], ref hoveredObjects);
+					
 			}
 			if (nonSelectables.Count > 0)
 			{
 				nonSelectables.IntersectWith (hoveredObjects);
-				if (nonSelectables.Count == hoveredObjects.Count)
-					nonSelectables.Clear ();
-				else
-					hoveredObjects.ExceptWith (nonSelectables);
-
 			}
-				
 		}
 
 
@@ -76,6 +71,10 @@ namespace MapRoot
 
 		void OnRawClick (Vector2 screenPoint)
 		{
+			if (nonSelectables.Count == hoveredObjects.Count)
+				nonSelectables.Clear ();
+			else
+				hoveredObjects.ExceptWith (nonSelectables);
 			foreach (var interactor in interactors)
 				interactor.Value.Interactor.OnDeselectAll ();
 			for (int i = 0; i < hitsGetter.ObjectHitsCount; i++)

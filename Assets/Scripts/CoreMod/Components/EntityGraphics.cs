@@ -8,12 +8,13 @@ namespace CoreMod
 	[ECompName ("graphics")]
 	public class EntityGraphics : EntityComponent
 	{
-		public override void CopyTo (GameObject go)
+		public override EntityComponent CopyTo (GameObject go)
 		{
 			EntityGraphics eg = go.AddComponent<EntityGraphics> ();
 			SpriteRenderer renderer = go.AddComponent<SpriteRenderer> ();
 			renderer.sprite = Find.Root<Sprites> ().GetSprite (packName, spriteName);
 			renderer.sortingOrder = 1;
+			return eg;
 		}
 
 		string spriteName;

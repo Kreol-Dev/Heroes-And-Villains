@@ -22,13 +22,10 @@ namespace CoreMod
 
 		public event ObjectDelegate<TileHandle> ObjectDeHovered;
 
-		TileHandle[] cachedHoverArray = new TileHandle[1];
-		TileHandle[] clearHoverArray = new TileHandle[0];
 
-		public override IEnumerable<object> OnHover (Vector2 point, HashSet<Transform> encounters)
+		public override void OnHover (Vector2 point, HashSet<Transform> encounters, ref HashSet<object> hoveredObjects)
 		{
 			TileHandle handle = Layer.MapHandle.GetHandle (point);
-			cachedHoverArray [0] = handle;
 			if (handle != null)
 			{
 				if (hoveredTile != handle)
@@ -38,7 +35,7 @@ namespace CoreMod
 					hoveredTile = handle;
 					ObjectHovered (hoveredTile);
 				}					
-				return cachedHoverArray;
+				hoveredObjects.Add (handle);
 			} else
 			{
 				if (hoveredTile != null)
@@ -46,7 +43,6 @@ namespace CoreMod
 					ObjectDeHovered (hoveredTile);
 					hoveredTile = null;
 				}
-				return clearHoverArray;
 			}
 		}
 
@@ -56,8 +52,9 @@ namespace CoreMod
 			if (handle == null)
 				return null;
 			else if (!selectables.Contains (handle))
+			{
 				return null;
-			else if (selectedTiles.Add (handle))
+			} else if (selectedTiles.Add (handle))
 			{
 				ObjectSelected (handle);
 				return handle;
@@ -97,13 +94,21 @@ namespace CoreMod
 
 		protected override void Setup (ITable definesTable)
 		{
-			ObjectSelected += (obj) => Debug.LogFormat ("TILE SElECTED: {0} {1}", obj.X, obj.Y);
+//			ObjectSelected += (obj) => Debug.LogFormat ("TILE SElECTED: {0} {1}", obj.X, obj.Y);
+//
+//			ObjectDeSelected += (obj) => Debug.LogFormat ("TILE DESELECTED: {0} {1}", obj.X, obj.Y);
+//
+//			ObjectHovered += (obj) => Debug.LogFormat ("TILE HOVERED: {0} {1}", obj.X, obj.Y);
+//
+//			ObjectDeHovered += (obj) => Debug.LogFormat ("TILE DEHOVERED: {0} {1}", obj.X, obj.Y);
 
-			ObjectDeSelected += (obj) => Debug.LogFormat ("TILE DESELECTED: {0} {1}", obj.X, obj.Y);
-
-			ObjectHovered += (obj) => Debug.LogFormat ("TILE HOVERED: {0} {1}", obj.X, obj.Y);
-
-			ObjectDeHovered += (obj) => Debug.LogFormat ("TILE DEHOVERED: {0} {1}", obj.X, obj.Y);
+			ObjectSelected += (obj) =>{};
+	
+			ObjectDeSelected += (obj) => {};
+	
+			ObjectHovered += (obj) =>{};
+	
+			ObjectDeHovered += (obj) => {};
 			GameObject go = GameObject.Find ("MapCollider");
 			InteractorRealm handle = go.AddComponent<InteractorRealm> ();
 			handle.Interactor = this;

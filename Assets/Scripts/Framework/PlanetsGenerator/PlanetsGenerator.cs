@@ -50,7 +50,7 @@ public class PlanetsGenerator : Root
 		Dictionary<string, Demiurg.Core.Extensions.ITable> tables = new Dictionary<string, Demiurg.Core.Extensions.ITable> ();
 		foreach (var avatarKey in wiring.GetKeys())
 		{
-			if (avatarKey == "global")
+			if ((string)avatarKey == "global")
 				continue;
 			ITable avatarTable = wiring.GetTable (avatarKey) as ITable;
 			if (avatarTable != null)

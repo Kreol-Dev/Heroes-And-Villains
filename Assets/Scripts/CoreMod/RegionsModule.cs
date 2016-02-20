@@ -99,7 +99,9 @@ namespace CoreMod
 				RegionSlot regionSlot = go.AddComponent<RegionSlot> ();
 				regionSlot.Tiles = region.Tiles;
 				regionSlot.TargetLayerName = targetLayerName;
+				regionSlot.IsRegion = true;
 				go.AddComponent<Slot> ();
+				go.AddComponent<SlotSurface> ().SurfaceID = chunk.Surface;
 				OutputObjects.Add (go);
 			}
 		}

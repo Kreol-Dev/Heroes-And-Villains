@@ -25,7 +25,9 @@ namespace Demiurg.Essentials
 		{
 			
 			IList objects = Activator.CreateInstance (targetType) as IList;
-			ITable table = fromTable.GetTable (id) as ITable;
+			ITable table = fromTable.GetTable (id, null) as ITable;
+			if (table == null)
+				return Activator.CreateInstance (targetType);
 			Type containedType = targetType.GetGenericArguments () [0];
 			IConfigLoader loader = loaders.FindLoader (containedType);
 			var keys = table.GetKeys ();

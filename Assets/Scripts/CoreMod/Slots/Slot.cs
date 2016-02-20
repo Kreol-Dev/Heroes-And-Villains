@@ -16,8 +16,10 @@ namespace CoreMod
 
 		void Awake ()
 		{
+			
 			CustomData = new Dictionary<object, object> ();
 			Tags = new TagsCollection ();
+			gameObject.AddComponent<TagsVisual> ().Setup (Tags);
 		}
 	}
 

@@ -94,3 +94,72 @@ climate.grassland =
 	},
 	expression = expressions.temp_hum__expression
 }
+
+
+surface = {}
+surface.land =
+{
+	criteria = 
+	{
+		slot_surface = defines.LAND_SURFACE
+	},
+	expression = expressions.surface_expression
+}
+
+surface.ocean =
+{
+	criteria =
+	{
+		slot_surface = defines.OCEAN_SURFACE
+	},
+	expression = expressions.surface_expression
+}
+
+object = {}
+object.region =
+{
+	criteria = 
+	{
+
+	},
+	expression = function (slot, criteria)
+		tiles = slot.Get(component.Region)
+		if tiles == nil then
+			return false
+		else
+			return tiles.IsRegion
+		end
+	end
+}
+
+object.singular =
+{
+	criteria = 
+	{
+
+	},
+	expression = function (slot, criteria)
+		tiles = slot.Get(component.Region)
+		if tiles == nil then
+			return false
+		else
+			return tiles.Size < 1.1 and tiles.Size > 0.9
+		end
+	end
+}
+
+object.multiple =
+{
+	criteria = 
+	{
+
+	},
+	expression = function (slot, criteria)
+		tiles = slot.Get(component.Region)
+		if tiles == nil then
+			return false
+		else
+			return tiles.Size > 1
+		end
+	end
+}
