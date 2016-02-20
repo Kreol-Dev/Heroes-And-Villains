@@ -12,7 +12,7 @@ namespace CoreMod
 	[RootDependencies (typeof(ModsManager), typeof(TagsRoot), typeof(ObjectsCreator))]
 	public class ObjectsRoot : ModRoot
 	{
-		Scribe scribe = Scribes.Find ("Objects root");
+		Scribe scribe;
 		Dictionary<string, CreationNamespace> namespaces = new Dictionary<string, CreationNamespace> ();
 
 
@@ -156,7 +156,8 @@ namespace CoreMod
 
 		protected override void PreSetup ()
 		{
-			base.PreSetup ();
+
+			scribe = Scribes.Find ("Objects root");
 		}
 
 		public CreationNamespace GetNamespace (string name)

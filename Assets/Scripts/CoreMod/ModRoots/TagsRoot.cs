@@ -9,12 +9,13 @@ namespace CoreMod
 	[RootDependencies (typeof(ModsManager))]
 	public class TagsRoot : ModRoot
 	{
-		Scribe scribe = Scribes.Find ("Tags root");
+		Scribe scribe;
 		Dictionary<string, Dictionary<string, Tag>> tags;
 		static int id = 0;
 
 		protected override void CustomSetup ()
 		{
+			
 			var modsManager = Find.Root<ModsManager> ();
 			ITable tagsTable = modsManager.GetTable ("tags");
 			tags = new Dictionary<string, Dictionary<string, Tag>> ();
@@ -31,6 +32,11 @@ namespace CoreMod
 
 			}
 			Fulfill.Dispatch ();
+		}
+
+		protected override void PreSetup ()
+		{
+			scribe = Scribes.Find ("Tags root");
 		}
 
 		Dictionary<string, Tag> GetTags (ITable table)
