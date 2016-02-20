@@ -20,6 +20,8 @@ public class MessagesScript : MonoBehaviour
     public List<InternalMessage> ShownMessages = new List<InternalMessage>();//
     public List<MessageType> ActiveType = new List<MessageType>();
     List<GameObject> consolemes = new List<GameObject>();
+    [SerializeField]
+    SliderScript slide;
     // Use this for initialization
     void Start()
     {
@@ -59,13 +61,15 @@ public class MessagesScript : MonoBehaviour
     public void ShowCategory(Category cat)
     {
         activeCategories[cat.ID] = true;
-
+       // slider -= ShownMessages.Count;
         ShownMessages.Clear();
         foreach (var message in messages)
         {
             if (activeCategories[message.Category.ID] == true && IsActiveType(message.Type))
                 ShownMessages.Add(message);
         }
+      //  slider += ShownMessages.Count;
+        slide.SetValue((float)slider / ShownMessages.Count);
         ShowMessagePool();
 
     }
@@ -73,13 +77,16 @@ public class MessagesScript : MonoBehaviour
     public void HideCategory(Category cat)
     {
         activeCategories[cat.ID] = false;
-        slider = 0;
+        //slider -= ShownMessages.Count;
         ShownMessages.Clear();
         foreach (var message in messages)
         {
             if (activeCategories[message.Category.ID] == true && IsActiveType(message.Type))
                 ShownMessages.Add(message);
         }
+       // slider = slider+ShownMessages.Count;
+       // if (slider < 0) slider = 0;
+        slide.SetValue((float)slider / ShownMessages.Count);
         ShowMessagePool();
     }
     public void ShowMessagePool()

@@ -21,7 +21,10 @@ public class SliderScript : MonoBehaviour
     {
         messages.ShowFrom(this.GetComponent<Slider>().value);
     }
-
+    public void SetValue(float value)
+    {
+        this.GetComponent<Slider>().value = value;
+    }
     public void scrolUP()
     {
         if (messages.slider >= 1)
