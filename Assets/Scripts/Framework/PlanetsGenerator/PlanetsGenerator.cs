@@ -13,50 +13,18 @@ using Demiurg.Core.Extensions;
 [RootDependencies (typeof(ModsManager), typeof(ObjectsCreator), typeof(Sprites), typeof(MapRoot.Map))]
 public class PlanetsGenerator : Root
 {
-	Scribe scribe = Scribes.Find ("PlanetsGenerator");
+    Scribe scribe;
 	LuaContext luaContext;
 	ModsManager modsManager;
-	//WorldCreator creator;
 	ITable wiring;
-
-	protected override void CustomSetup ()
+    protected override void PreSetup()
+    {
+        base.PreSetup();
+        scribe = Scribes.Find("PlanetsGenerator");
+    }
+    protected override void CustomSetup ()
 	{
-		/*creator = new WorldCreator ();
-
 		
-
-        luaContext = Find.Root<LuaContext> ();
-        //luaContext.DeclareLibrary("Demiurg", new NameFuncPair[]{new NameFuncPair( "module_outputs", Outputs)});
-        modsManager = Find.Root<ModsManager> ();
-        //luaContext.LoadScripts (modsManager.GetFiles("Demiurg\\" + WiringTable + ".lua"), WiringTable);
-        //luaContext.LoadScript ("Mods\\CoreMod\\Demiurg\\Wiring\\Wiring.lua", WiringTable);
-        Dictionary<string, Type> nodes = FindNodeTypes ();
-
-        Script script = new Script ();
-        RegisterSlotComponents (script);
-        script.Globals ["wiring"] = new Table (script);
-        script.Globals ["replacers"] = new Table (script);
-        script.Globals ["tags"] = new Table (script);
-        script.Globals ["tag_expressions"] = new Table (script);
-        (script.Globals ["tag_expressions"] as Table) ["component"] = script.Globals ["component"];
-        script.Options.ScriptLoader = new FileSystemScriptLoader ();
-        script.DoFile ("Mods\\CoreMod\\Demiurg\\TagExpressions\\Expressions.lua", script.Globals ["tag_expressions"] as Table);
-        script.DoFile ("Mods\\CoreMod\\Demiurg\\Replacers\\Replacers.lua", script.Globals ["replacers"] as Table);
-        (script.Globals ["tags"] as Table) ["tag_expressions"] = script.Globals ["tag_expressions"];
-        script.DoFile ("Mods\\CoreMod\\Demiurg\\Tags\\Tags.lua", script.Globals ["tags"] as Table);
-        script.DoFile ("Mods\\CoreMod\\Demiurg\\Wiring\\Wiring.lua", script.Globals ["wiring"] as Table);
-
-
-        //script.Globals.Values
-        Dictionary<string, Table> tables = new Dictionary<string, Table> ();
-        foreach (var pair in ((Table)script.Globals ["wiring"]).Pairs)
-        {
-            Debug.Log (pair.Key.CastToString ());
-            tables.Add (pair.Key.CastToString (), pair.Value.Table);
-        }
-        creator.SetupReplacers (FormReplacers (script.Globals ["replacers"] as Table));
-        creator.SetupTags (FormTags (script.Globals ["tags"] as Table));
-        creator.InitWiring (tables, nodes);*/
 
 		wiring = Find.Root<ModsManager> ().GetTable ("wiring");
 

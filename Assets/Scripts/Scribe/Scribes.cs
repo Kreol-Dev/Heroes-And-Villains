@@ -35,7 +35,7 @@ public static class Scribes
             scribe.Log ("Duplicate scribe: " + scribeName);
             return scribes [scribeName];
         }
-        Scribe newScribe = new Scribe ("Logs\\" + scribeName + ".txt");
+        Scribe newScribe = new Scribe (scribeName);
         scribes.Add (scribeName, newScribe);
         return newScribe;
     }

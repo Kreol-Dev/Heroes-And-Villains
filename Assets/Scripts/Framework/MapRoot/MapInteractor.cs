@@ -11,7 +11,7 @@ namespace MapRoot
 	[RootDependencies (typeof(InputManager), typeof(MapRoot.Map), typeof(ModsManager))]
 	public class MapInteractor : Root
 	{
-		Scribe scribe = Scribes.Find ("MAP INTERACTOR");
+        Scribe scribe;
 
 		public delegate void HitDelegate (Transform hitTransform, Vector3 hitPoint);
 
@@ -39,7 +39,8 @@ namespace MapRoot
 
 		protected override void PreSetup ()
 		{
-		}
+            scribe = Scribes.Find("MAP INTERACTOR");
+        }
 
 
 

@@ -9,7 +9,7 @@ namespace MapRoot
 	[RootDependencies (typeof(MapRoot.Map), typeof(MapRoot.MapInteractor))]
 	public class MapRepresenter : Root
 	{
-		Scribe scribe = Scribes.Find ("MAP REPRESENTER");
+		Scribe scribe;
 		MapInteractor interactors;
 		Map map;
 
@@ -20,8 +20,12 @@ namespace MapRoot
 			ReadRepresenters ();
 			Fulfill.Dispatch ();
 		}
-
-		class RepresenterHandle
+        protected override void PreSetup()
+        {
+            base.PreSetup();
+            scribe = Scribes.Find("MAP REPRESENTER");
+        }
+        class RepresenterHandle
 		{
 			RepresenterState state;
 
