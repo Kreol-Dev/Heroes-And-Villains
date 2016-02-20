@@ -9,7 +9,9 @@ public class FilterScript : MonoBehaviour
     [SerializeField]
     Toggle toggle;
     [SerializeField]
-    Text text;   
+    Text text;
+    [SerializeField]
+    Color custom_color;
     public MessagesScript messages;
     public Category cat;
     public MessageType type;
@@ -45,5 +47,20 @@ public class FilterScript : MonoBehaviour
         }      
        
         
+    }
+    public void SetInActive()
+    {
+        if(cat!=null)
+        if(this.GetComponentInChildren<Toggle>().isOn)
+           this.GetComponent<Image>().color = messages.GetHash(cat.Name) ;
+        else
+           this.GetComponent<Image>().color = custom_color;
+        else
+            if (this.GetComponentInChildren<Toggle>().isOn)
+            this.GetComponent<Image>().color = messages.GetHash(type.ToString());
+        else
+            this.GetComponent<Image>().color = custom_color;
+
+
     }
 }
