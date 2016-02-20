@@ -3,10 +3,10 @@ using System.Collections;
 
 namespace AI
 {
-	public class Goal
+	public class Condition
 	{
 
 	}
-
 }
+
 
