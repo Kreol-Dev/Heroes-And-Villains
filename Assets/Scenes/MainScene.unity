@@ -520,6 +520,9 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: b72e39591ef3cfd45bfea2595bacaf9b, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  parent: {fileID: 109126, guid: 9ea6cc4cbe6b3ee4481f472509f3e89d, type: 2}
+  panel: {fileID: 406506332}
+  mes: {fileID: 747260718}
 --- !u!1 &747260713
 GameObject:
   m_ObjectHideFlags: 0
@@ -620,14 +623,16 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: d5bcb891f839dee40ab87f4ff40ed0ab, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  messageGo: {fileID: 0}
+  messageGo: {fileID: 166768, guid: 9e22f41ca97f9cc40ac81f82fcb380ba, type: 2}
   DefaultSize: 6
   slider: 0
-  parent: {fileID: 0}
+  parent: {fileID: 747260714}
   custom_sprite: {fileID: 0}
   messages: []
   FilterType: 
   ShownMessages: []
+  ActiveType: 
+  activeCategories: 
 --- !u!1 &772745204
 GameObject:
   m_ObjectHideFlags: 0
@@ -1112,6 +1117,7 @@ GameObject:
   m_Component:
   - 224: {fileID: 1394681405}
   - 114: {fileID: 1394681406}
+  - 114: {fileID: 1394681407}
   m_Layer: 5
   m_Name: Slider
   m_TagString: Untagged
@@ -1184,9 +1190,32 @@ MonoBehaviour:
   m_Value: 0
   m_OnValueChanged:
     m_PersistentCalls:
-      m_Calls: []
+      m_Calls:
+      - m_Target: {fileID: 1394681407}
+        m_MethodName: Change_view
+        m_Mode: 1
+        m_Arguments:
+          m_ObjectArgument: {fileID: 0}
+          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
+          m_IntArgument: 0
+          m_FloatArgument: 0
+          m_StringArgument: 
+          m_BoolArgument: 0
+        m_CallState: 2
     m_TypeName: UnityEngine.UI.Slider+SliderEvent, UnityEngine.UI, Version=1.0.0.0,
       Culture=neutral, PublicKeyToken=null
+--- !u!114 &1394681407
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_PrefabParentObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 0}
+  m_GameObject: {fileID: 1394681404}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: a65b01bfe4be9a74294ad7fd45f844ce, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  messages: {fileID: 747260718}
 --- !u!1 &1497431759
 GameObject:
   m_ObjectHideFlags: 0
@@ -1304,9 +1333,9 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 72d0a6f069ed1a94d9ced89a56628476, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  categories: {fileID: 0}
-  types: {fileID: 0}
-  messages: {fileID: 0}
+  categories: {fileID: 1761901197}
+  types: {fileID: 406506337}
+  messages: {fileID: 747260718}
 --- !u!114 &1666328813
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -1476,6 +1505,9 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 6a95126ee82a2504fbad90f7e680be18, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  parent: {fileID: 109126, guid: 9ea6cc4cbe6b3ee4481f472509f3e89d, type: 2}
+  panel: {fileID: 1761901195}
+  mes: {fileID: 747260718}
 --- !u!114 &1761901198
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -1528,7 +1560,7 @@ MonoBehaviour:
   m_ChildAlignment: 0
   m_StartCorner: 0
   m_StartAxis: 0
-  m_CellSize: {x: 100, y: 100}
+  m_CellSize: {x: 60, y: 30}
   m_Spacing: {x: 0, y: 0}
   m_Constraint: 0
   m_ConstraintCount: 2

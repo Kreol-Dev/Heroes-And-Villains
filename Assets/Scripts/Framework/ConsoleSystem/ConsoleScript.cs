@@ -9,8 +9,7 @@ public class ConsoleScript : MonoBehaviour
     [SerializeField]
     TypesScript types;
     [SerializeField]
-    MessagesScript messages;
-   // public enum MessageType { Notification, Warning, Error }
+    MessagesScript messages;   
     public void Init()
     {
         //categories.OnCategoryHided += OnCategoryHidedHandle;
@@ -37,6 +36,12 @@ public class ConsoleScript : MonoBehaviour
     public void Log(string message, Category category, MessageType type)
     {
         messages.RegisterMessage(category, message, type);
+        if (messages.IsNewType(type))
+        {
+            messages.FilterType.Add(type);
+            types.AddType(type);
+            messages.ActiveType.Add(type);
+        }
         messages.ShowMessagePool();
     }
     

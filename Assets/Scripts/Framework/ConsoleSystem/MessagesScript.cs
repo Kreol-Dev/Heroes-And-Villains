@@ -18,7 +18,8 @@ public class MessagesScript : MonoBehaviour
     public List<Category> FilterCat = new List<Category>();// List of all Categories     
     public List<MessageType> FilterType = new List<MessageType>();// List of all Types
     public List<InternalMessage> ShownMessages = new List<InternalMessage>();//
-
+    public List<MessageType> ActiveType = new List<MessageType>();
+    List<GameObject> consolemes = new List<GameObject>();
     // Use this for initialization
     void Start()
     {
@@ -48,7 +49,7 @@ public class MessagesScript : MonoBehaviour
             messege.gameObject.name = "ConsoleMessage" + (i + 1).ToString();
             messege.gameObject.transform.localPosition = new Vector3(0, 63 - 28 * i, 0);
             messege.gameObject.GetComponent<Image>().sprite = custom_sprite;
-            // consolemes.Add(messege.gameObject);
+            consolemes.Add(messege.gameObject);
 
         }
         consolePoolSize += delta;
@@ -62,7 +63,7 @@ public class MessagesScript : MonoBehaviour
         ShownMessages.Clear();
         foreach (var message in messages)
         {
-            if (activeCategories[message.Category.ID] == true)
+            if (activeCategories[message.Category.ID] == true && IsActiveType(message.Type))
                 ShownMessages.Add(message);
         }
         ShowMessagePool();
@@ -76,14 +77,15 @@ public class MessagesScript : MonoBehaviour
         ShownMessages.Clear();
         foreach (var message in messages)
         {
-            if (activeCategories[message.Category.ID] == true)
+            if (activeCategories[message.Category.ID] == true && IsActiveType(message.Type))
                 ShownMessages.Add(message);
         }
         ShowMessagePool();
     }
     public void ShowMessagePool()
     {
-         //SetActiveMessage();
+        
+        SetActiveMessage();
         for (int i = slider, conMessage = 0; (i < slider + consolePoolSize) && conMessage < ShownMessages.Count; i++, conMessage++)
         {
             ShownMessages[i].ShowTo(messagesPool[conMessage]);
@@ -122,14 +124,14 @@ public class MessagesScript : MonoBehaviour
         {
             for (int i = 0; i < consolePoolSize; i++)
             {
-                GameObject.Find("ConsoleMessage"+(i+1).ToString()).SetActive(true);
+                consolemes[i].SetActive(true);
             }
         }
         if (consolePoolSize > ShownMessages.Count)
         {
-            for (int i = consolePoolSize ; i >= ShownMessages.Count; i--)
+            for (int i = consolePoolSize-1 ; i >= ShownMessages.Count; i--)
             {
-                GameObject.Find("ConsoleMessage" + (i).ToString()).SetActive(false);
+               consolemes[i].SetActive(false);
             }
 
         }
@@ -143,5 +145,30 @@ public class MessagesScript : MonoBehaviour
             slider = ShownMessages.Count - consolePoolSize;
         ShowMessagePool();
     }
-
-}
+    public bool IsNewType(MessageType type)
+    {
+        for(int i=0;i<FilterType.Count;i++)
+        {
+            if (type == FilterType[i]) return false;
+        }
+        return true;
+    }
+    public bool IsActiveType(MessageType type)
+    {
+        for(int i=0;i<ActiveType.Count;i++)
+        {
+            if (type == ActiveType[i]) return true;
+        }
+        return false;
+    }
+    public void FilterByType()
+    {
+        ShownMessages.Clear();
+        foreach (var message in messages)
+        {
+            if (activeCategories[message.Category.ID] == true && IsActiveType(message.Type))
+                ShownMessages.Add(message);
+        }
+        ShowMessagePool();
+    }
+    }

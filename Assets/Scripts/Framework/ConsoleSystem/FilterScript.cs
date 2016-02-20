@@ -12,7 +12,7 @@ public class FilterScript : MonoBehaviour
     Text text;   
     public MessagesScript messages;
     public Category cat;
-
+    public MessageType type;
     public void Set(string name, bool state)
     {
         text.text = name;
@@ -21,11 +21,28 @@ public class FilterScript : MonoBehaviour
     
     public void ChangeFilter()
     {
-        if (this.GetComponentInChildren<Toggle>().isOn)       
-            messages.ShowCategory(cat);
-        else        
-            messages.HideCategory(cat);
-            
+        if (cat != null)
+        {
+            if (this.GetComponentInChildren<Toggle>().isOn)
+                messages.ShowCategory(cat);
+            else
+                messages.HideCategory(cat);
+        }
+        else
+        {
+            if (this.GetComponentInChildren<Toggle>().isOn)
+            {
+                messages.ActiveType.Add(type);
+                messages.FilterByType();
+            }               
+
+            else
+            {
+                messages.ActiveType.Remove(type);
+                messages.FilterByType();               
+            }
+                
+        }      
        
         
     }

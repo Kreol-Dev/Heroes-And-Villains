@@ -36,12 +36,14 @@ public class Scribe
         console.Log(record, category, MessageType.Notification);
         builder.AppendLine (record);
     }
-	
+   
     public void LogFormat (string format, params object[] objects)
     {
         string record = string.Format(format, objects);
-        console.Log(record, category, MessageType.Notification);
-        builder.AppendLine (record);
+       
+            console.Log(record, category, MessageType.Notification);
+       
+        
     }
     public void LogWarning (string record)
     {

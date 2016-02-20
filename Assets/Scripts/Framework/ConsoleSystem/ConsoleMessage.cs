@@ -9,7 +9,7 @@ public class InternalMessage
     public Category Category { get; internal set; }
     public string Message { get; internal set; }
     
-    MessageType Type;
+    public MessageType Type;
    // Type { get; internal set; }
 
     public InternalMessage(Category cat, string mes, MessageType type)
