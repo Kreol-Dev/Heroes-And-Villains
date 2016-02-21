@@ -14,9 +14,6 @@ regions_climate =
 regions_tags =
 {
 	avatar_type = "CoreMod.TagsAssigner",
-	configs =
-	{
-	},
 	inputs =
 	{
 		main = { "regions_climate", "main" }
@@ -58,9 +55,6 @@ ocean_slots_creator =
 oceans_tags =
 {
 	avatar_type = "CoreMod.TagsAssigner",
-	configs =
-	{
-	},
 	inputs =
 	{
 		main = { "ocean_slots_creator", "main" }
@@ -69,10 +63,6 @@ oceans_tags =
 oceans_creator = 
 {
 	avatar_type = "CoreMod.SlotsReplacer",
-	configs =
-	{
-				
-	},
 	inputs = 
 	{
 		main = { "oceans_tags", "main" }
@@ -82,9 +72,6 @@ oceans_creator =
 biomes_creator =
 {
 	avatar_type = "CoreMod.SlotsReplacer",
-	configs =
-	{
-	},
 	inputs = 
 	{
 		main = { "regions_tags", "main" }

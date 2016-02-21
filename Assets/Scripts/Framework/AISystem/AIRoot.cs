@@ -4,7 +4,7 @@ using System.Collections;
 namespace AI
 {
 	[RootDependencies (typeof(ModsManager))]
-	public class PlanningRoot : Root
+	public class AIRoot : Root
 	{
 		protected override void CustomSetup ()
 		{

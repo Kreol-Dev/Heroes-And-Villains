@@ -47,7 +47,12 @@ namespace CoreMod
 			selectionTextGO.transform.SetParent (selectionTransform, false);
 			selectText = selectionTextGO.GetComponent<Text> ();
 
+			var layout = hoverPanelGO.AddComponent<LayoutElement> ();
+			layout.minWidth = 100;
 			hoverPanelGO.SetActive (false);
+
+			layout = selectPanelGO.AddComponent<LayoutElement> ();
+			layout.minWidth = 100;
 			selectPanelGO.SetActive (false);
 		}
 

@@ -10,18 +10,18 @@ namespace CoreMod
 	public class Biome : EntityComponent<BiomeSharedData>
 	{
 		public int MovementCost;
+		public string Name;
 
 		public override void LoadFromTable (ITable table)
 		{
 			SharedData = new BiomeSharedData ();
 			string graphicsLayerName = Find.Root<ModsManager> ().GetTable ("defines").GetString ("BIOMES_GRAPHICS_LAYER");
-			SharedData.layer = Find.Root<MapRoot.Map> ().GetLayer (graphicsLayerName) as ITileMapLayer<GraphicsTile>;
-			SharedData.movementCost = table.GetInt ("tile_movement_cost");
-			MovementCost = SharedData.movementCost;
+			SharedData.layer = Find.Root<MapRoot.Map> ().GetLayer (graphicsLayerName) as ITileMapLayer<GraphicsTile>; 
+			MovementCost = table.GetInt ("tile_movement_cost");
 			int priority = table.GetInt ("priority");
 			string spriteName = table.GetString ("tile_graphics");
-			SharedData.biomeName = table.GetString ("name");
-			SharedData.graphicsTile = new GraphicsTile (Find.Root<Sprites> ().GetSprite ("map_tiles", spriteName), priority, SharedData.biomeName + " tile");
+			Name = table.GetString ("name");
+			SharedData.graphicsTile = new GraphicsTile (Find.Root<Sprites> ().GetSprite ("map_tiles", spriteName), priority, this.Name + " tile");
 				
 
 		}
@@ -31,6 +31,7 @@ namespace CoreMod
 			Biome biome = go.AddComponent<Biome> ();
 			biome.SharedData = SharedData;
 			biome.MovementCost = this.MovementCost;
+			biome.Name = this.Name;
 			return biome;
 		}
 
