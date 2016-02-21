@@ -93,7 +93,7 @@ public class MessagesScript : MonoBehaviour
     {
         
         SetActiveMessage();
-        for (int i = slider, conMessage = 0; (i < slider + consolePoolSize) && conMessage < ShownMessages.Count; i++, conMessage++)
+        for (int i = slider, conMessage = 0; (i < slider + consolePoolSize) && i < ShownMessages.Count && conMessage < consolePoolSize; i++, conMessage++)
         {
             ShownMessages[i].ShowTo(messagesPool[conMessage]);
         }
