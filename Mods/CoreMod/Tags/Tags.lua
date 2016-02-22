@@ -1,5 +1,4 @@
-climate = {}
-climate.desert =
+coremod.desert =
 {
 	criteria = 
 	{
@@ -11,7 +10,7 @@ climate.desert =
 	expression = expressions.temp_hum__expression
 }
 
-climate.mountains =
+coremod.mountains =
 {
 	criteria = 
 	{
@@ -21,7 +20,7 @@ climate.mountains =
 	expression = expressions.height_expression
 }
 
-climate.hills =
+coremod.hills =
 {
 	criteria = 
 	{
@@ -31,7 +30,7 @@ climate.hills =
 	expression = expressions.height_expression
 }
 
-climate.plains =
+coremod.plains =
 {
 	criteria = 
 	{
@@ -43,7 +42,7 @@ climate.plains =
 	expression = expressions.plains_expression
 }
 
-climate.irradiated =
+coremod.irradiated =
 {
 	criteria = 
 	{
@@ -53,7 +52,7 @@ climate.irradiated =
 	expression = expressions.rad_expression
 }
 
-climate.swamp =
+coremod.swamp =
 {
 	criteria = 
 	{
@@ -67,7 +66,7 @@ climate.swamp =
 	expression = expressions.swamp_expression
 }
 
-climate.steppe =
+coremod.steppe =
 {
 	criteria = 
 	{
@@ -83,7 +82,7 @@ climate.steppe =
 	expression = expressions.steppe_expression
 }
 
-climate.grassland =
+coremod.grassland =
 {
 	criteria = 
 	{
@@ -96,8 +95,7 @@ climate.grassland =
 }
 
 
-surface = {}
-surface.land =
+coremod.land =
 {
 	criteria = 
 	{
@@ -106,7 +104,7 @@ surface.land =
 	expression = expressions.surface_expression
 }
 
-surface.ocean =
+coremod.ocean =
 {
 	criteria =
 	{
@@ -115,8 +113,7 @@ surface.ocean =
 	expression = expressions.surface_expression
 }
 
-object = {}
-object.region =
+coremod.region =
 {
 	criteria = 
 	{
@@ -132,7 +129,7 @@ object.region =
 	end
 }
 
-object.singular =
+coremod.singular =
 {
 	criteria = 
 	{
@@ -143,12 +140,12 @@ object.singular =
 		if tiles == nil then
 			return false
 		else
-			return tiles.Size < 1.1 and tiles.Size > 0.9
+			return tiles.Size < 1.1 and tiles.Size > 0.9 and not tiles.IsRegion
 		end
 	end
 }
 
-object.multiple =
+coremod.multiple =
 {
 	criteria = 
 	{
@@ -159,7 +156,21 @@ object.multiple =
 		if tiles == nil then
 			return false
 		else
-			return tiles.Size > 1
+			return tiles.Size > 1 and not tiles.IsRegion
+		end
+	end
+}
+
+
+coremod.nest = 
+{
+	criteria = {},
+	expression = function ( slot, criteria )
+		nestCmp = slot.Get(component.Nest)
+		if nestCmp == nil then
+			return false
+		else
+			return true
 		end
 	end
 }

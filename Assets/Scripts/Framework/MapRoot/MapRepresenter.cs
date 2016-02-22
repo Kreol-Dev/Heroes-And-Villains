@@ -20,12 +20,14 @@ namespace MapRoot
 			ReadRepresenters ();
 			Fulfill.Dispatch ();
 		}
-        protected override void PreSetup()
-        {
-            base.PreSetup();
-            scribe = Scribes.Find("MAP REPRESENTER");
-        }
-        class RepresenterHandle
+
+		protected override void PreSetup ()
+		{
+			base.PreSetup ();
+			scribe = Scribes.Find ("MAP REPRESENTER");
+		}
+
+		class RepresenterHandle
 		{
 			RepresenterState state;
 
@@ -43,13 +45,15 @@ namespace MapRoot
 
 			public IMapLayerRenderer Renderer { get; internal set; }
 
-			public RepresenterHandle (IMapLayer layer, IMapLayerInteractor interactor, IMapLayerPresenter presenter, IMapLayerRenderer renderer, Type objectPresenterType, RepresenterState defaultState)
+			public RepresenterHandle (IMapLayer layer, IMapLayerInteractor interactor, IMapLayerPresenter presenter, 
+			                          IMapLayerRenderer renderer, Type objectPresenterType, RepresenterState defaultState,
+			                          ITable rendererData)
 			{
 				Presenter = presenter;
 				Renderer = renderer;
 				state = defaultState;
 				Presenter.Setup (layer, interactor, objectPresenterType, state);
-				Renderer.Setup (layer, interactor, state);
+				Renderer.Setup (layer, interactor, state, rendererData);
 			}
 		}
 
@@ -100,7 +104,7 @@ namespace MapRoot
 					IMapLayerRenderer repRenderer = Activator.CreateInstance (rendererType) as IMapLayerRenderer;
 					IMapLayerPresenter repPresenter = Activator.CreateInstance (presenterType) as IMapLayerPresenter;
 					ITable layersTable = repTable.GetTable ("layers");
-
+					ITable rendererTable = repTable.GetTable ("renderer_data", null);
 					RepresenterState state = (RepresenterState)Enum.Parse (typeof(RepresenterState), repTable.GetString ("default_state"));
 					string interactorName = repTable.GetString ("interactor");
 					var interactor = interactors.GetInteractor (interactorName);
@@ -108,7 +112,7 @@ namespace MapRoot
 					{
 						string layerName = layersTable.GetString (layerID);
 						var layer = map.GetLayer (layerName);
-						RepresenterHandle handle = new RepresenterHandle (layer, interactor, repPresenter, repRenderer, objectPresenterType, state);
+						RepresenterHandle handle = new RepresenterHandle (layer, interactor, repPresenter, repRenderer, objectPresenterType, state, rendererTable);
 
 						representers.Add (repName as string, handle);
 					}

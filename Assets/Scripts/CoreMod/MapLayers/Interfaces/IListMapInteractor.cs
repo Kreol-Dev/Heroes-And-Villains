@@ -3,7 +3,7 @@ using System.Collections;
 
 namespace CoreMod
 {
-	public interface IListInteractor<TObject, TLayerObject, TLayer> where TLayer : IListMapLayer<TLayerObject>
+	public interface IListInteractor<TObject, TLayerObject, TLayer> where TLayer : IListMapLayer<TLayerObject> where TLayerObject : class
 	{
 		event ObjectDelegate<TObject> ObjectClicked;
 		event ObjectDelegate<TObject> ObjectDeClicked;

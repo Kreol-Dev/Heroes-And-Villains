@@ -23,7 +23,7 @@ public class ModsManager : Root
 	List<ModDesc> mods;
 	List<ModDesc> activeMods;
 	Mod globalMod;
-
+	Scribe scribe;
 	List<Type> allTypes;
 	Dictionary<string, Type> typesByName;
 
@@ -86,6 +86,7 @@ public class ModsManager : Root
 	protected override void PreSetup ()
 	{
 		base.PreSetup ();
+		scribe = Scribes.Find ("Mods manager");
 		globalContext.Options.ScriptLoader = new FileSystemScriptLoader ();
 		mods = SearchForMods ();
 		foreach (var mod in mods)
@@ -151,10 +152,21 @@ public class ModsManager : Root
 				}
 				Table globalTable = (table as BindingTable).Table;
 				string[] files = Directory.GetFiles ("Mods\\" + activeMod.Name + "\\" + shared.Directory);
+				string namespaceFilePath = "Mods\\" + activeMod.Name + "\\" + shared.Directory + "\\" + "namespace.lua";
+
+				//scribe.Log (namespaceFilePath);
+				if (File.Exists (namespaceFilePath))
+				{
+					scribe.LogFormat ("Loading file {0} for a table {1}", namespaceFilePath, shared.Name);
+					globalContext.DoFile (namespaceFilePath, globalTable);
+				}
 				foreach (var file in files)
 				{
-					Debug.LogFormat ("Loading file {0} for a table {1}", file, shared.Name);
-					globalContext.DoFile (file, globalTable);
+					if (file != namespaceFilePath)
+					{
+						scribe.LogFormat ("Loading file {0} for a table {1}", file, shared.Name);
+						globalContext.DoFile (file, globalTable);
+					}
 				}
 			}
 		}

@@ -28,6 +28,8 @@ regions_slots_creator =
 	configs =
 	{
 		name = "Land",
+		size = 0,
+		is_region = true,
 		density = 100,
 		target_layer = defines.BIOMES_GO_LAYER
 	},
@@ -43,6 +45,8 @@ ocean_slots_creator =
 	configs =
 	{
 		name = "Ocean",
+		size = 0,
+		is_region = true,
 		density = 1000,
 		target_layer = defines.BIOMES_GO_LAYER
 	},

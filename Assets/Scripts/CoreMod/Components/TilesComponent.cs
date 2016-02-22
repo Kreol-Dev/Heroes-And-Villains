@@ -30,6 +30,8 @@ namespace CoreMod
 				tile.Set (layer.Tiles, this.gameObject);
 				layer.TileUpdated.Dispatch (tile);
 			}
+			layer.AddObject (this.gameObject);
+			//layer.gos.Add (this.gameObject);
 		}
 
 

@@ -8,6 +8,10 @@ namespace CoreMod
 {
 	public class RegionsModule : SlotsProcessor
 	{
+		[AConfig ("is_region")]
+		bool isRegion;
+		[AConfig ("size")]
+		int maxSize;
 		[AConfig ("density")]
 		int density;
 		[AConfig ("name")]
@@ -72,7 +76,7 @@ namespace CoreMod
 			List<Region> regions = new List<Region> ();
 			foreach (var handle in handles)
 			{
-				Region region = new Region (regionID++, handle, env, dirs);
+				Region region = new Region (regionID++, handle, env, dirs, maxSize);
 				regions.Add (region);
 			}
 
@@ -99,7 +103,7 @@ namespace CoreMod
 				RegionSlot regionSlot = go.AddComponent<RegionSlot> ();
 				regionSlot.Tiles = region.Tiles;
 				regionSlot.TargetLayerName = targetLayerName;
-				regionSlot.IsRegion = true;
+				regionSlot.IsRegion = isRegion;
 				go.AddComponent<Slot> ();
 				go.AddComponent<SlotSurface> ().SurfaceID = chunk.Surface;
 				OutputObjects.Add (go);
@@ -122,9 +126,14 @@ namespace CoreMod
 
 		int[,] env;
 		Deck<TileDirection> dirs;
+		int maxSize;
 
-		public Region (int id, TileHandle startHandle, int[,] env, Deck<TileDirection> dirs)
+		public Region (int id, TileHandle startHandle, int[,] env, Deck<TileDirection> dirs, int maxSize)
 		{
+			if (maxSize == 0)
+				this.maxSize = int.MaxValue;
+			else
+				this.maxSize = maxSize;
 			this.ID = id;
 			this.frontier.Add (startHandle);
 			startHandle.Set (env, id);
@@ -135,7 +144,16 @@ namespace CoreMod
 		public bool Update ()
 		{
 			cachedFrontier.Clear ();
+
+			if (tiles.Count + frontier.Count > maxSize)
+			{
+				Debug.LogFormat ("MAX {0} COUNT {1}", maxSize, tiles.Count + frontier.Count);
+				foreach (var tile in frontier)
+					tiles.Add (tile);
+				frontier.Clear ();
+			}
 			bool update = frontier.Count > 0;
+
 			for (int i = 0; i < frontier.Count; i++)
 			{
 				int j = 0;
@@ -144,7 +162,6 @@ namespace CoreMod
 					TileHandle nextHandle = GrowTile (frontier [i], dirs.values [j]);
 					if (nextHandle != null)
 					{
-
 						nextHandle.Set (env, ID);
 						cachedFrontier.Add (nextHandle);
 						break;
@@ -164,6 +181,7 @@ namespace CoreMod
 			cachedFrontier = temp;
 //			if (update)
 //				Debug.LogWarningFormat ("UPDATED Region {0} tiles {1} frontier {2}", ID, tiles.Count, frontier.Count);
+
 			return frontier.Count > 0;
 		}
 

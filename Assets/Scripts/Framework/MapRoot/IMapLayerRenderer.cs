@@ -6,7 +6,7 @@ namespace MapRoot
 {
 	public interface IMapLayerRenderer
 	{
-		void Setup (IMapLayer layer, IMapLayerInteractor interactor, RepresenterState defaultState);
+		void Setup (IMapLayer layer, IMapLayerInteractor interactor, RepresenterState defaultState, ITable rendererData);
 
 		void ChangeState (RepresenterState state);
 	}
@@ -20,7 +20,7 @@ namespace MapRoot
 
 		protected TInteractor Interactor { get; private set; }
 
-		public void Setup (IMapLayer layer, IMapLayerInteractor interactor, RepresenterState defaultState)
+		public void Setup (IMapLayer layer, IMapLayerInteractor interactor, RepresenterState defaultState, ITable rendererData)
 		{
 			Layer = layer as TLayer;
 			if (Layer == null)
@@ -37,14 +37,26 @@ namespace MapRoot
 			ITable table = Find.Root<ModsManager> ().GetTable ("defines");
 			if (table == null)
 				return;
-			Setup (table);
+			Setup (table, rendererData);
 			ChangeState (defaultState);
 		}
 
 		public abstract void ChangeState (RepresenterState state);
 
-		protected abstract void Setup (ITable definesTable);
+		protected abstract void Setup (ITable definesTable, ITable rendererData);
         
+	}
+
+	public class NullRenderer : IMapLayerRenderer
+	{
+		public void Setup (IMapLayer layer, IMapLayerInteractor interactor, RepresenterState defaultState, ITable rendererData)
+		{
+		}
+
+		public void ChangeState (RepresenterState state)
+		{
+		}
+		
 	}
 }
 

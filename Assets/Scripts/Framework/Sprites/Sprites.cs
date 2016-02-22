@@ -4,6 +4,7 @@ using System.Collections.Generic;
 using System.IO;
 using MoonSharp.Interpreter;
 using MoonSharp.Interpreter.Loaders;
+using System.Text;
 
 public class Sprites : Root
 {
@@ -50,12 +51,13 @@ public class Sprites : Root
 					int maxY = texture.height - (int)(double)((Table)spriteTable ["left_top_corner"]) [2];
 					int maxX = (int)(double)((Table)spriteTable ["right_bottom_corner"]) [1];
 					int minY = texture.height - (int)(double)((Table)spriteTable ["right_bottom_corner"]) [2];
-					Sprite sprite = Sprite.Create (texture, Rect.MinMaxRect (minX, minY, maxX, maxY), Vector2.zero, 32f);
-
-					Debug.LogWarningFormat ("{0} {1}", name, pair.Key.ToPrintString ());
-					//Почему-то по стандарту uv тут перепутаны в отличие от uv спрайтов, которые уже заложены в ресурсы
-					foreach (var  UV in sprite.uv)
-						Debug.LogWarning (UV);
+					Sprite sprite = Sprite.Create (texture, Rect.MinMaxRect (minX, minY, maxX, maxY), Vector2.zero, 32f, 0, SpriteMeshType.FullRect);
+//					StringBuilder builder = new StringBuilder ();
+//					builder.Append (string.Format ("{0} {1}", name, pair.Key.ToPrintString ()));
+//					//Почему-то по стандарту uv тут перепутаны в отличие от uv спрайтов, которые уже заложены в ресурсы
+//					foreach (var  UV in sprite.uv)
+//						builder.Append (" ").Append (UV);
+//					Debug.LogWarning (builder.ToString ());
 					sprites.Add (pair.Key.ToPrintString (), sprite);
 				}
 			}

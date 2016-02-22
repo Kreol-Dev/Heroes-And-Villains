@@ -1,34 +1,29 @@
-biomes = {}
-biomes.wasteland_biome = 
+coremod.wasteland_biome = 
 {
 	creation =
 	{
-		availability = {surface = {"land"}, object = {"region"}},
+		availability = {coremod = {"land", "region"}},
 		similarity = {}
 	},
 	biome = 
 	{
 		name = "Wasteland",
-		priority = 1,
 		tile_movement_cost = 1,
-		tile_graphics = "wasteland",
 		modifiers = modifiers.biome
 	}
 }
 
-biomes.ocean_biome =
+coremod.ocean_biome =
 {
 	creation =
 	{
-		availability = {surface = {"ocean"}, object = {"region"}},
+		availability = {coremod = {"ocean", "region"}},
 		similarity = {}
 	},
 	biome = 
 	{
 		name = "Ocean",
-		priority = 1,
 		tile_movement_cost = 1,
-		tile_graphics = "ocean",
 		modifiers = {}
 	}
 }

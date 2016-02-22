@@ -6,7 +6,7 @@ using System.Collections.Generic;
 
 namespace CoreMod
 {
-	public class GOLayer : MapLayer, ITileMapLayer<GameObject>
+	public class GOLayer : MapLayer, ITileMapLayer<GameObject>, IListMapLayer<GameObject>
 	{
 
 		public MapHandle MapHandle { get; internal set; }
@@ -17,8 +17,34 @@ namespace CoreMod
 
 		public GameObject[,] Tiles { get; internal set; }
 
-		public HashSet<GameObject> gos = new HashSet<GameObject> ();
 
+		public event ObjectDelegate<GameObject> ObjectAdded;
+		public event ObjectDelegate<GameObject> ObjectRemoved;
+
+		HashSet<GameObject> gos = new HashSet<GameObject> ();
+
+		public bool AddObject (GameObject go)
+		{
+			if (gos.Add (go))
+			{
+				if (ObjectAdded != null)
+					ObjectAdded (go);
+				return true;
+			}
+			return false;
+			
+		}
+
+		public bool RemoveObject (GameObject go)
+		{
+			if (gos.Remove (go))
+			{
+				if (ObjectRemoved != null)
+					ObjectRemoved (go);
+				return true;
+			}
+			return false;
+		}
 
 		protected override void Setup (ITable definesTable)
 		{
@@ -50,7 +76,7 @@ namespace CoreMod
 		{
 		}
 
-		protected override void Setup (ITable definesTable)
+		protected override void Setup (ITable definesTable, ITable rendererData)
 		{
 			Debug.LogWarning ("SETUP GO RENDERER");
 		}

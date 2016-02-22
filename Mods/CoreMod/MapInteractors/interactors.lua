@@ -18,3 +18,10 @@ tiles_interactor =
 	default_state = "Active",
 	layer = "tile_map_layer"
 }
+
+nests_interactor = 
+{
+	interactor_type = "CoreMod.GOInteractor",
+	default_state = "Active",
+	layer = "nests_layer"
+}

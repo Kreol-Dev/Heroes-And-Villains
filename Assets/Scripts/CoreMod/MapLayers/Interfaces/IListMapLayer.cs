@@ -6,19 +6,14 @@ using MapRoot;
 
 namespace CoreMod
 {
-    public interface IListMapLayer<T>
-    {
-        /*T GetByID (int id);
+	public interface IListMapLayer<TObject> where TObject : class
+	{
+		event ObjectDelegate<TObject> ObjectAdded;
+		event ObjectDelegate<TObject> ObjectRemoved;
 
-        T Find (Func<T, bool> criteria);
+		bool AddObject (TObject go);
 
-        int AddObject (T obj);*/
-
-        Signal<T> ObjectAdded { get; }
-
-        Signal<T> ObjectRemoved { get; }
-
-        Signal<T> ObjectUpdated { get; }
-    }
+		bool RemoveObject (TObject go);
+	}
 
 }

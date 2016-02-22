@@ -95,5 +95,40 @@ namespace MapRoot
 		public abstract void ChangeState (RepresenterState state);
 	}
 
+
+	public class NullLayerPresenter : IMapLayerPresenter
+	{
+		public void Setup (IMapLayer layer, IMapLayerInteractor interactor, Type objectPresenterType, RepresenterState defaultState)
+		{
+		}
+
+		public void ChangeState (RepresenterState state)
+		{
+		}
+	}
+
+	public class NullObjectPresenter : ObjectPresenter<object>
+	{
+		public override void Setup (ITable definesTable)
+		{
+		}
+
+		public override void ShowObjectDesc (object obj)
+		{
+		}
+
+		public override void HideObjectDesc ()
+		{
+		}
+
+		public override void ShowObjectShortDesc (object obj)
+		{
+		}
+
+		public override void HideObjectShortDesc ()
+		{
+		}
+		
+	}
 }
 

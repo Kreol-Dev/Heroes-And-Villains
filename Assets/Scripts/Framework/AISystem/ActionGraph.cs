@@ -7,7 +7,26 @@ namespace AI
 {
 	public class ActionGraph
 	{
-		
+		Dictionary<Type, GoalDefinition> Goals;
+		Dictionary<Type, ConditionDefinition> Conditions;
+		Dictionary<Type, ActionDefition> Actions;
+
+		public void RegisterGoal (Type goal)
+		{
+			
+		}
+
+		public void RegisterCondition (Type condition)
+		{
+			
+		}
+
+		public void RegisterAction (Type action)
+		{
+			
+		}
+
+		//public
 	}
 
 

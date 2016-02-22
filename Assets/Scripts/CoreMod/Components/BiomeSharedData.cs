@@ -5,11 +5,17 @@ using System.Collections.Generic;
 
 namespace CoreMod
 {
-	[AShared]
 	public class BiomeSharedData
 	{
-		public GraphicsTile graphicsTile;
-		public ITileMapLayer<GraphicsTile> layer;
+		public BiomeTile BiomeTile { get; internal set; }
+
+		public ITileMapLayer<BiomeTile> Layer { get; internal set; }
+
+		public BiomeSharedData (ITileMapLayer<BiomeTile> layer, BiomeTile biomeTile)
+		{
+			this.BiomeTile = biomeTile;
+			this.Layer = layer;
+		}
 	}
 
 
