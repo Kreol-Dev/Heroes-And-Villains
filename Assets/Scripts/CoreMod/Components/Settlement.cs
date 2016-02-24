@@ -9,6 +9,7 @@ using UIO;
 
 namespace CoreMod
 {
+	[AShared]
 	[ECompName ("settlement")]
 	public class Settlement : EntityComponent
 	{
@@ -21,12 +22,14 @@ namespace CoreMod
 			return settlement;
 		}
 
+		[Defined ("population")]
 		public int Population;
+
 		public Sprite Race;
 
 		public override void LoadFromTable (ITable table)
 		{
-			Population = table.GetInt ("population");
+			Find.Root<ModsManager> ().Defs.LoadObjectAs<Settlement> (this, table);
 			string spriteName = table.GetString ("race");
 			Race = Find.Root<Sprites> ().GetSprite ("races", spriteName);
 

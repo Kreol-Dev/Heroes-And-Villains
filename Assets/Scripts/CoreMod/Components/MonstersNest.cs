@@ -16,10 +16,7 @@ namespace CoreMod
 		{
 			string monsterName = table.GetString ("monster_name", "NULL");
 
-			Count = table.GetInt ("count", 0);
-			Food = table.GetInt ("food", 0);
-			HasChief = table.GetBool ("has_chief", false);
-			Danger = table.GetInt ("danger", 0);
+			Find.Root<ModsManager> ().Defs.LoadObjectAs<MonstersNest> (this, table);
 
 			SharedData = new SharedNestData (monsterName, Find.Root<MapRoot.Map> ().GetLayer ("nests_tiles_layer") as ITileMapLayer<NestTile>);
 
@@ -57,9 +54,13 @@ namespace CoreMod
 			SharedData.NestsLayer.TileUpdated.Dispatch (tile);
 		}
 
+		[Defined ("count")]
 		public int Count;
+		[Defined ("food")]
 		public int Food;
+		[Defined ("has_chief")]
 		public bool HasChief;
+		[Defined ("danger")]
 		public int Danger;
 
 

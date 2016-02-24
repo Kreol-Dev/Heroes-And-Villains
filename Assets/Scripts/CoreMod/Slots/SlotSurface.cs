@@ -9,6 +9,7 @@ namespace CoreMod
 	[ASlotComponent ("Surface")]
 	public class SlotSurface : SlotComponent
 	{
+		[Defined ("surface_id")]
 		public int SurfaceID;
 	}
 

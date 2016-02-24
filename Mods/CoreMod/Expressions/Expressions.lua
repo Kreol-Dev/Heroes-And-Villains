@@ -76,7 +76,7 @@ end
 surface_expression = function ( slot, criteria )
 	surface = slot.Get(component.Surface)
 	if surface != nil then
-		return surface.SurfaceID == criteria.slot_surface
+		return surface.surface_id == criteria.slot_surface
 	else
 		return false
 	end

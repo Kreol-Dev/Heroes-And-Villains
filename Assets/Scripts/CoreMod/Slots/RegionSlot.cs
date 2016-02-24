@@ -9,8 +9,10 @@ namespace CoreMod
 	[AShared]
 	public class RegionSlot : SlotComponent
 	{
+		[Defined ("size")]
 		public int Size { get { return Tiles.Count; } }
 
+		[Defined ("is_region")]
 		public bool IsRegion = false;
 		public List<TileHandle> Tiles;
 		public string TargetLayerName;

@@ -1,4 +1,4 @@
 biome_modifier = function ( biome, modifier )
-	biome.MovementCost = biome.MovementCost + modifier.add_move_cost
-	biome.Name = modifier.add_prefix .. " " .. biome.Name
+	biome.movement_cost = biome.movement_cost + modifier.add_move_cost
+	biome.name = modifier.add_prefix .. " " .. biome.name
 end

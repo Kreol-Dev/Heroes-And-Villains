@@ -124,7 +124,7 @@ coremod.region =
 		if tiles == nil then
 			return false
 		else
-			return tiles.IsRegion
+			return tiles.is_region
 		end
 	end
 }
@@ -140,7 +140,7 @@ coremod.singular =
 		if tiles == nil then
 			return false
 		else
-			return tiles.Size < 1.1 and tiles.Size > 0.9 and not tiles.IsRegion
+			return tiles.size < 1.1 and tiles.size > 0.9 and not tiles.is_region
 		end
 	end
 }
@@ -156,7 +156,7 @@ coremod.multiple =
 		if tiles == nil then
 			return false
 		else
-			return tiles.Size > 1 and not tiles.IsRegion
+			return tiles.size > 1 and not tiles.is_region
 		end
 	end
 }

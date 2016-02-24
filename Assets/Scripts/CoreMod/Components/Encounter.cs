@@ -10,14 +10,15 @@ namespace CoreMod
 	[ECompName ("encounter")]
 	public class Encounter : EntityComponent<EncounterSharedData>
 	{
+		[Defined ("description")]
 		public string Description { get; internal set; }
 
+		[Defined ("danger")]
 		public int Danger { get; internal set; }
 
 		public override void LoadFromTable (ITable table)
 		{
-			Description = table.GetString ("description");
-			Danger = table.GetInt ("danger");
+			Find.Root<ModsManager> ().Defs.LoadObjectAs<Encounter> (this, table);
 			SharedData = new EncounterSharedData ();
 
 			string graphicsLayerName = Find.Root<ModsManager> ().GetTable ("defines").GetString ("STATIC_OBJECTS_LAYER");

@@ -21,6 +21,7 @@ public class SlotComponentsProvider
 			Debug.LogFormat ("{0} | {1}", entry.Key, entry.Value);
 	}
 
+	[Defined ("Get")]
 	public SlotComponent Get (int componentIndex)
 	{
 		if (GO != null)

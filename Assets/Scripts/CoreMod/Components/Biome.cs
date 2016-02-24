@@ -11,7 +11,9 @@ namespace CoreMod
 	public class Biome : EntityComponent<BiomeSharedData>
 	{
 		static int tileID = 0;
+		[Defined ("movement_cost")]
 		public int MovementCost;
+		[Defined ("name")]
 		public string Name;
 
 		public override void LoadFromTable (ITable table)

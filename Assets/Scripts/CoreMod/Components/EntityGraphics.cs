@@ -5,6 +5,7 @@ using UIO;
 
 namespace CoreMod
 {
+	[AShared]
 	[ECompName ("graphics")]
 	public class EntityGraphics : EntityComponent
 	{
