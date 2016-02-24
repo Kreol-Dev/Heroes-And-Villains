@@ -1,7 +1,7 @@
 ﻿using UnityEngine;
 using System.Collections;
 using MapRoot;
-using Demiurg.Core.Extensions;
+using UIO;
 
 namespace CoreMod
 {

@@ -2,11 +2,11 @@ using System.Collections;
 using System.Collections.Generic;
 using System;
 using System.Reflection;
-using Demiurg.Core.Extensions;
 using System.Linq;
 using UnityEngine;
 using UnityEditor;
 using System.Text;
+using UIO;
 
 namespace Demiurg.Core
 {
@@ -97,23 +97,24 @@ namespace Demiurg.Core
 					scribe.LogFormatError ("INPUT DATA MISSING: Can't find output {2} in avatar {3} for avatar {0} input {1}", Name, input.Name, targetOutputName, targetAvatarName);
 					continue;
 				}
-				input.ConnectTo (output, Demiurg.GetConverters ());
+				input.ConnectTo (output);
 			}
 		}
 
 		void SetupConfigs (ITable configs)
 		{
-			ConfigLoaders loaders = Demiurg.GetLoaders ();
-			if (configs == null)
-			{
-				scribe.LogFormatWarning ("No configs table for: {0}", Name);
-
-				return;
-			}
-			foreach (var config in Configs)
-			{
-				IConfigLoader loader = loaders.FindLoader (config.FieldType ());
-
+			if (configs != null)
+				Find.Root<ModsManager> ().Defs.LoadObjectAs<Avatar> (this, configs);
+//			if (configs == null)
+//			{
+//				scribe.LogFormatWarning ("No configs table for: {0}", Name);
+//
+//				return;
+//			}
+//			foreach (var config in Configs)
+//			{
+//				IConfigLoader loader = loaders.FindLoader (config.FieldType ());
+//
 //				object cfg = configs.GetTable (config.Name);
 //				if (cfg == null)
 //				{
@@ -125,19 +126,19 @@ namespace Demiurg.Core
 //					}
 //					continue;
 //				}
-				object value = loader.Load (configs, config.Name, config.FieldType (), loaders);
-				if (value == null)
-				{
-					scribe.LogFormatError ("Value not loaded properly {0} {1} {2} {3}", Name, config.Name, config.FieldType (), loader);
-					if (!configs.Contains (config.Name))
-					{
-						foreach (var key in configs.GetKeys())
-							scribe.LogError (key.ToString ());
-					}
-					continue;
-				}
-				config.SetValue (value);
-			}
+//				object value = loader.Load (configs, config.Name, config.FieldType (), loaders);
+//				if (value == null)
+//				{
+//					scribe.LogFormatError ("Value not loaded properly {0} {1} {2} {3}", Name, config.Name, config.FieldType (), loader);
+//					if (!configs.Contains (config.Name))
+//					{
+//						foreach (var key in configs.GetKeys())
+//							scribe.LogError (key.ToString ());
+//					}
+//					continue;
+//				}
+//				config.SetValue (value);
+//			}
 		}
 
 		public abstract void Work ();

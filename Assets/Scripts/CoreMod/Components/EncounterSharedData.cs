@@ -2,7 +2,7 @@ using UnityEngine;
 using System.Collections;
 using MapRoot;
 using UnityEngine.UI;
-using Demiurg.Core.Extensions;
+using UIO;
 
 namespace CoreMod
 {

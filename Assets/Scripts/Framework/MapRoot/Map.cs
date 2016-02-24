@@ -1,7 +1,7 @@
 ﻿using UnityEngine;
 using System.Collections;
 using System.Collections.Generic;
-using Demiurg.Core.Extensions;
+using UIO;
 using System;
 
 namespace MapRoot
@@ -9,7 +9,7 @@ namespace MapRoot
 	[RootDependencies (typeof(ModsManager))]
 	public class Map : Root
 	{
-        Scribe scribe;
+		Scribe scribe;
 		Dictionary<string, IMapLayer> layers = new Dictionary<string, IMapLayer> ();
 
 		protected override void CustomSetup ()
@@ -43,8 +43,8 @@ namespace MapRoot
 
 		protected override void PreSetup ()
 		{
-            scribe = Scribes.Find("MAP");
-        }
+			scribe = Scribes.Find ("MAP");
+		}
 
 
 		public void RegisterMapLayer (string name, Type layerType)

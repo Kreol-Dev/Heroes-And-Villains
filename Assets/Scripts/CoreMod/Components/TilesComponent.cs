@@ -1,6 +1,7 @@
 ﻿using UnityEngine;
 using System.Collections;
 using System.Collections.Generic;
+using UIO;
 
 namespace CoreMod
 {
@@ -9,7 +10,7 @@ namespace CoreMod
 		public event TileDelegate TileAdded;
 		public event TileDelegate TileRemoved;
 
-		public override void LoadFromTable (Demiurg.Core.Extensions.ITable table)
+		public override void LoadFromTable (ITable table)
 		{
 			
 		}

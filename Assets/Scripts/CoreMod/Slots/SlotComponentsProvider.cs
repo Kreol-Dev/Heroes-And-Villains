@@ -1,7 +1,7 @@
 ﻿using UnityEngine;
 using System.Collections;
 using CoreMod;
-using Demiurg.Core.Extensions;
+using UIO;
 using MoonSharp.Interpreter;
 
 [AShared]

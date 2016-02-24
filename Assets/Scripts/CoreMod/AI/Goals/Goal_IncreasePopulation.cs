@@ -5,11 +5,11 @@ namespace CoreMod
 {
 	public class Goal_IncreasePopulation : AI.Goal
 	{
-		Condition_PopulationBiggerThan condition;
+		C_Population condition;
 
 		public Goal_IncreasePopulation (GameObject target, int delta)
 		{
-			condition = target.GetComponent<AI.Conditions> ().GetCondition<Condition_PopulationBiggerThan> ();
+			condition = target.GetComponent<AI.Conditions> ().GetCondition<C_Population> ();
 			condition.TargetPopulation = condition.settlement.Population + delta;
 		}
 

@@ -2,13 +2,14 @@
 using System.Collections;
 using System.Collections.Generic;
 using Demiurg;
-using DemiurgBinding;
+using UIOBinding;
 
 public class FrameworkRoots : MonoBehaviour
 {
 	void Awake ()
 	{
-        FindObjectOfType<ConsoleScript>().Init();
+		
+		FindObjectOfType<ConsoleScript> ().Init ();
 		Find.Register<PlanetsGenerator> ();
 		Find.Register<ModsManager> ();
 		Find.Register<LuaContext> ();
@@ -20,8 +21,5 @@ public class FrameworkRoots : MonoBehaviour
 		Find.Register<MapRoot.MapRepresenter> ();
 		Find.Register<BindingRoot> ();
 	}
-
-
-    
 }
 

@@ -2,7 +2,7 @@ using UnityEngine;
 using System.Collections;
 using Demiurg;
 using MoonSharp.Interpreter;
-using Demiurg.Core.Extensions;
+using UIO;
 
 
 namespace CoreMod

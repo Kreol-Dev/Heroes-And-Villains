@@ -7,29 +7,31 @@ using System;
 using System.Reflection;
 using MoonSharp.Interpreter;
 using MoonSharp.Interpreter.Loaders;
-using DemiurgBinding;
-using Demiurg.Core.Extensions;
+using UIOBinding;
+using UIO;
 
 [RootDependencies (typeof(ModsManager), typeof(ObjectsCreator), typeof(Sprites), typeof(MapRoot.Map))]
 public class PlanetsGenerator : Root
 {
-    Scribe scribe;
+	Scribe scribe;
 	LuaContext luaContext;
 	ModsManager modsManager;
 	ITable wiring;
-    protected override void PreSetup()
-    {
-        base.PreSetup();
-        scribe = Scribes.Find("PlanetsGenerator");
-    }
-    protected override void CustomSetup ()
+
+	protected override void PreSetup ()
+	{
+		base.PreSetup ();
+		scribe = Scribes.Find ("PlanetsGenerator");
+	}
+
+	protected override void CustomSetup ()
 	{
 		
 
 		wiring = Find.Root<ModsManager> ().GetTable ("wiring");
 
 		int seed = Find.Root<ModsManager> ().GetTable ("defines").GetInt ("SEED");
-		DemiurgEntity dem = new DemiurgEntity (FindAvatarTypes (), PrepareAvatarsTables (), LoadConverters (), LoadLoaders (), seed);
+		DemiurgEntity dem = new DemiurgEntity (FindAvatarTypes (), PrepareAvatarsTables (), seed);
 		Fulfill.Dispatch ();
 	}
 
@@ -47,7 +49,7 @@ public class PlanetsGenerator : Root
 
 	Dictionary<string, ITable> PrepareAvatarsTables ()
 	{
-		Dictionary<string, Demiurg.Core.Extensions.ITable> tables = new Dictionary<string, Demiurg.Core.Extensions.ITable> ();
+		Dictionary<string, ITable> tables = new Dictionary<string, ITable> ();
 		foreach (var avatarKey in wiring.GetKeys())
 		{
 			if ((string)avatarKey == "global")
@@ -65,31 +67,7 @@ public class PlanetsGenerator : Root
 		return tables;
 	}
 
-	List<Demiurg.Core.Extensions.IConverter> LoadConverters ()
-	{
-		List<IConverter> convs = new List<IConverter> ();
-		Assembly asm = Assembly.GetExecutingAssembly ();
-		Type convType = typeof(IConfigLoader);
-		foreach (var type in asm.GetTypes())
-		{
-			if (convType.IsAssignableFrom (type) && !type.IsAbstract && !type.IsGenericType)
-				convs.Add (Activator.CreateInstance (type) as IConverter);
-		}
-		return convs;
-	}
 
-	List<Demiurg.Core.Extensions.IConfigLoader> LoadLoaders ()
-	{
-		List<IConfigLoader> loads = new List<IConfigLoader> ();
-		Assembly asm = Assembly.GetExecutingAssembly ();
-		Type loaderType = typeof(IConfigLoader);
-		foreach (var type in asm.GetTypes())
-		{
-			if (loaderType.IsAssignableFrom (type) && !type.IsAbstract && !type.IsGenericType)
-				loads.Add (Activator.CreateInstance (type) as IConfigLoader);
-		}
-		return loads;
-	}
 	/*
     Dictionary<string, Type> FindNodeTypes ()
     {

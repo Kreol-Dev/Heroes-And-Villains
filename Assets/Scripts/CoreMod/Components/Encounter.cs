@@ -2,8 +2,8 @@
 using System.Collections;
 using MapRoot;
 using UnityEngine.UI;
-using Demiurg.Core.Extensions;
 using System.Collections.Generic;
+using UIO;
 
 namespace CoreMod
 {
@@ -14,7 +14,7 @@ namespace CoreMod
 
 		public int Danger { get; internal set; }
 
-		public override void LoadFromTable (Demiurg.Core.Extensions.ITable table)
+		public override void LoadFromTable (ITable table)
 		{
 			Description = table.GetString ("description");
 			Danger = table.GetInt ("danger");

@@ -5,11 +5,11 @@ using System.Collections.Generic;
 using System;
 using System.IO;
 using MoonSharp.Interpreter;
-using DemiurgBinding;
-using Demiurg.Core.Extensions;
 using MoonSharp.Interpreter.Loaders;
 using System.Reflection;
 using System.Linq;
+using UIO;
+using UIOBinding;
 
 public abstract class ModRoot : Root
 {
@@ -18,7 +18,10 @@ public abstract class ModRoot : Root
 
 public class ModsManager : Root
 {
-    
+	public Definitions Defs { get; internal set; }
+
+	Converters converters;
+
 	Script globalContext = new Script ();
 	List<ModDesc> mods;
 	List<ModDesc> activeMods;
@@ -104,6 +107,11 @@ public class ModsManager : Root
 		SearchForModRoots ();
 
 		allTypes = new List<Type> (globalMod.ModAssembly.GetTypes ());
+
+		converters = new Converters ();
+		Defs = new Definitions (converters, typesByName);
+		converters.AttachDefinitions (Defs);
+		converters.ReceiveConverters (allTypes.Where (x => x.IsSubclassOf (typeof(IConverter))));
 
 		typesByName = new Dictionary<string, Type> ();
 		foreach (var type in allTypes)

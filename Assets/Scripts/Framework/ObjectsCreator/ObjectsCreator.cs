@@ -2,8 +2,8 @@
 using System.Collections;
 using System.Collections.Generic;
 using System;
-using Demiurg.Core.Extensions;
 using System.Linq.Expressions;
+using UIO;
 
 [RootDependencies (typeof(ModsManager), typeof(MapRoot.Map), typeof(Sprites))]
 public class ObjectsCreator : Root

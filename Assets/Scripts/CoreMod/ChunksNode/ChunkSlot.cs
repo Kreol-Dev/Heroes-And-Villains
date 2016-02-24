@@ -1,6 +1,5 @@
 using UnityEngine;
 using System.Collections;
-using Demiurg.Core.Extensions;
 
 namespace CoreMod
 {

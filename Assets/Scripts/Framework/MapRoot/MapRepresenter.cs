@@ -1,7 +1,7 @@
 ﻿using UnityEngine;
 using System.Collections;
 using System.Collections.Generic;
-using Demiurg.Core.Extensions;
+using UIO;
 using System;
 
 namespace MapRoot

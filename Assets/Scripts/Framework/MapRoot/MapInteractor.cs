@@ -1,7 +1,7 @@
 ﻿using UnityEngine;
 using System.Collections;
 using System.Collections.Generic;
-using Demiurg.Core.Extensions;
+using UIO;
 using System.Reflection;
 using System;
 using System.Linq;
@@ -12,7 +12,7 @@ namespace MapRoot
 	[RootDependencies (typeof(InputManager), typeof(MapRoot.Map), typeof(ModsManager))]
 	public class MapInteractor : Root
 	{
-        Scribe scribe;
+		Scribe scribe;
 
 		public delegate void HitDelegate (Transform hitTransform, Vector3 hitPoint);
 
@@ -39,8 +39,8 @@ namespace MapRoot
 
 		protected override void PreSetup ()
 		{
-            scribe = Scribes.Find("MAP INTERACTOR");
-        }
+			scribe = Scribes.Find ("MAP INTERACTOR");
+		}
 
 
 

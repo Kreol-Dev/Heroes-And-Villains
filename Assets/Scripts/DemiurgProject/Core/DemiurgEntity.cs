@@ -1,6 +1,6 @@
 using UnityEngine;
 using System.Collections;
-using Demiurg.Core.Extensions;
+using UIO;
 using System.Collections.Generic;
 using System;
 
@@ -10,16 +10,11 @@ namespace Demiurg.Core
 	{
 		Scribe scribe = Scribes.Find ("Demiurg");
 		Dictionary<string, Avatar> avatars = new Dictionary<string, Avatar> ();
-		Converters converters = null;
-		ConfigLoaders loaders = null;
 		int seed;
 
-		public DemiurgEntity (Dictionary<string, Type> possibleAvatars, Dictionary<string, ITable> avatarsTables, 
-		                      List<IConverter> converters, List<IConfigLoader> loaders, int seed)
+		public DemiurgEntity (Dictionary<string, Type> possibleAvatars, Dictionary<string, ITable> avatarsTables, int seed)
 		{
 			this.seed = seed;
-			this.converters = new Converters (converters);
-			this.loaders = new ConfigLoaders (loaders);
 			foreach (var avatarType in possibleAvatars)
 				Avatar.UseAvatarType (avatarType.Value);
 			foreach (var avatar in avatarsTables)
@@ -72,16 +67,6 @@ namespace Demiurg.Core
 			Avatar avatar = null;
 			avatars.TryGetValue (name, out avatar);
 			return avatar;
-		}
-
-		public Converters GetConverters ()
-		{
-			return converters;
-		}
-
-		public ConfigLoaders GetLoaders ()
-		{
-			return loaders;
 		}
 	}
 

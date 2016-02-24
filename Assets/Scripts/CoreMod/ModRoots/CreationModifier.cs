@@ -3,7 +3,7 @@ using System.Collections;
 using System.Reflection;
 using System.Collections.Generic;
 using System;
-using Demiurg.Core.Extensions;
+using UIO;
 
 namespace CoreMod
 {

@@ -1,7 +1,7 @@
 ﻿using UnityEngine;
 using System.Collections;
 using System.Collections.Generic;
-using Demiurg.Core.Extensions;
+using UIO;
 using MapRoot;
 
 namespace CoreMod
@@ -65,6 +65,7 @@ namespace CoreMod
 
 		IEnumerator NestSimulation ()
 		{
+			
 			while (this.enabled)
 			{
 				for (int i = 0; i < nests.Count; i++)
