@@ -10,6 +10,9 @@ namespace CoreMod
 	[ECompName ("biome")]
 	public class Biome : EntityComponent<BiomeSharedData>
 	{
+		Zone biomeZone;
+
+
 		static int tileID = 0;
 		[Defined ("movement_cost")]
 		public int MovementCost;
@@ -45,6 +48,12 @@ namespace CoreMod
 			{
 				handle.Set (SharedData.Layer.Tiles, SharedData.BiomeTile);
 				SharedData.Layer.TileUpdated.Dispatch (handle);
+			}
+			var spatialCmp = GetComponent<SpatialObject> ();
+			if (spatialCmp != null)
+			{
+				biomeZone = spatialCmp.Zone;
+				//SharedData.Layer.Assign (biomeZone);
 			}
 
 		}

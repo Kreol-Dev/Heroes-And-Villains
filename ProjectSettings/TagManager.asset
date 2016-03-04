@@ -13,9 +13,9 @@ TagManager:
   - UI
   - 
   - 
-  - MapFlatLayer
-  - MapEntityLayer
-  - 
+  - MaterialObjects
+  - TriggerObjects
+  - RegionObjects
   - 
   - 
   - 

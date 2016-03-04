@@ -3,12 +3,13 @@ using System.Collections;
 using System.Collections.Generic;
 using Demiurg;
 using UIOBinding;
+using System.Threading;
 
 public class FrameworkRoots : MonoBehaviour
 {
+
 	void Awake ()
 	{
-		
 		FindObjectOfType<ConsoleScript> ().Init ();
 		Find.Register<PlanetsGenerator> ();
 		Find.Register<ModsManager> ();
