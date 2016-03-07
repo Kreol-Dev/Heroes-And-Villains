@@ -50,11 +50,24 @@ namespace CoreMod
 						ITable creationTable = repTable.GetTable ("creation");
 						ITable availabilityTable = creationTable.GetTable ("availability");
 						ITable similarityTable = creationTable.GetTable ("similarity");
-
+						ITable fixedSpaceTable = creationTable.GetTable ("fixed_space", null);
+						int size = -1;
+						ObjectCreationHandle.PlotType plot = ObjectCreationHandle.PlotType.Nothing;
+						if (fixedSpaceTable != null)
+						{
+							size = fixedSpaceTable.GetInt ("size");
+							string enumStr = fixedSpaceTable.GetString ("form");
+							if (enumStr == "circle")
+								plot = ObjectCreationHandle.PlotType.Circle;
+							else
+								plot = ObjectCreationHandle.PlotType.Rect;
+						}
 						ObjectCreationHandle handle = new ObjectCreationHandle (prototypeGO, 
 						                                                        GetAvailableTags (availabilityTable),
 						                                                        GetSimilarity (similarityTable),
-						                                                        GetModifiers (repTable));
+						                                                        GetModifiers (repTable), 
+						                                                        size, 
+						                                                        plot);
 						prototypeGO.SetActive (false);
 						repNamespace.AddProrotype (replacerName as string, handle);
 					}

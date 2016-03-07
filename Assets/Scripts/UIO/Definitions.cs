@@ -9,7 +9,7 @@ namespace UIO
 	public class Definitions
 	{
 		Converters converters;
-		Dictionary<string, Type> types;
+		Dictionary<string, Type> types = new Dictionary<string, Type> ();
 		Scribe scribe;
 
 		public Definitions (Converters converters, Dictionary<string, Type> types)

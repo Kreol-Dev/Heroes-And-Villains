@@ -1,6 +1,9 @@
 ﻿using UnityEngine;
 using System.Collections;
 using System.Collections.Generic;
+using UIO;
+using System;
+using UIO.BasicConverters;
 
 namespace CoreMod
 {
@@ -118,6 +121,55 @@ namespace CoreMod
 			OnFormUpdated ();
 		}
 	}
+
+
+	public class CircleFormConverter : IConverter<CircleForm>
+	{
+		public override object Load (object key, ITable table, bool reference)
+		{
+			ITable formTable = table.GetTable (key);
+			float radius = formTable.GetFloat ("radius", 0.5f);
+			var vecTable = formTable.GetTable ("center", null);
+			Vector2 center = Vector2.zero;
+			if (vecTable != null)
+				center = new Vector2 (vecTable.GetFloat (1, 0f), vecTable.GetFloat (2, 0f));
+			return new CircleForm (center, radius);
+		}
+
+		public override void Save (object key, ITable table, object obj, bool reference)
+		{
+			throw new System.NotImplementedException ();
+		}
+	}
+
+	public class RectFormConverter : IConverter<RectForm>
+	{
+		public override object Load (object key, ITable table, bool reference)
+		{
+			ITable formTable = table.GetTable (key);
+			var sizeTable = formTable.GetTable ("size", null);
+			var vecTable = formTable.GetTable ("center", null);
+			Vector2 center = Vector2.zero;
+			Vector2 size = Vector2.one;
+			if (vecTable != null)
+				center = new Vector2 (vecTable.GetFloat (1, 0f), vecTable.GetFloat (2, 0f));
+			if (sizeTable != null)
+				size = new Vector2 (vecTable.GetFloat (1, 1f), vecTable.GetFloat (2, 1f));
+			return new RectForm (center, size);
+		}
+
+		public override void Save (object key, ITable table, object obj, bool reference)
+		{
+			throw new System.NotImplementedException ();
+		}
+	}
+
+	public class FormsConverter : PolymorphicConverter<Form>
+	{
+
+
+	}
+
 }
 
 

@@ -109,6 +109,9 @@ public class ModsManager : Root
 		allTypes = new List<Type> (globalMod.ModAssembly.GetTypes ());
 
 		converters = new Converters ();
+		typesByName = new Dictionary<string, Type> ();
+		foreach (var type in allTypes)
+			typesByName.Add (type.FullName, type);
 		Defs = new Definitions (converters, typesByName);
 		converters.AttachDefinitions (Defs);
 		converters.ReceiveConverters (allTypes.Where (x => x.IsSubclassOf (typeof(IConverter))));

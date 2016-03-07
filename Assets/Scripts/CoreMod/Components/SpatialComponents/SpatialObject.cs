@@ -20,7 +20,7 @@ namespace CoreMod
 
 		public override void PostCreate ()
 		{
-			
+
 		}
 
 		protected Scribe Scribe { get; private set; }
@@ -38,6 +38,7 @@ namespace CoreMod
 			Zone.FormUpdated += OnFormUpdated;
 			Init ();
 		}
+
 
 		protected abstract void Init ();
 

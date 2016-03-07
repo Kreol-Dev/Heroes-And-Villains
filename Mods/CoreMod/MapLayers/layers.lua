@@ -11,3 +11,9 @@ biomes_layer =
 		go_layer = "biomes_go_layer"
 	}	
 }
+
+blocks_layer =
+{
+	layer_type = "CoreMod.ObjectsLayer",
+	configs = {}
+}

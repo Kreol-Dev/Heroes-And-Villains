@@ -81,6 +81,26 @@ namespace CoreMod
 			dict.TryGetValue (name, out tag);
 			return tag;
 		}
+
+		public Tag CreateNewTag (string tagsNamespace, string name)
+		{
+			Tag tag = new Tag (name, id++, null, null);
+			if (!tags.ContainsKey (tagsNamespace))
+				tags [tagsNamespace] = new Dictionary<string, Tag> ();
+			tags [tagsNamespace].Add (name, tag);
+			return tag;
+		}
+
+		public Dictionary<string, Tag> CreateNamespace (string name)
+		{
+			if (!tags.ContainsKey (name))
+			{
+				var names = new Dictionary<string, Tag> ();
+				tags.Add (name, names);
+				return names;
+			} else
+				return tags [name];
+		}
 	}
 
 }

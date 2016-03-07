@@ -35,7 +35,8 @@ namespace CoreMod
 					if (hoveredObject != null)
 						ObjectDeHovered (hoveredObject);
 					hoveredObject = obj;
-					ObjectHovered (hoveredObject);
+					if (hoveredObject != null)
+						ObjectHovered (hoveredObject);
 				}
 				if (obj != null)
 					hoveredObjects.Add (obj);

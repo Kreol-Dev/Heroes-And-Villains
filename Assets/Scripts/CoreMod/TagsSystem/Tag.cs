@@ -36,6 +36,8 @@ namespace CoreMod
 		public bool CheckSlot (GameObject go)
 		{
 			provider.GO = go;
+			if (checkFunction == null || criteria == null)
+				return false;
 			return (bool)checkFunction.Call (provider, criteria);
 		}
 
@@ -159,6 +161,43 @@ namespace CoreMod
 			}
 
 
+		}
+	}
+
+
+	public class TagsConverter : IConverter<TagsCollection>
+	{
+		public override object Load (object key, ITable table, bool reference)
+		{
+			TagsCollection collection = new TagsCollection ();
+			TagsRoot tagsRoot = Find.Root<TagsRoot> ();
+			ITable tagsTable = table.GetTable (key);
+			foreach (var namespaceKey in tagsTable.GetKeys())
+			{
+				ITable namespaceTable = tagsTable.GetTable (namespaceKey);
+				var tags = tagsRoot.GetTags (namespaceKey as string);
+				if (tags == null)
+					tags = tagsRoot.CreateNamespace (namespaceKey as string);
+				foreach (var tagKey in namespaceTable.GetKeys())
+				{
+					Tag tag = null;
+					string tagName = namespaceTable.GetString (tagKey);
+					if (tags.ContainsKey (tagName))
+					{
+						tag = tagsRoot.GetTag (tagName, tags);
+					} else
+					{
+						tag = tagsRoot.CreateNewTag (namespaceKey as string, tagName);
+					}
+					collection.AddTag (tag);
+				}
+			}
+			return collection;
+		}
+
+		public override void Save (object key, ITable table, object obj, bool reference)
+		{
+			throw new System.NotImplementedException ();
 		}
 	}
 }

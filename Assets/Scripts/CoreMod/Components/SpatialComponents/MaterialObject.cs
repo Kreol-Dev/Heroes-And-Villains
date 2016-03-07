@@ -9,6 +9,8 @@ namespace CoreMod
 	[ECompName ("spatial_material")]
 	public class MaterialObject : SpatialObject
 	{
+		[Defined ("form")]
+		Form form;
 		protected Dictionary<Form, Collider2D> colliders = new Dictionary<Form, Collider2D> ();
 
 		protected override void Init ()
@@ -16,6 +18,20 @@ namespace CoreMod
 			var body = gameObject.AddComponent<Rigidbody2D> ();
 			body.isKinematic = true;
 			gameObject.layer = PhysicsRoot.MaterialObjectsLayer;
+
+		}
+
+		public override EntityComponent CopyTo (GameObject go)
+		{
+			MaterialObject obj = base.CopyTo (go) as MaterialObject;
+			obj.form = this.form;
+			return obj;
+		}
+
+		public override void PostCreate ()
+		{
+			base.PostCreate ();
+			Zone.AttachForm (form);
 		}
 
 		protected override void OnFormAdded (Form thisForm)

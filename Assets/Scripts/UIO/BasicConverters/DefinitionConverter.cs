@@ -56,6 +56,21 @@ namespace UIO.BasicConverters
 		}
 		
 	}
+
+	public class PolymorphicConverter<T> : IConverter<T>
+	{
+		public override object Load (object key, ITable table, bool reference)
+		{
+			Type type = Definitions.GetObjectType (table.GetTable (key));
+			return Converters.GetConverter (type).Load (key, table, reference);
+		}
+
+		public override void Save (object key, ITable table, object obj, bool reference)
+		{
+			throw new System.NotImplementedException ();
+		}
+
+	}
 }
 
 

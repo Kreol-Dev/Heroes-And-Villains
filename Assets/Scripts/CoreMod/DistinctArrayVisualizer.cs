@@ -17,6 +17,8 @@ namespace CoreMod
 		Texture2D mainO;
 		[AConfig ("random")]
 		bool random;
+		[AConfig ("ascending")]
+		bool ascending;
 
 		struct LevelPair
 		{
@@ -28,15 +30,18 @@ namespace CoreMod
 
 		Color FindColor (int value)
 		{
-			for (int i = 0; i < levels.Length; i++) {
+			for (int i = 0; i < levels.Length; i++)
+			{
 				if (levels [i].Level == value)
 					return levels [i].Color;
 			}
 			return Color.clear;
 		}
 
+
 		protected override Sprite CreateSprite ()
 		{
+			
 			levels = new LevelPair[Levels.Count];
 			for (int i = 0; i < Levels.Count; i++)
 				levels [i] = new LevelPair () {
@@ -45,22 +50,45 @@ namespace CoreMod
 				};
 			int sizeX = main.GetLength (0);
 			int sizeY = main.GetLength (1);
+			int max = int.MinValue;
+			int min = int.MaxValue;
+			for (int i = 0; i < sizeX; i++)
+				for (int j = 0; j < sizeY; j++)
+				{
+					if (main [i, j] > max)
+						max = main [i, j];
+					if (main [i, j] < min)
+						min = main [i, j];
+				}
+			float maxValue = (float)max;
+			float minValue = (float)min;
+
 			Texture2D texture = new Texture2D (sizeX, sizeY);
-			if (random == true) {
+			if (random == true)
+			{
 				Debug.LogWarning ("Random discrete colours");
 				Dictionary<int, Color> colors = new Dictionary<int, Color> ();
 				for (int i = 0; i < sizeX; i++)
-					for (int j = 0; j < sizeY; j++) {
+					for (int j = 0; j < sizeY; j++)
+					{
 						Color color = Color.white;
-						if (!colors.TryGetValue (main [i, j], out color)) {
-							color = new Color ((float)Random.NextDouble (), (float)Random.NextDouble (), (float)Random.NextDouble ());
+						if (!colors.TryGetValue (main [i, j], out color))
+						{
+							if (ascending)
+							{
+								float value = Mathf.InverseLerp (minValue, maxValue, main [i, j]);
+								color = new Color (value, value, value);
+							} else
+								color = new Color ((float)Random.NextDouble (), (float)Random.NextDouble (), (float)Random.NextDouble ());
 							colors.Add (main [i, j], color);
 						}
 						texture.SetPixel (i, j, color);
 					}
-			} else {
+			} else
+			{
 				for (int i = 0; i < sizeX; i++)
-					for (int j = 0; j < sizeY; j++) {
+					for (int j = 0; j < sizeY; j++)
+					{
 						Color color = FindColor (main [i, j]);
 						texture.SetPixel (i, j, color);
 					}

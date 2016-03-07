@@ -9,23 +9,25 @@ namespace CoreMod
 	public class CreationNamespace
 	{
 		Scribe scribe = Scribes.Find ("Objects root");
-		Dictionary<string, ObjectCreationHandle> prototypes = new Dictionary<string, ObjectCreationHandle> ();
+
+		Dictionary<string, ObjectCreationHandle> Prototypes;
 
 		public string Name { get; internal set; }
 
 		public CreationNamespace (string name)
 		{
+			Prototypes = new Dictionary<string, ObjectCreationHandle> ();
 			Name = name;
 		}
 
 		public void AddProrotype (string name, ObjectCreationHandle prototype)
 		{
-			prototypes.Add (name, prototype);
+			Prototypes.Add (name, prototype);
 		}
 
 		public IEnumerable<ObjectCreationHandle> FindAvailable (TagsCollection tags)
 		{
-			return (from prototype in prototypes
+			return (from prototype in Prototypes
 			        where prototype.Value.IsAvailable (tags)
 			        select prototype.Value) as IEnumerable<ObjectCreationHandle>;
 		}
@@ -59,7 +61,7 @@ namespace CoreMod
 		{
 			int maximum = int.MinValue;
 			List<ObjectCreationHandle> maxSimilar = new List<ObjectCreationHandle> ();
-			IEnumerable<ObjectCreationHandle>	availablePrototypes = (from prototype in prototypes
+			IEnumerable<ObjectCreationHandle>	availablePrototypes = (from prototype in Prototypes
 			                                                         select prototype.Value) as IEnumerable<ObjectCreationHandle>;
 			foreach (var handle in availablePrototypes)
 			{
@@ -90,8 +92,24 @@ namespace CoreMod
 		Dictionary<Tag, int> weights;
 		TagsCollection similarTags;
 
-		public ObjectCreationHandle (GameObject go, IEnumerable<Tag> availabilityTags, Dictionary<Tag, int> similarity, Dictionary<Type, List<Modifier>> modifiers)
+		public int PlotSize { get; internal set; }
+
+		public enum PlotType
 		{
+			Circle,
+			Rect,
+			Nothing
+
+		}
+
+		public PlotType Plot { get; internal set; }
+
+		public ObjectCreationHandle (GameObject go, IEnumerable<Tag> availabilityTags, 
+		                             Dictionary<Tag, int> similarity, Dictionary<Type, List<Modifier>> modifiers,
+		                             int plotSize, PlotType plot)
+		{
+			this.PlotSize = plotSize;
+			this.Plot = plot;
 			availability = new TagsCollection ();
 			similarTags = new TagsCollection ();
 

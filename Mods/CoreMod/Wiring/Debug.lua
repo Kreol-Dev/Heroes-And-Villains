@@ -17,7 +17,8 @@ distinct_chunks_visualizer =
 	configs =
 	{
 		levels = {},
-		random = true
+		random = true,
+		ascending = false
 	},
 	inputs = 
 	{
@@ -31,10 +32,27 @@ regions_visualizer =
 	configs =
 	{
 		levels = {},
-		random = true
+		random = true,
+		ascending = false
 	},
 	inputs = 
 	{
 		main = { "regions_slots_creator", "environment"}
 	}
 }
+
+clearance_visualiser = 
+{
+	avatar_type = "CoreMod.DistinctArrayVisualizer",
+	configs =
+	{
+		levels = {},
+		random = true,
+		ascending = true
+	},
+	inputs = 
+	{
+		main = { "blocks_plots", "env"}
+	}
+}
+
