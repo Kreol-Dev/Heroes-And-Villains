@@ -5,8 +5,23 @@ using System.Collections.Generic;
 namespace CoreMod
 {
 	[DisallowMultipleComponent]
-	public abstract class SpatialObject : MonoBehaviour
+	public abstract class SpatialObject : EntityComponent
 	{
+		public override void LoadFromTable (UIO.ITable table)
+		{
+			Find.Root<ModsManager> ().Defs.LoadObjectAs<SpatialObject> (this, table);
+		}
+
+		public override EntityComponent CopyTo (GameObject go)
+		{
+			EntityComponent spatialObject = go.AddComponent (this.GetType ()) as EntityComponent;
+			return spatialObject;
+		}
+
+		public override void PostCreate ()
+		{
+			
+		}
 
 		protected Scribe Scribe { get; private set; }
 
@@ -14,6 +29,8 @@ namespace CoreMod
 
 		void Awake ()
 		{
+			var events = Find.Root<CoreModEvents> ();
+			events.SpatialObjectCreated.Dispatch (this);
 			Scribe = Scribes.Find ("SPATIAL OBJECT");
 			Zone = new Zone ();
 			Zone.FormAdded += OnFormAdded; 

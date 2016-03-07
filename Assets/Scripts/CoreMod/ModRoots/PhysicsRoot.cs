@@ -3,6 +3,7 @@ using System.Collections;
 
 namespace CoreMod
 {
+	[RootDependencies (typeof(MapRoot.Map))]
 	public class PhysicsRoot : ModRoot
 	{
 		public const int MaterialObjectsLayer = 10;
@@ -19,6 +20,7 @@ namespace CoreMod
 			
 			Physics2D.IgnoreLayerCollision (TriggerObjectsLayer, TriggerObjectsLayer, true);
 			Physics2D.IgnoreLayerCollision (RegionObjectsLayer, RegionObjectsLayer, true);
+			Physics2D.IgnoreLayerCollision (TriggerObjectsLayer, RegionObjectsLayer, true);
 		}
 	}
 }

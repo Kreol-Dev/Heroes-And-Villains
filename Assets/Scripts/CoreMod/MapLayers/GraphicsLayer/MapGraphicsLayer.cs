@@ -18,7 +18,7 @@ namespace CoreMod
 
 
 
-		protected override void Setup (ITable definesTable)
+		protected override void Setup (ITable definesTable, MapRoot.Map mapRoot)
 		{
 			foreach (var  UV in defaultTile.Sprite.uv)
 				Debug.LogWarning (UV);

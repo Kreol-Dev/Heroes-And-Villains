@@ -6,10 +6,12 @@ namespace CoreMod
 {
 	public class Zone
 	{
+		HashSet<TileHandle> handles = new HashSet<TileHandle> ();
 
 		public event Form.FormDelegate FormAdded;
 		public event Form.FormDelegate FormRemoved;
 		public event Form.FormDelegate FormUpdated;
+		public event ObjectDelegate<Zone> ZoneUpdated;
 
 		HashSet<Form> forms = new HashSet<Form> ();
 
@@ -19,6 +21,8 @@ namespace CoreMod
 			{
 				if (FormAdded != null)
 					FormAdded (form);
+				Updated (form);
+				form.FormUpdated += Updated;
 				form.FormUpdated += FormUpdated;
 			}
 		}
@@ -29,8 +33,16 @@ namespace CoreMod
 			{
 				if (FormRemoved != null)
 					FormRemoved (form);
-				form.FormUpdated += FormUpdated;
+				Updated (form);
+				form.FormUpdated -= Updated;
+				form.FormUpdated -= FormUpdated;
 			}
+		}
+
+		void Updated (Form form)
+		{
+			if (ZoneUpdated != null)
+				ZoneUpdated (this);
 		}
 	}
 

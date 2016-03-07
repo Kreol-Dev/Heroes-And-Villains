@@ -9,7 +9,7 @@ namespace CoreMod
 	{
 		public MapHandle MapHandle { get; internal set; }
 
-		protected override void Setup (ITable definesTable)
+		protected override void Setup (ITable definesTable, MapRoot.Map mapRoot)
 		{
 			MapHandle = Find.Root<TilesRoot> ().MapHandle;
 		}

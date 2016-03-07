@@ -107,69 +107,69 @@ namespace CoreMod
 
 
 
-	public class NestsTilesLayer : TilesLayer<NestTile>
-	{
-		
-	}
+	//	public class NestsTilesLayer : TilesLayer<NestTile>
+	//	{
+	//
+	//	}
 
-	public class NestsTilesRenderer : SpriteMapRenderer<NestTile, NestsTilesLayer>
-	{
-		Dictionary<string, GraphicsDeterminer> determiners = new Dictionary<string, GraphicsDeterminer> ();
-
-		public class GraphicsDeterminer
-		{
-			public Dictionary<int, GraphicsTile> tiles = new Dictionary<int, GraphicsTile> ();
-
-			public GraphicsTile DetermineTile (int count)
-			{
-				GraphicsTile tile = null;
-				int max = int.MinValue;
-				foreach (var pair in tiles)
-				{
-					if (pair.Key <= count && pair.Key > max)
-					{
-						max = pair.Key;
-						tile = pair.Value;
-					}
-				}
-				return tile;
-			}
-		}
-
-		protected override Sprite GetSprite (NestTile obj)
-		{
-			if (obj == null)
-				return null;
-			GraphicsDeterminer determiner = null;
-			determiners.TryGetValue (obj.MonsterName, out determiner);
-			if (determiner == null)
-				return null;
-			var tile = determiner.DetermineTile (obj.Size);
-			if (tile == null)
-				return null;
-			return tile.Sprite;
-		}
-
-		protected override void ReadRules (ITable rulesTable)
-		{
-			foreach (var monsterName in rulesTable.GetKeys())
-			{
-				ITable monsterRuleTable = rulesTable.GetTable (monsterName);
-				GraphicsDeterminer determiner = new GraphicsDeterminer ();
-				foreach (var spriteName in monsterRuleTable.GetKeys())
-				{
-					GraphicsTile tile = null;
-					tiles.TryGetValue (spriteName as string, out tile);
-					if (tile == null)
-						continue;
-					int count = monsterRuleTable.GetTable (spriteName).GetInt ("count");
-					determiner.tiles.Add (count, tile);
-				}
-				determiners.Add (monsterName as string, determiner);
-			}
-		}
-		
-	}
+	//	public class NestsTilesRenderer : SpriteMapRenderer<NestTile, NestsTilesLayer>
+	//	{
+	//		Dictionary<string, GraphicsDeterminer> determiners = new Dictionary<string, GraphicsDeterminer> ();
+	//
+	//		public class GraphicsDeterminer
+	//		{
+	//			public Dictionary<int, GraphicsTile> tiles = new Dictionary<int, GraphicsTile> ();
+	//
+	//			public GraphicsTile DetermineTile (int count)
+	//			{
+	//				GraphicsTile tile = null;
+	//				int max = int.MinValue;
+	//				foreach (var pair in tiles)
+	//				{
+	//					if (pair.Key <= count && pair.Key > max)
+	//					{
+	//						max = pair.Key;
+	//						tile = pair.Value;
+	//					}
+	//				}
+	//				return tile;
+	//			}
+	//		}
+	//
+	//		protected override Sprite GetSprite (NestTile obj)
+	//		{
+	//			if (obj == null)
+	//				return null;
+	//			GraphicsDeterminer determiner = null;
+	//			determiners.TryGetValue (obj.MonsterName, out determiner);
+	//			if (determiner == null)
+	//				return null;
+	//			var tile = determiner.DetermineTile (obj.Size);
+	//			if (tile == null)
+	//				return null;
+	//			return tile.Sprite;
+	//		}
+	//
+	//		protected override void ReadRules (ITable rulesTable)
+	//		{
+	//			foreach (var monsterName in rulesTable.GetKeys())
+	//			{
+	//				ITable monsterRuleTable = rulesTable.GetTable (monsterName);
+	//				GraphicsDeterminer determiner = new GraphicsDeterminer ();
+	//				foreach (var spriteName in monsterRuleTable.GetKeys())
+	//				{
+	//					GraphicsTile tile = null;
+	//					tiles.TryGetValue (spriteName as string, out tile);
+	//					if (tile == null)
+	//						continue;
+	//					int count = monsterRuleTable.GetTable (spriteName).GetInt ("count");
+	//					determiner.tiles.Add (count, tile);
+	//				}
+	//				determiners.Add (monsterName as string, determiner);
+	//			}
+	//		}
+	//
+	//	}
 }
 
 

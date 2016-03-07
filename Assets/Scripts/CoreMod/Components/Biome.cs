@@ -10,9 +10,6 @@ namespace CoreMod
 	[ECompName ("biome")]
 	public class Biome : EntityComponent<BiomeSharedData>
 	{
-		Zone biomeZone;
-
-
 		static int tileID = 0;
 		[Defined ("movement_cost")]
 		public int MovementCost;
@@ -23,10 +20,7 @@ namespace CoreMod
 		{
 			MovementCost = table.GetInt ("tile_movement_cost");
 			Name = table.GetString ("name");
-			var layer = Find.Root<MapRoot.Map> ().GetLayer ("biomes_tiles_layer") as ITileMapLayer<BiomeTile>;
-			var biomeTile = new BiomeTile (tileID++, this.gameObject.name);
-
-			SharedData = new BiomeSharedData (layer, biomeTile);
+			SharedData = new BiomeSharedData (table.GetString ("biome_type"));
 		}
 
 		public override EntityComponent CopyTo (GameObject go)
@@ -41,94 +35,70 @@ namespace CoreMod
 
 		public override void PostCreate ()
 		{
-			var tilesCmp = gameObject.GetComponent<TilesComponent> ();
-			tilesCmp.TileAdded += OnTileAdded;
-			tilesCmp.TileRemoved += OnTileRemoved;
-			foreach (var handle in tilesCmp.Tiles)
-			{
-				handle.Set (SharedData.Layer.Tiles, SharedData.BiomeTile);
-				SharedData.Layer.TileUpdated.Dispatch (handle);
-			}
-			var spatialCmp = GetComponent<SpatialObject> ();
-			if (spatialCmp != null)
-			{
-				biomeZone = spatialCmp.Zone;
-				//SharedData.Layer.Assign (biomeZone);
-			}
 
-		}
 
-		void OnTileAdded (TileHandle handle)
-		{
-			handle.Set (SharedData.Layer.Tiles, SharedData.BiomeTile);
-			SharedData.Layer.TileUpdated.Dispatch (handle);
-		}
-
-		void OnTileRemoved (TileHandle handle)
-		{
-			handle.Set (SharedData.Layer.Tiles, null);
-			SharedData.Layer.TileUpdated.Dispatch (handle);
-		}
-	}
-
-	public class BiomeTile
-	{
-		public int ID { get; internal set; }
-
-		public string Name { get; internal set; }
-
-		public BiomeTile (int id, string name)
-		{
-			ID = id;
-			Name = name;
 		}
 	}
 
 
-	public class MapBiomesTilesLayer : TilesLayer<BiomeTile>
+
+
+	public class BiomesRenderer : SpriteMapRenderer<GameObject, RegionsLayer>
 	{
-
-	}
-
-
-	public class BiomesRenderer : SpriteMapRenderer<BiomeTile, MapBiomesTilesLayer>
-	{
-		Scribe scribe;
-		Dictionary<BiomeTile, GraphicsTile> tilesByID = new Dictionary<BiomeTile, GraphicsTile> ();
-		Dictionary<string, string> biomeToGraphics = new Dictionary<string, string> ();
-
-		protected override Sprite GetSprite (BiomeTile obj)
+		protected override Sprite GetSprite (GameObject obj)
 		{
-			scribe = Scribes.Find ("BIOMES RENDERER");
-			GraphicsTile tile = null;
-			tilesByID.TryGetValue (obj, out tile);
-			if (tile == null)
-			{
-				string graphicsTileName = null;
-				biomeToGraphics.TryGetValue (obj.Name, out graphicsTileName);
-				if (graphicsTileName != null)
-				{
-					tiles.TryGetValue (graphicsTileName, out tile);
-				}
-				if (tile != null)
-				{
-					scribe.LogFormatWarning ("Registered biomeTile {0} with graphiсs {1}", obj.Name, tile.Name);
-					tilesByID.Add (obj, tile);
-				}
-			}
-			if (tile == null)
+			if (obj == null)
 				return null;
+			var biomeCmp = obj.GetComponent<Biome> ();
+			if (biomeCmp == null)
+				return null;
+
+			GraphicsTile tile = null;
+			BiomeTiles.TryGetValue (biomeCmp.SharedData, out tile);
+			if (tile == null)
+			{
+				string tileName = null;
+				if (!typeToTile.TryGetValue (biomeCmp.SharedData.BiomeType, out tileName))
+					return null;
+				if (!tiles.TryGetValue (tileName, out tile))
+					return null;
+				BiomeTiles.Add (biomeCmp.SharedData, tile);
+			}
 			return tile.Sprite;
 		}
 
+		Dictionary<BiomeSharedData, GraphicsTile> BiomeTiles = new Dictionary<BiomeSharedData, GraphicsTile> ();
+
+		[Defined ("type_to_tile")]
+		Dictionary<string, string> typeToTile = new Dictionary<string, string> ();
+
 		protected override void ReadRules (ITable rulesTable)
 		{
-			foreach (var biomeName in rulesTable.GetKeys())
-			{
-				biomeToGraphics.Add (biomeName as string, rulesTable.GetString (biomeName));
-			}
+			Debug.Log ("-------------------------------------------------------------");
+			Find.Root<ModsManager> ().Defs.LoadObjectAs<BiomesRenderer> (this, rulesTable);
+
+			Debug.Log ("-------------------------11111111111111-----------------------");
+			foreach (var typeTilePair in typeToTile)
+				Debug.LogFormat ("{0} {1}", typeTilePair.Key, typeTilePair.Value);
+
 		}
-		
+
+
+		protected override void Clicked (GameObject go)
+		{
+		}
+
+		protected override void DeClicked (GameObject go)
+		{
+		}
+
+		protected override void Hovered (GameObject go)
+		{
+		}
+
+		protected override void DeHovered (GameObject go)
+		{
+		}
 	}
 
 

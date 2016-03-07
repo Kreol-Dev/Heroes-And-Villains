@@ -6,7 +6,7 @@ using UIO;
 
 namespace CoreMod
 {
-	public abstract class SpriteMapRenderer<TLayerObject, TLayer> : BaseMapLayerRenderer<TLayer, TileMapLayerInteractor>
+	public abstract class SpriteMapRenderer<TLayerObject, TLayer> : BaseMapLayerRenderer<TLayer, GOInteractor>
 		where TLayer: class, IMapLayer, ITileMapLayer<TLayerObject>
 	{
 		public override void ChangeState (RepresenterState state)
@@ -32,21 +32,13 @@ namespace CoreMod
 
 		protected abstract Sprite GetSprite (TLayerObject obj);
 
-		void Clicked (TileHandle tile)
-		{
-		}
+		protected abstract void Clicked (GameObject go);
 
-		void DeClicked (TileHandle tile)
-		{
-		}
+		protected abstract void DeClicked (GameObject go);
 
-		void Hovered (TileHandle tile)
-		{
-		}
+		protected abstract void Hovered (GameObject go);
 
-		void DeHovered (TileHandle tile)
-		{
-		}
+		protected abstract void DeHovered (GameObject go);
 
 		void TileUpdated (TileHandle tile)
 		{

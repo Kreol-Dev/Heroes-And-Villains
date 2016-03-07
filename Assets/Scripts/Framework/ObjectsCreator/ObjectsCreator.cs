@@ -107,7 +107,7 @@ public abstract class EntityComponent : MonoBehaviour
 
 public abstract class EntityComponent<TSharedData> : EntityComponent
 {
-	protected TSharedData SharedData { get; set; }
+	public TSharedData SharedData { get; protected set; }
 
 
 }

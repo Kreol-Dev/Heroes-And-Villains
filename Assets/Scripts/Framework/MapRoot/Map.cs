@@ -16,12 +16,18 @@ namespace MapRoot
 		{
 
 			ITable layersTable = Find.Root<ModsManager> ().GetTable ("map_layers");
+
+			var mm = Find.Root<ModsManager> ();
 			foreach (var key in layersTable.GetKeys())
 			{
 				try
 				{
 					string layerName = (string)key;
-					string layerTypeName = layersTable.GetString (layerName);
+					ITable layerTable = layersTable.GetTable (key);
+
+					if (mm.IsTechnical (layersTable, key))
+						continue;
+					string layerTypeName = layerTable.GetString ("layer_type");
 					Type type = Type.GetType (layerTypeName);
 					IMapLayer layer = Activator.CreateInstance (type) as IMapLayer;
 					if (layer == null)
@@ -29,13 +35,19 @@ namespace MapRoot
 						scribe.LogFormatError ("Layer {0} is not a subclass of IMapLayer", layerName);
 						continue;
 					}
-					layer.Setup (layerName);
+
 					layers.Add (layerName, layer);
 				} catch (ITableTypesMismatch e)
 				{
 					
 				}
 
+			}
+
+			foreach (var layerPair in layers)
+			{
+				mm.Defs.LoadObjectAs<IMapLayer> (layerPair.Value, layersTable.GetTable (layerPair.Key).GetTable ("configs"));
+				layerPair.Value.Setup (layerPair.Key, this);
 			}
 			Fulfill.Dispatch ();
 
@@ -86,7 +98,7 @@ namespace MapRoot
 				scribe.LogFormatWarning ("Map had no layer with the name {0}, so DefaultMapLayer was added during GetLayer call", 
 				                         name);
 				layer = new DefaultMapLayer ();
-				layer.Setup (name);
+				layer.Setup (name, this);
 			} else
 				layer = layers [name];
 			return layer;

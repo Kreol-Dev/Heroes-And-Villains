@@ -1,9 +1,12 @@
 ﻿using UnityEngine;
 using System.Collections;
 using System.Collections.Generic;
+using UIO;
 
 namespace CoreMod
 {
+	[AShared]
+	[ECompName ("spatial_material")]
 	public class MaterialObject : SpatialObject
 	{
 		protected Dictionary<Form, Collider2D> colliders = new Dictionary<Form, Collider2D> ();
@@ -69,14 +72,14 @@ namespace CoreMod
 
 		void OnTriggerEnter (Collider other)
 		{
-			//if (other.gameObject.GetComponent<MaterialObject> () != null)
-			OnObjectEntered (other.gameObject);
+			if (other.gameObject.layer == PhysicsRoot.MaterialObjectsLayer)
+				OnObjectEntered (other.gameObject);
 		}
 
 		void OnTriggerExit (Collider other)
 		{
-			//if (other.gameObject.GetComponent<MaterialObject> () != null)
-			OnObjectLeft (other.gameObject);
+			if (other.gameObject.layer == PhysicsRoot.MaterialObjectsLayer)
+				OnObjectLeft (other.gameObject);
 		}
 
 	

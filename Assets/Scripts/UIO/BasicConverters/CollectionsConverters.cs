@@ -17,7 +17,7 @@ namespace UIO.BasicConverters
 			if (keysConverter == null)
 				return dict;
 			IConverter valueConverter = null;
-			if (!args [1].IsClass)
+			if (!args [1].IsClass || args [1] == typeof(string))
 			{
 				valueConverter = Converters.GetConverter (args [1]);
 				var dictTable = table.GetTable (key);
@@ -71,7 +71,7 @@ namespace UIO.BasicConverters
 			var args = SpecifiedType.GetGenericArguments ();
 
 			var listTable = table.GetTable (key);
-			if (!args [0].IsClass)
+			if (!args [0].IsClass || args [0] == typeof(string))
 			{
 				var valueConverter = Converters.GetConverter (args [0]);
 				foreach (var listKey in listTable.GetKeys())

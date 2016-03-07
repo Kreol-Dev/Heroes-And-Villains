@@ -118,9 +118,11 @@ namespace MapRoot
 					}
 				} catch (ITableTypesMismatch e)
 				{
+					scribe.LogWarning (e.ToString ());
 					continue;
 				} catch (ITableMissingID e)
 				{
+					scribe.LogWarning (e.ToString ());
 					continue;
 				}
 

@@ -17,7 +17,7 @@ namespace CoreMod
 
 
 
-		protected override void Setup (ITable definesTable)
+		protected override void Setup (ITable definesTable, MapRoot.Map mapRoot)
 		{
 			TileUpdated = new Signals.Signal<TileHandle> ();
 			MassUpdate = new Signals.Signal ();

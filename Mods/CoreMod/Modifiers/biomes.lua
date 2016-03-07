@@ -1,6 +1,6 @@
 biome = 
 {
-	climate = 
+	coremod = 
 	{
 		hills = 
 		{

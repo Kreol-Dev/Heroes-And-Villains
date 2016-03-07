@@ -20,18 +20,18 @@ namespace CoreMod
 			return go.AddComponent<TilesComponent> ();
 		}
 
-		GOLayer layer;
+		RegionsLayer layer;
 
 		public void Receive (RegionSlot data)
 		{
 			tiles = new HashSet<TileHandle> (data.Tiles);
-			layer = Find.Root<MapRoot.Map> ().GetLayer<GOLayer> (data.TargetLayerName);
+			layer = Find.Root<MapRoot.Map> ().GetLayer<RegionsLayer> (data.TargetLayerName);
 			foreach (var tile in tiles)
 			{
 				tile.Set (layer.Tiles, this.gameObject);
 				layer.TileUpdated.Dispatch (tile);
 			}
-			layer.AddObject (this.gameObject);
+			//layer.AddObject (this);
 			//layer.gos.Add (this.gameObject);
 		}
 

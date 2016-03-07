@@ -33,7 +33,7 @@ namespace MapRoot
 	}
 
 	public abstract class BaseMapLayerPresenter<TObject, TLayer, TInteractor> : IMapLayerPresenter
-		where TLayer : class, IMapLayer where TInteractor : class, IMapLayerInteractor
+		//where TLayer : class, IMapLayer where TInteractor : class, IMapLayerInteractor
 	{
 		Scribe scribe = Scribes.Find ("LAYER PRESENTER");
 
@@ -69,18 +69,23 @@ namespace MapRoot
 
 		public void Setup (IMapLayer layer, IMapLayerInteractor interactor, Type objectPresenterType, RepresenterState defaultState)
 		{
-			Layer = layer as TLayer;
-			if (Layer == null)
+			try
+			{
+				Layer = (TLayer)layer;
+			} catch
 			{
 				scribe.LogFormatError ("Layer provided to presenter is of wrong type {0} while assumed {1}", layer.GetType (), typeof(TLayer));
 				return;
 			}
-			Interactor = interactor as TInteractor;
-			if (Interactor == null)
+			try
+			{
+				Interactor = (TInteractor)interactor;
+			} catch
 			{
 				scribe.LogFormatError ("Interactor provided to presenter is of wrong type {0} while assumed {1}", interactor.GetType (), typeof(TInteractor));
 				return;
 			}
+
 			if (!objectPresenterType.IsSubclassOf (typeof(ObjectPresenter<TObject>)))
 			{
 				scribe.LogFormatError ("Object presenter provided to presenter is of wrong type {0} while assumed {1}", objectPresenterType, typeof(ObjectPresenter<TObject>));

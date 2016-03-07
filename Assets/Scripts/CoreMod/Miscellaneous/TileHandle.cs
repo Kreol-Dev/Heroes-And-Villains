@@ -179,6 +179,7 @@ namespace CoreMod
 			layer [X, Y] = value;
 		}
 
+		public Vector2 Center { get { return new Vector2 (X + 0.5f, Y + 0.5f); } }
 		/*public static bool operator == (TileHandle A, TileHandle B)
 		{
 			if (System.Object.ReferenceEquals (A, B))
@@ -208,7 +209,7 @@ namespace CoreMod
 
 		public override string ToString ()
 		{
-			return string.Format ("[TileHandle: X={0}, Y={1}]", X, Y);
+			return string.Format ("tile x: {0} y: {1}", X, Y);
 		}
 		//		public override int GetHashCode ()
 		//		{

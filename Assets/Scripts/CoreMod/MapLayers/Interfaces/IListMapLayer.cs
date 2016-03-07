@@ -14,6 +14,8 @@ namespace CoreMod
 		bool AddObject (TObject go);
 
 		bool RemoveObject (TObject go);
+
+		bool HasObject (TObject go);
 	}
 
 }

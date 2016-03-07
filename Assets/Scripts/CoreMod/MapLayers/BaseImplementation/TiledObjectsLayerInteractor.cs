@@ -8,7 +8,7 @@ namespace CoreMod
 {
 
 	public abstract class TiledObjectsLayerInteractor<TLayerObject, TLayer> : BaseMapLayerInteractor<TLayer>, 
-	IObjectsInteractor<TLayerObject> where TLayer : class, IMapLayer, ITileMapLayer<TLayerObject> where TLayerObject: class
+	IObjectsInteractor<TLayerObject> where TLayer : /*class, IMapLayer,*/ ITileMapLayer<TLayerObject> where TLayerObject: class
 	{
 		HashSet<TLayerObject> selectedObjects = new HashSet<TLayerObject> ();
 
@@ -111,13 +111,13 @@ namespace CoreMod
 //			ObjectHovered += (obj) => Debug.LogFormat ("OBJECT HOVERED: {0}", obj);
 //
 //			ObjectDeHovered += (obj) => Debug.LogFormat ("OBJECT DEHOVERED: {0}", obj);
-			ObjectSelected += (obj) => {};
-
-			ObjectDeSelected += (obj) => {};
-
-			ObjectHovered += (obj) => {};
-
-			ObjectDeHovered += (obj) => {};
+//			ObjectSelected += (obj) => {};
+//
+//			ObjectDeSelected += (obj) => {};
+//
+//			ObjectHovered += (obj) => {};
+//
+//			ObjectDeHovered += (obj) => {};
 			GameObject go = GameObject.Find ("MapCollider");
 			InteractorRealm handle = go.AddComponent<InteractorRealm> ();
 			handle.Interactor = this;

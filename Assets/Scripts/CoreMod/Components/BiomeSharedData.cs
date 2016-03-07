@@ -7,14 +7,11 @@ namespace CoreMod
 {
 	public class BiomeSharedData
 	{
-		public BiomeTile BiomeTile { get; internal set; }
+		public string BiomeType { get; internal set; }
 
-		public ITileMapLayer<BiomeTile> Layer { get; internal set; }
-
-		public BiomeSharedData (ITileMapLayer<BiomeTile> layer, BiomeTile biomeTile)
+		public BiomeSharedData (string biomeType)
 		{
-			this.BiomeTile = biomeTile;
-			this.Layer = layer;
+			BiomeType = biomeType;
 		}
 	}
 

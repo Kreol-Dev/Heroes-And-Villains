@@ -22,7 +22,7 @@ namespace MapRoot
 		IEnumerable<object> OnMassSelect (Vector2 minCorner, Vector2 maxCorner);
 	}
 
-	public abstract class BaseMapLayerInteractor<TLayer> : IMapLayerInteractor where TLayer : class, IMapLayer
+	public abstract class BaseMapLayerInteractor<TLayer> : IMapLayerInteractor  /* where TLayer :class, IMapLayer*/
 	{
 		public int Priority { get; internal set; }
 
@@ -48,8 +48,10 @@ namespace MapRoot
 		{
 			Priority = priority;
 			Scribe.LogFormat ("Interactor {0} start working with a layer {1}", this.GetType (), layer.Name);
-			this.layer = layer as TLayer;
-			if (this.layer == null)
+			try
+			{
+				this.layer = (TLayer)layer;
+			} catch
 			{
 				Scribe.LogFormatError ("Interactor doesn't match layer provided: interactor type is {0} while layer {1}", this.GetType (), layer.GetType ());
 				return;
