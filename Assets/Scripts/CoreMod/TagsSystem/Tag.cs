@@ -117,7 +117,7 @@ namespace CoreMod
 
 		}
 
-		public IEnumerable Tags ()
+		public IEnumerable<Tag> Tags ()
 		{
 			return assignedTags;
 		}

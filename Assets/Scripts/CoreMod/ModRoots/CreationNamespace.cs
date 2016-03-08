@@ -25,6 +25,13 @@ namespace CoreMod
 			Prototypes.Add (name, prototype);
 		}
 
+		public IEnumerable<ObjectCreationHandle> FindAvailable (TagsCollection tags, int size, ObjectCreationHandle.PlotType plotType)
+		{
+			return (from prototype in Prototypes
+			        where prototype.Value.IsAvailable (tags) && ConfirmFitness (prototype.Value.PlotSize, prototype.Value.Plot, size, plotType)
+			        select prototype.Value) as IEnumerable<ObjectCreationHandle>;
+		}
+
 		public IEnumerable<ObjectCreationHandle> FindAvailable (TagsCollection tags)
 		{
 			return (from prototype in Prototypes
@@ -32,7 +39,23 @@ namespace CoreMod
 			        select prototype.Value) as IEnumerable<ObjectCreationHandle>;
 		}
 
-		public IEnumerable<ObjectCreationHandle> FindSimilar (TagsCollection tags, out int maxSimilarity, IEnumerable<ObjectCreationHandle> availablePrototypes)
+		bool ConfirmFitness (int fitSize, ObjectCreationHandle.PlotType fitPlot, int size, ObjectCreationHandle.PlotType plot)
+		{
+			if (fitPlot == ObjectCreationHandle.PlotType.Nothing && plot == ObjectCreationHandle.PlotType.Nothing)
+				return true;
+			if (fitSize <= size)
+			{
+				if (fitPlot == ObjectCreationHandle.PlotType.Rect && fitPlot == ObjectCreationHandle.PlotType.Circle)
+				{
+					//sqrt (fitSize^2 + fitSize^2) < size
+					return (float)fitSize * 1.41421 <= (float)size;
+				}
+				return true;
+			}
+			return false;
+		}
+
+		public IEnumerable<ObjectCreationHandle> FindSimilar (TagsCollection tags, out int maxSimilarity, IEnumerable<ObjectCreationHandle> availablePrototypes, int size = 0)
 		{
 			int maximum = int.MinValue;
 			List<ObjectCreationHandle> maxSimilar = new List<ObjectCreationHandle> ();
@@ -43,7 +66,7 @@ namespace CoreMod
 			}
 			foreach (var handle in availablePrototypes)
 			{
-				int similarity = handle.HowSimilar (tags);
+				int similarity = handle.HowSimilar (tags) + Mathf.Max (handle.PlotSize, size);
 				if (maximum < similarity)
 				{
 					maximum = similarity;

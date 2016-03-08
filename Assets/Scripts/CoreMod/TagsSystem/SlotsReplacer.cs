@@ -44,11 +44,18 @@ namespace CoreMod
 		{
 			int maxSimilarity = int.MinValue;
 			List<ObjectCreationHandle> similarObjects = new List<ObjectCreationHandle> ();
+			var plot = slot.gameObject.GetComponent<Plot> ();
 			foreach (var space in namespaces)
 			{
-				var available = space.FindAvailable (slot.Tags);
+				
+				IEnumerable<ObjectCreationHandle> available = null;
+				if (plot == null)
+					available = space.FindAvailable (slot.Tags);
+				else
+					available = space.FindAvailable (slot.Tags, plot.Size, plot.PlotType);
 				int similarity = int.MinValue;
-				var similar = space.FindSimilar (slot.Tags, out similarity, available);
+				int plotSize = plot == null ? 0 : plot.Size;
+				var similar = space.FindSimilar (slot.Tags, out similarity, available, plotSize);
 				if (similarity > maxSimilarity)
 				{
 					maxSimilarity = similarity;

@@ -154,7 +154,7 @@ namespace CoreMod
 			if (vecTable != null)
 				center = new Vector2 (vecTable.GetFloat (1, 0f), vecTable.GetFloat (2, 0f));
 			if (sizeTable != null)
-				size = new Vector2 (vecTable.GetFloat (1, 1f), vecTable.GetFloat (2, 1f));
+				size = new Vector2 (sizeTable.GetFloat (1, 1f), sizeTable.GetFloat (2, 1f));
 			return new RectForm (center, size);
 		}
 

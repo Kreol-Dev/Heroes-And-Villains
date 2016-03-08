@@ -52,7 +52,7 @@ clearance_visualiser =
 	},
 	inputs = 
 	{
-		main = { "blocks_plots", "env"}
+		main = { "settlements_plots", "env"}
 	}
 }
 

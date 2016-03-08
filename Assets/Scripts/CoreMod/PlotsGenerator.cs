@@ -9,12 +9,18 @@ namespace CoreMod
 {
 	[ASlotComponent ("Plot")]
 	[AShared]
-	public class Plot : SlotComponent
+	public class Plot : Slot
 	{
 		public int Size;
 		public Vector2 Center;
 		public ObjectCreationHandle.PlotType PlotType;
 		public int ID;
+
+		public override void FillComponent (GameObject go)
+		{
+			base.FillComponent (go);
+			go.transform.position = Center;
+		}
 	}
 
 	public class PlotsGenerator : Demiurg.Core.Avatar
@@ -129,8 +135,12 @@ namespace CoreMod
 				TileHandle tile = tiles [randomTile] as TileHandle;
 				//tiles.Remove (randomTile)
 				GameObject plotGO = new GameObject ("Plot");
+				var regionCmp = plotGO.AddComponent<RegionSlot> ();
 				plots.Add (plotGO);
 				var plotCmp = plotGO.AddComponent<Plot> ();
+				foreach (var tag in groups.Tags())
+					plotCmp.Tags.AddTag (tag);
+					
 				plotCmp.Size = mask.Size;
 				plotCmp.ID = id++;
 				plotCmp.PlotType = mask.Type;
@@ -143,7 +153,9 @@ namespace CoreMod
 					{
 						if (mask.mask [x, y] == true)
 						{
+							
 							var curTile = map.GetHandle (tile.X + x, tile.Y + y);
+							regionCmp.Tiles.Add (curTile);
 							if (!updatedTiles.ContainsKey (curTile))
 								updatedTiles.Add (curTile, curTile.Get (environment));
 							curTile.Set (environment, 0);

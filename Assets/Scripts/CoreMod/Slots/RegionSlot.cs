@@ -14,7 +14,7 @@ namespace CoreMod
 
 		[Defined ("is_region")]
 		public bool IsRegion = false;
-		public List<TileHandle> Tiles;
+		public List<TileHandle> Tiles = new List<TileHandle> ();
 		public string TargetLayerName;
 
 		public override void FillComponent (GameObject go)
