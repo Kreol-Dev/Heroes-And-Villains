@@ -48,7 +48,7 @@ namespace CoreMod
 
 	}
 
-	public class ObjectsPresenter : ObjectLayerPresenter<GameObject, GameObject, ITileMapLayer<GameObject>, IObjectsInteractor<GameObject>>
+	public class ObjectsPresenter : ObjectLayerPresenter<GameObject, GameObject, object, IObjectsInteractor<GameObject>>
 	{
 		public override GameObject ObjectFromLayer (GameObject obj)
 		{

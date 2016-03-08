@@ -8,7 +8,7 @@ coremod.large_block =
 	},
 	entity = 
 	{
-		layer_name = "blocks_layer"
+		layer_name = "cities_layer"
 	},
 	spatial_material = 
 	{
@@ -31,7 +31,7 @@ coremod.small_block =
 	},
 	entity = 
 	{
-		layer_name = "blocks_layer"
+		layer_name = "cities_layer"
 	},
 	spatial_material = 
 	{

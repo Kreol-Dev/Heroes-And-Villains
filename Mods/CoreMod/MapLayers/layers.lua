@@ -12,7 +12,7 @@ biomes_layer =
 	}	
 }
 
-blocks_layer =
+cities_layer =
 {
 	layer_type = "CoreMod.ObjectsLayer",
 	configs = {}

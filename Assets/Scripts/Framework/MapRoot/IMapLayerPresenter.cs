@@ -69,6 +69,7 @@ namespace MapRoot
 
 		public void Setup (IMapLayer layer, IMapLayerInteractor interactor, Type objectPresenterType, RepresenterState defaultState)
 		{
+			
 			try
 			{
 				Layer = (TLayer)layer;
@@ -91,6 +92,7 @@ namespace MapRoot
 				scribe.LogFormatError ("Object presenter provided to presenter is of wrong type {0} while assumed {1}", objectPresenterType, typeof(ObjectPresenter<TObject>));
 				return;
 			}
+			scribe.LogFormat ("Presenter {0} start working with a layer {1}", this.GetType (), layer.Name);
 			this.objectPresenterType = objectPresenterType;
 			defines = Find.Root<ModsManager> ().GetTable ("defines");
 			ChangeState (defaultState);

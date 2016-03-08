@@ -6,7 +6,7 @@ using System.Collections.Generic;
 namespace CoreMod
 {
 	public abstract class ObjectLayerPresenter<TObject, TInteractorObject, TLayer, TInteractor> : BaseMapLayerPresenter<TObject, TLayer, TInteractor>
-		where TLayer : /*class, IMapLayer,*/ ITileMapLayer<TObject> where TInteractor : /*class, IMapLayerInteractor,*/ IObjectsInteractor<TInteractorObject> where TInteractorObject : class
+	/*where TLayer : class, IMapLayer, ITileMapLayer<TObject> */ where TInteractor : /*class, IMapLayerInteractor,*/ IObjectsInteractor<TInteractorObject> where TInteractorObject : class
 	{
 		HashSet<TileHandle> selectedTiles = new HashSet<TileHandle> ();
 		HashSet<TileHandle> hoveredTiles = new HashSet<TileHandle> ();

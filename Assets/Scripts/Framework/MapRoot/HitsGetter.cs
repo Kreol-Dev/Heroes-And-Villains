@@ -13,7 +13,7 @@ namespace MapRoot
 				allegianceDict.Add (interactor, new HashSet<Transform> ());
 		}
 
-		RaycastHit[] hits = new RaycastHit[10];
+		RaycastHit2D[] hits = new RaycastHit2D[10];
 		ObjectHit[] realmHits = new ObjectHit[10];
 		Dictionary<IMapLayerInteractor, HashSet<Transform>> allegianceDict = new Dictionary<IMapLayerInteractor, HashSet<Transform>> ();
 
@@ -32,13 +32,13 @@ namespace MapRoot
 				allegianceSet.Value.Clear ();
 			
 			realmHitsCount = 0;
-			Ray ray = Camera.main.ScreenPointToRay (screenPoint);
-			int collidersCount = Physics.RaycastNonAlloc (ray, hits, 30);
+			var point = Camera.main.ScreenToWorldPoint (screenPoint);
+			int collidersCount = Physics2D.RaycastNonAlloc (point, Vector2.zero, hits); //(point, hits, 30);
 			if (collidersCount >= hits.Length)
 			{
-				hits = new RaycastHit[collidersCount + 2];
+				hits = new RaycastHit2D[collidersCount + 2];
 				realmHits = new ObjectHit[collidersCount + 2];
-				collidersCount = Physics.RaycastNonAlloc (ray, hits, 30);
+				collidersCount = Physics2D.RaycastNonAlloc (point, Vector2.zero, hits);
 			}
 			for (int i = 0; i < collidersCount; i++)
 			{

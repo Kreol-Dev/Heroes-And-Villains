@@ -1,3 +1,4 @@
+
 biomes_renderer_map =
 {
 	default_state = "Active",
@@ -28,4 +29,18 @@ biomes_renderer_map =
 	presenter = "CoreMod.ObjectsPresenter",
 	objectPresenter = "CoreMod.GOPresenter"
 }
+cities_rep =
+{
+	default_state = "Active",
+	interactor = "cities_interactor",
+	layers = 
+	{
+		"cities_layer"
+	},
+	renderer = "MapRoot.NullRenderer",
+	renderer_data = {},
+	presenter = "CoreMod.ObjectsPresenter",
+	objectPresenter = "CoreMod.GOPresenter"
+}
+
 
