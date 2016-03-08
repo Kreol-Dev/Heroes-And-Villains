@@ -117,13 +117,13 @@ namespace CoreMod
 
 		protected override void Setup (ITable definesTable)
 		{
-			ObjectSelected += (obj) => Debug.LogFormat ("OBJECT SElECTED: {0}", obj);
-			
-			ObjectDeSelected += (obj) => Debug.LogFormat ("OBJECT DESELECTED: {0}", obj);
-			
-			ObjectHovered += (obj) => Debug.LogFormat ("OBJECT HOVERED: {0}", obj);
-			
-			ObjectDeHovered += (obj) => Debug.LogFormat ("OBJECT DEHOVERED: {0}", obj);
+//			ObjectSelected += (obj) => Debug.LogFormat ("OBJECT SElECTED: {0}", obj);
+//			
+//			ObjectDeSelected += (obj) => Debug.LogFormat ("OBJECT DESELECTED: {0}", obj);
+//			
+//			ObjectHovered += (obj) => Debug.LogFormat ("OBJECT HOVERED: {0}", obj);
+//			
+//			ObjectDeHovered += (obj) => Debug.LogFormat ("OBJECT DEHOVERED: {0}", obj);
 			Layer.ObjectAdded += OnObjectAdded;
 			Layer.ObjectRemoved += OnObjectRemoved;
 			GameObject go = GameObject.Find ("MapCollider");
