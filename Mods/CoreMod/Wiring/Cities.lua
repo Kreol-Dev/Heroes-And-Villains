@@ -30,3 +30,18 @@ settlement_creators =
 		main = { "settlements_tags", "main" }
 	}
 }
+
+settlements_slotcontrol =
+{
+	avatar_type = "CoreMod.SlotGenerator",
+	configs =
+	 {
+        density = 5,
+        name = "Faction"
+     },
+	inputs = 
+	{
+        slots = { "settlements_plots","plots"}
+    }
+
+}
