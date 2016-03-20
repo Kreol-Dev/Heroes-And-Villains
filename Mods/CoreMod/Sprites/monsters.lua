@@ -10,7 +10,7 @@ mutant =
 	right_bottom_corner = { 64, 32}
 }
 
-plains_people =
+humans =
 {
 	left_top_corner = { 0, 32},
 	right_bottom_corner = { 32, 64}

@@ -21,6 +21,8 @@ public class FrameworkRoots : MonoBehaviour
 		Find.Register<MapRoot.MapInteractor> ();
 		Find.Register<MapRoot.MapRepresenter> ();
 		Find.Register<BindingRoot> ();
+		Find.Register<StatesRoot> ();
+		Find.Register<AI.AIRoot> ();
 	}
 }
 

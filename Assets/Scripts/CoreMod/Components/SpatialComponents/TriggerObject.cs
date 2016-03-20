@@ -14,6 +14,10 @@ namespace CoreMod
 			gameObject.layer = PhysicsRoot.TriggerObjectsLayer;
 		}
 
+		protected override void PostDestroy ()
+		{
+
+		}
 	}
 
 }

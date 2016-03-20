@@ -21,6 +21,11 @@ namespace CoreMod
 
 		}
 
+		protected override void PostDestroy ()
+		{
+
+		}
+
 		public override EntityComponent CopyTo (GameObject go)
 		{
 			MaterialObject obj = base.CopyTo (go) as MaterialObject;

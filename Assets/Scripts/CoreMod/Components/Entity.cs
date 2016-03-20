@@ -30,6 +30,11 @@ namespace CoreMod
 
 			gosLayer.AddObject (this.gameObject);
 		}
+
+		protected override void PostDestroy ()
+		{
+
+		}
 	}
 
 }

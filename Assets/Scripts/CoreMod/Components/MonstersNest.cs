@@ -75,6 +75,11 @@ namespace CoreMod
 			}
 		}
 
+		protected override void PostDestroy ()
+		{
+
+		}
+
 	}
 
 	public class NestTile

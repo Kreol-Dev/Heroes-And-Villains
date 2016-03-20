@@ -39,6 +39,10 @@ namespace CoreMod
 			return e;
 		}
 
+		protected override void PostDestroy ()
+		{
+
+		}
 	}
 
 	public class EncounterPresenter : ObjectPresenter<Encounter>

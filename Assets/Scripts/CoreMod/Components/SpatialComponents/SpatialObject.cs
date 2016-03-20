@@ -23,6 +23,11 @@ namespace CoreMod
 
 		}
 
+		protected override void PostDestroy ()
+		{
+
+		}
+
 		protected Scribe Scribe { get; private set; }
 
 		public Zone Zone { get; internal set; }

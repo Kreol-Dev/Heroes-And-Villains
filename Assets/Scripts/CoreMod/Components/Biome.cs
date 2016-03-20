@@ -38,6 +38,11 @@ namespace CoreMod
 
 
 		}
+
+		protected override void PostDestroy ()
+		{
+			
+		}
 	}
 
 
@@ -74,10 +79,7 @@ namespace CoreMod
 
 		protected override void ReadRules (ITable rulesTable)
 		{
-			Debug.Log ("-------------------------------------------------------------");
 			Find.Root<ModsManager> ().Defs.LoadObjectAs<BiomesRenderer> (this, rulesTable);
-
-			Debug.Log ("-------------------------11111111111111-----------------------");
 			foreach (var typeTilePair in typeToTile)
 				Debug.LogFormat ("{0} {1}", typeTilePair.Key, typeTilePair.Value);
 

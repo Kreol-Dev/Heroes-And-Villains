@@ -19,6 +19,11 @@ namespace CoreMod
 
 		MapHandle map;
 
+		protected override void PostDestroy ()
+		{
+
+		}
+
 		protected override void Init ()
 		{ 
 			regionsCount++;

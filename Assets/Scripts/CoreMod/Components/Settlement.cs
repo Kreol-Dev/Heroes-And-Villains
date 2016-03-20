@@ -17,10 +17,41 @@ namespace CoreMod
 		public override EntityComponent CopyTo (GameObject go)
 		{
 			Settlement settlement = go.AddComponent<Settlement> ();
-			settlement.Population = Population;
-			settlement.Race = Race;
+			settlement.BaseFood = this.BaseFood;
+			settlement.BaseProduction = this.BaseProduction;
+			settlement.Food = this.Food;
+			settlement.FoodMod = this.FoodMod;
+			settlement.ProductionMod = this.ProductionMod;
+			settlement.Population = this.Population;
+			settlement.Wealth = this.Wealth;
+			settlement.Race = this.Race;
 			return settlement;
 		}
+
+		public int ResultProduction { get { return (int)((float)BaseProduction * ProductionMod); } }
+
+		public int ResultFood { get { return (int)((float)BaseFood * FoodMod); } }
+
+		[Defined ("base_production")]
+		public int BaseProduction;
+
+		[Defined ("base_food")]
+		public int BaseFood;
+
+		[Defined ("wealth")]
+		public int Wealth;
+
+		[Defined ("production")]
+		public int Production;
+
+		[Defined ("food")]
+		public int Food;
+
+		[Defined ("production_mod")]
+		public float ProductionMod;
+
+		[Defined ("food_mod")]
+		public float FoodMod;
 
 		[Defined ("population")]
 		public int Population;
@@ -35,14 +66,95 @@ namespace CoreMod
 
 		}
 
+		C_Population populationTarget;
+
 		public override void PostCreate ()
 		{
+			populationTarget = new C_Population ();
+			populationTarget.TargetPopulation = Population + 20;
+			Find.Root<Ticker> ().Tick += OnTick;
+			GetComponent<AI.Planner> ().Plan (populationTarget);
+			Debug.LogWarning (populationTarget.PlannedAction);
+		}
 
+
+		void OnTick ()
+		{
+			int deltaFood = ResultFood - Population;
+			int deltaProduction = ResultProduction - Population;
+			Food += deltaFood;
+			Production += deltaProduction;
+			if (Food < 0)
+			{
+				Food = 0;
+				Population += deltaFood;
+				if (Population == 0)
+				{
+					gameObject.SetActive (false);
+					Find.Root<Ticker> ().Tick -= OnTick;
+				}
+			}
+
+			if (Production < 0)
+				Production = 0;
+
+			
+
+		}
+
+		protected override void PostDestroy ()
+		{
+			Find.Root<Ticker> ().Tick -= OnTick;
+		}
+
+	}
+
+	public class ProductionState : IntState<Settlement>
+	{
+		public override void Add (Settlement cmp, int value)
+		{
+			cmp.BaseProduction += value;
+		}
+
+		public override void Mul (Settlement cmp, float value)
+		{
+			cmp.BaseProduction = (int)((float)cmp.BaseProduction * value);
+		}
+
+		public override int Get (Settlement cmp)
+		{
+			return cmp.ResultProduction;
+		}
+
+		public override void Set (Settlement cmp, int value)
+		{
+			cmp.BaseProduction = value;
 		}
 	}
 
 
+	public class FoodState : IntState<Settlement>
+	{
+		public override void Add (Settlement cmp, int value)
+		{
+			cmp.BaseFood += value;
+		}
 
+		public override void Mul (Settlement cmp, float value)
+		{
+			cmp.BaseFood = (int)((float)cmp.BaseFood * value);
+		}
+
+		public override int Get (Settlement cmp)
+		{
+			return cmp.ResultFood;
+		}
+
+		public override void Set (Settlement cmp, int value)
+		{
+			cmp.BaseFood = value;
+		}
+	}
 
 
 

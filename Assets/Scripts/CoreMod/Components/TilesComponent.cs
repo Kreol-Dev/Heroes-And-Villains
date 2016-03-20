@@ -82,6 +82,10 @@ namespace CoreMod
 
 		}
 
+		protected override void PostDestroy ()
+		{
+
+		}
 	}
 
 }

@@ -62,6 +62,8 @@ public class ObjectsCreator : Root
 			EntityComponent cmp = go.AddComponent (type) as EntityComponent;
 			cmp.LoadFromTable (fromTable.GetTable (cmpName) as ITable);
 		}
+		foreach (var cmp in go.GetComponents<EntityComponent>())
+			cmp.OnInitPrefab ();
 		return go;
 	}
 
@@ -96,13 +98,32 @@ public class ECompName : Attribute
 
 public abstract class EntityComponent : MonoBehaviour
 {
-	public abstract void LoadFromTable (ITable table);
+	public virtual void LoadFromTable (ITable table)
+	{
+		
+	}
 
+	public virtual void OnInitPrefab ()
+	{
+		
+	}
+
+	public delegate void EntityComponentDelegate (EntityComponent ec);
+
+	public event EntityComponentDelegate Destroyed;
 
 	public abstract EntityComponent CopyTo (GameObject go);
 
 	public abstract void PostCreate ();
 
+	void OnDestroy ()
+	{
+		PostDestroy ();
+		if (Destroyed != null)
+			Destroyed (this);
+	}
+
+	protected abstract void PostDestroy ();
 }
 
 public abstract class EntityComponent<TSharedData> : EntityComponent

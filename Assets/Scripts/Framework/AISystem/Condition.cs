@@ -1,48 +1,89 @@
 ﻿using UnityEngine;
 using System.Collections;
+using System.Collections.Generic;
+using System;
 
 namespace AI
 {
+	//	public class Conditions : MonoBehaviour
+	//	{
+	//		Dictionary<Type, Condition> conditions = new Dictionary<Type, Condition> ();
+	//
+	//		public T GetCondition<T> () where T : Condition
+	//		{
+	//			Type t = typeof(T);
+	//			Condition condition = null;
+	//			conditions.TryGetValue (t, out condition);
+	//			return condition as T;
+	//		}
+	//
+	//		//		public void AssignCondition (Type conditionType)
+	//		//		{
+	//		//			conditions.Add(conditionType,
+	//		//		}
+	//	}
+
 	public abstract class Condition
 	{
+		public Action PlannedAction { get; internal set; }
 
-		public delegate void BoolDelegate (bool value);
+		public abstract PlanResult Plan (Planner planner);
+	}
 
-		public event BoolDelegate FulfillmentChanged;
+	public abstract class Condition<T, C> : Condition where T : Condition<T, C> where C : Component
+	{
 
-		private bool fulfilled;
+		public C Component { get; internal set; }
 
-		protected bool Fulfilled {
-			get
+		public bool Satisfied;
+		public bool Borrowed;
+
+		public sealed override PlanResult Plan (Planner planner)
+		{
+			var relActions = planner.RelevantActions (typeof(T));
+			//var node = plan [lastNodeID];
+			float minCost = float.MaxValue;
+			PlanResult bestResult = new PlanResult ();
+			int minIndex = -1;
+			for (int i = 0, maxCount = relActions.Count; i < maxCount; i++)
 			{
-				fulfilled = IsFulfilled ();
-				return fulfilled;
-			}
-			private set
-			{
-				if (fulfilled != value)
+				var action = relActions [i];
+				var result = action.Plan (planner, this);
+				if (result.Effect < 0)
+					continue;
+				float cost = (1 - planner.ContentratedOnResult) * result.Effect + planner.ContentratedOnResult * result.Cost;
+				if (cost < minCost)
 				{
-					fulfilled = value;
-					if (FulfillmentChanged != null)
-						FulfillmentChanged (fulfilled);
+					minCost = cost;
+					bestResult = result;
+					minIndex = i;
 				}
 			}
+			if (minIndex > 0)
+				PlannedAction = relActions [minIndex];
+			else
+				PlannedAction = null;
+			for (int i = 0, maxCount = relActions.Count; i < maxCount; i++)
+			{
+				if (i != minIndex)
+					relActions [i].DePlan ();
+			}
+			return bestResult;
 		}
 
-		protected GameObject Host { get; private set; }
-
-		public abstract bool IsValidFor (GameObject go);
-
-		public void AssignTo (GameObject go)
+		public void Setup (GameObject go)
 		{
-			Host = go;
-			Setup ();
+			Component = go.GetComponent<C> ();
 		}
 
-		protected abstract void Setup ();
+		public void Setup (C cmp)
+		{
+			Component = cmp;
+		}
 
-		protected abstract bool IsFulfilled ();
+
 	}
+		
 }
 
 
