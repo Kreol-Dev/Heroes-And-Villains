@@ -63,7 +63,31 @@ namespace AI
 		}
 
 
+		public Dictionary<Type, List<ActionsPool>> ProvideGraphForPrefab (GameObject go)
+		{
+			Dictionary<Type, List<ActionsPool>> graph = new Dictionary<Type, List<ActionsPool>> ();
+			foreach (var pair in postConditionToActions)
+			{
+				foreach (var node in pair.Value)
+				{
+					var action = node.ActionsPool.GetFreeAction ();
+					if (action.CheckPrefab (go))
+					{
+						List<ActionsPool> pools = null;
+						graph.TryGetValue (pair.Key, out pools);
+						if (pools == null)
+						{
+							pools = new List<ActionsPool> ();
+							graph.Add (pair.Key, pools);
+						}
+						pools.Add (node.ActionsPool);
+					}
+					node.ActionsPool.ReturnAction (action);
 
+				}
+			}
+			return graph;
+		}
 	}
 }
 

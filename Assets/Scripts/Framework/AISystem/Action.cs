@@ -20,6 +20,8 @@ namespace AI
 			return carriedResult;
 		}
 
+		public abstract bool CheckPrefab (GameObject go);
+
 		public abstract void ApproveAction ();
 
 
@@ -74,8 +76,11 @@ namespace AI
 
 		protected sealed override void OnDePlan ()
 		{
+			ReleaseConditions ();
 			pool.ReturnAction (this);
 		}
+
+		protected abstract void ReleaseConditions ();
 	}
 
 }

@@ -19,7 +19,7 @@ namespace AI
 			var actionsTypes = from type in allTypes
 			                   where type.IsSubclassOf (typeof(Action)) && !type.IsGenericType && !type.IsAbstract
 			                   select type;
-
+			
 			foreach (var actionType in actionsTypes)
 			{
 				var newPool = new ActionsPool (actionType);
@@ -29,6 +29,9 @@ namespace AI
 			}
 
 			fullActionsGraph = new ActionGraph (actionsTypes, pools);
+
+			var field = typeof(Condition).GetProperty ("Scribe", BindingFlags.Static | BindingFlags.DeclaredOnly | BindingFlags.NonPublic);
+			field.SetValue (null, Scribes.Register ("Conditions"), null);
 			Fulfill.Dispatch ();
 		}
 
@@ -44,7 +47,8 @@ namespace AI
 
 		public Dictionary<Type, List<ActionsPool>> GetActionsForPrefab (GameObject go)
 		{
-			return new Dictionary<Type, List<ActionsPool>> ();
+			
+			return fullActionsGraph.ProvideGraphForPrefab (go);
 		}
 
 	}
@@ -54,6 +58,7 @@ namespace AI
 		Stack<Action> actions = new Stack<Action> ();
 		Type t;
 
+
 		public ActionsPool (Type t)
 		{
 			this.t = t;
@@ -62,12 +67,17 @@ namespace AI
 		public Action GetFreeAction ()
 		{
 			if (actions.Count == 0)
+			{
+//				Debug.Log ("Pop New " + t);
 				return Activator.CreateInstance (t) as Action;
+			} else
+//				Debug.Log ("Pop " + t);
 			return actions.Pop ();
 		}
 
 		public void ReturnAction (Action action)
-		{
+		{	
+//			Debug.Log ("Returned " + t);
 			actions.Push (action);
 		}
 	}

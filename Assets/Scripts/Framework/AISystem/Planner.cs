@@ -47,21 +47,31 @@ namespace AI
 		public float ContentratedOnResult { get; internal set; }
 
 		Dictionary<Type, List<ActionsPool>> actions;
-		List<Action> cachedRelActions = new List<Action> ();
+		Stack<List<Action>> cachedRelActions = new Stack<List<Action>> ();
+		//List<Action> cachedRelActions = new List<Action> ();
 
 		public List<Action> RelevantActions (Type conditionType)
 		{
-			List<ActionsPool> relActions = null;
-			cachedRelActions.Clear ();
-			if (actions.TryGetValue (conditionType, out relActions))
+			List<ActionsPool> relPools = null;
+			List<Action> relActions = null;
+			if (cachedRelActions.Count == 0)
+				relActions = new List<Action> ();
+			else
+				relActions = cachedRelActions.Pop ();
+			if (actions.TryGetValue (conditionType, out relPools))
 			{
-				for (int i = 0; i < relActions.Count; i++)
-					cachedRelActions.Add (relActions [i].GetFreeAction ());
+				for (int i = 0; i < relPools.Count; i++)
+					relActions.Add (relPools [i].GetFreeAction ());
 			}
-			return cachedRelActions;
+			return relActions;
 
 		}
 
+		public void ReturnList (List<Action> actions)
+		{
+			actions.Clear ();
+			cachedRelActions.Push (actions);
+		}
 
 		public void Plan (Condition condition)
 		{
@@ -78,10 +88,10 @@ namespace AI
 		public float Cost;
 		public float Effect;
 
-		public PlanResult (float cost, float gradient)
+		public PlanResult (float cost, float effect)
 		{
 			Cost = cost;
-			Effect = gradient;
+			Effect = effect;
 		}
 
 	}

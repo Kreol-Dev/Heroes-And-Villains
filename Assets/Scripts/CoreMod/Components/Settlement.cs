@@ -66,15 +66,14 @@ namespace CoreMod
 
 		}
 
+		[SerializeField]
 		C_Population populationTarget;
 
 		public override void PostCreate ()
 		{
 			populationTarget = new C_Population ();
-			populationTarget.TargetPopulation = Population + 20;
+			populationTarget.Setup (this);
 			Find.Root<Ticker> ().Tick += OnTick;
-			GetComponent<AI.Planner> ().Plan (populationTarget);
-			Debug.LogWarning (populationTarget.PlannedAction);
 		}
 
 
@@ -98,6 +97,14 @@ namespace CoreMod
 			if (Production < 0)
 				Production = 0;
 
+			if (populationTarget.PlannedAction == null)
+			{
+
+				populationTarget.TargetPopulation = Population + 20;
+				GetComponent<AI.Planner> ().Plan (populationTarget);
+//				Debug.LogWarning (populationTarget.PlannedAction);
+				populationTarget.DePlan ();
+			}
 			
 
 		}

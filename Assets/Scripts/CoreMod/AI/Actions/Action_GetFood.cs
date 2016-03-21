@@ -8,6 +8,11 @@ namespace CoreMod
 	{
 		C_Production production = new C_Production ();
 
+		public override bool CheckPrefab (GameObject go)
+		{
+			return production.CanBeApplied (go);
+		}
+
 		public override void ApproveAction ()
 		{
 		}
@@ -51,6 +56,11 @@ namespace CoreMod
 				production.CurProduction += production.TargetProduction;
 				production.Borrowed = false;
 			}
+		}
+
+		protected override void ReleaseConditions ()
+		{
+			production.DePlan ();
 		}
 	}
 

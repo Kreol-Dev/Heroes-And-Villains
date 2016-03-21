@@ -9,6 +9,8 @@ namespace CoreMod
 
 		public event VoidDelegate Tick;
 
+		public float TickDelta = 5f;
+
 		protected override void PreSetup ()
 		{
 			base.PreSetup ();
@@ -26,7 +28,7 @@ namespace CoreMod
 			{
 				if (Tick != null)
 					Tick ();
-				yield return new WaitForSeconds (1f);
+				yield return new WaitForSeconds (TickDelta);
 			}
 		}
 

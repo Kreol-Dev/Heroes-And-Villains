@@ -13,6 +13,10 @@ namespace CoreMod
 			
 		}
 
+		public override bool CheckPrefab (GameObject go)
+		{
+			return Food.CanBeApplied (go);
+		}
 		//		public override void DiscardAction ()
 		//		{
 		//
@@ -58,7 +62,11 @@ namespace CoreMod
 				Food.Borrowed = false;
 			}
 		}
-	
+
+		protected override void ReleaseConditions ()
+		{
+			Food.DePlan ();
+		}
 	}
 
 
