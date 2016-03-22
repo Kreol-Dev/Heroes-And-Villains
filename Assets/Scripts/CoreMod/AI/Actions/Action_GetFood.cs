@@ -17,6 +17,15 @@ namespace CoreMod
 		{
 		}
 
+		public override void OnTick ()
+		{
+			
+		}
+
+		public override void OnTimedUpdate (float timeDelta)
+		{
+			
+		}
 		//		public override void DiscardAction ()
 		//		{
 		//		}

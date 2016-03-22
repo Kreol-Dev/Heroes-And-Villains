@@ -73,7 +73,7 @@ namespace CoreMod
 		{
 			populationTarget = new C_Population ();
 			populationTarget.Setup (this);
-			Find.Root<Ticker> ().Tick += OnTick;
+			Find.Root<AI.Ticker> ().Tick += OnTick;
 		}
 
 
@@ -90,7 +90,7 @@ namespace CoreMod
 				if (Population == 0)
 				{
 					gameObject.SetActive (false);
-					Find.Root<Ticker> ().Tick -= OnTick;
+					Find.Root<AI.Ticker> ().Tick -= OnTick;
 				}
 			}
 
@@ -111,7 +111,7 @@ namespace CoreMod
 
 		protected override void PostDestroy ()
 		{
-			Find.Root<Ticker> ().Tick -= OnTick;
+			Find.Root<AI.Ticker> ().Tick -= OnTick;
 		}
 
 	}

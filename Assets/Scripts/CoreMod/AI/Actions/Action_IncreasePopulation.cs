@@ -13,6 +13,16 @@ namespace CoreMod
 			
 		}
 
+		public override void OnTick ()
+		{
+
+		}
+
+		public override void OnTimedUpdate (float timeDelta)
+		{
+
+		}
+
 		public override bool CheckPrefab (GameObject go)
 		{
 			return Food.CanBeApplied (go);

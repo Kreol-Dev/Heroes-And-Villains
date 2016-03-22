@@ -7,6 +7,11 @@ namespace AI
 	{
 		protected Condition PostCondition;
 
+		public delegate void ActionDelegate (Action action);
+
+		public event ActionDelegate ActionDone;
+		public event ActionDelegate ActionFailed;
+
 		public PlanResult Plan (Planner planner, Condition postCondition)
 		{
 			this.PostCondition = postCondition;
@@ -24,6 +29,16 @@ namespace AI
 
 		public abstract void ApproveAction ();
 
+		/// <summary>
+		/// For simulation updates
+		/// </summary>
+		public abstract void OnTick ();
+
+		/// <summary>
+		/// For animation and similar stuff updates
+		/// </summary>
+		/// <param name="timeDelta">Time delta.</param>
+		public abstract void OnTimedUpdate (float timeDelta);
 
 
 		public void DePlan ()

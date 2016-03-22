@@ -23,6 +23,7 @@ public class FrameworkRoots : MonoBehaviour
 		Find.Register<BindingRoot> ();
 		Find.Register<StatesRoot> ();
 		Find.Register<AI.AIRoot> ();
+		Find.Register<AI.Ticker> ();
 	}
 }
 

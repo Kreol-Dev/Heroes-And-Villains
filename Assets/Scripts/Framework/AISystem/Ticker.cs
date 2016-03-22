@@ -1,9 +1,9 @@
 ﻿using UnityEngine;
 using System.Collections;
 
-namespace CoreMod
+namespace AI
 {
-	public class Ticker : ModRoot
+	public class Ticker : Root
 	{
 		public delegate void VoidDelegate ();
 
@@ -34,5 +34,4 @@ namespace CoreMod
 
 	}
 }
-
 
