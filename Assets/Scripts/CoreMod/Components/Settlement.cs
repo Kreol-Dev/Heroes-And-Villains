@@ -86,7 +86,7 @@ namespace CoreMod
 			if (Food < 0)
 			{
 				Food = 0;
-				Population += deltaFood;
+				Population += deltaFood / 3;
 				if (Population == 0)
 				{
 					gameObject.SetActive (false);
@@ -99,11 +99,12 @@ namespace CoreMod
 
 			if (populationTarget.PlannedAction == null)
 			{
-
 				populationTarget.TargetPopulation = Population + 20;
 				GetComponent<AI.Planner> ().Plan (populationTarget);
 //				Debug.LogWarning (populationTarget.PlannedAction);
-				populationTarget.DePlan ();
+				//populationTarget.DePlan ();
+				if (populationTarget.PlannedAction != null)
+					GetComponent<AI.Agent> ().Do (populationTarget);
 			}
 			
 

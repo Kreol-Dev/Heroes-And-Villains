@@ -8,14 +8,24 @@ namespace CoreMod
 	{
 		C_Food Food = new C_Food ();
 
-		public override void ApproveAction ()
+		public override void ApproveAction (Agent agent)
 		{
-			
+			ReleaseStates ();
+			if (Food.PlannedAction != null)
+				Food.PlannedAction.ApproveAction (agent);
+			agent.PushAction (this);
 		}
 
 		public override void OnTick ()
 		{
-
+			if (Food.CurFood > 0)
+			{
+				var food = Mathf.Min (Food.TargetFood, Food.CurFood);
+				Food.CurFood -= food;
+				PostCondition.CurPopulation += food / 2;
+				Done ();
+			} else
+				Fail ();
 		}
 
 		public override void OnTimedUpdate (float timeDelta)
@@ -41,7 +51,6 @@ namespace CoreMod
 				var carriedResult = Food.Plan (planner);
 				return carriedResult;
 			}
-
 			return new PlanResult (0f, 1f);
 		}
 

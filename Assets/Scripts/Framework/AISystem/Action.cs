@@ -5,12 +5,27 @@ namespace AI
 {
 	public abstract class Action
 	{
-		protected Condition PostCondition;
+		public Condition PostCondition { get; internal set; }
 
 		public delegate void ActionDelegate (Action action);
 
 		public event ActionDelegate ActionDone;
+
+		protected void Done ()
+		{
+			Debug.Log ("Done " + this.GetType ());
+			if (ActionDone != null)
+				ActionDone (this);
+		}
+
 		public event ActionDelegate ActionFailed;
+
+		protected void Fail ()
+		{
+			Debug.Log ("Fail " + this.GetType ());
+			if (ActionFailed != null)
+				ActionFailed (this);
+		}
 
 		public PlanResult Plan (Planner planner, Condition postCondition)
 		{
@@ -27,7 +42,7 @@ namespace AI
 
 		public abstract bool CheckPrefab (GameObject go);
 
-		public abstract void ApproveAction ();
+		public abstract void ApproveAction (Agent agent);
 
 		/// <summary>
 		/// For simulation updates

@@ -16,6 +16,7 @@ coremod.large_city =
 		bold = 0.5,
 		concentrated_on_result = 0.5
 	},
+	agent = {},
 	settlement =
 	{
 		base_food = 10,
@@ -51,6 +52,7 @@ coremod.middle_city =
 	{
 		layer_name = "cities_layer"
 	},
+	agent = {},
 	planner = 
 	{
 		risky = 0.5,
@@ -93,6 +95,7 @@ coremod.small_city =
 	{
 		layer_name = "cities_layer"
 	},
+	agent = {},
 	planner = 
 	{
 		risky = 0.5,

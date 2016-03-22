@@ -13,13 +13,24 @@ namespace CoreMod
 			return production.CanBeApplied (go);
 		}
 
-		public override void ApproveAction ()
+		public override void ApproveAction (Agent agent)
 		{
+			ReleaseStates ();
+			if (production.PlannedAction != null)
+				production.PlannedAction.ApproveAction (agent);
+			agent.PushAction (this);
 		}
 
 		public override void OnTick ()
 		{
-			
+			if (production.CurProduction > 0)
+			{
+				var result = Mathf.Min (production.TargetProduction, production.CurProduction);
+				production.CurProduction -= result;
+				PostCondition.CurFood += result;
+				Done ();
+			} else
+				Fail ();
 		}
 
 		public override void OnTimedUpdate (float timeDelta)
@@ -36,7 +47,9 @@ namespace CoreMod
 			difficulty = 1f;
 			if (!production.Satisfied)
 			{
+				var baseEffect = (float)production.CurProduction / (float)production.TargetProduction;
 				var result = production.Plan (planner);
+				result.Effect += baseEffect;
 				return result;
 			}
 
@@ -46,6 +59,7 @@ namespace CoreMod
 		protected override void PreparePreConditions ()
 		{
 			production.Setup (PostCondition.Component);
+			production.TargetProduction = PostCondition.TargetFood;
 			if (production.TargetProduction < production.CurProduction)
 				production.Satisfied = true;
 			else

@@ -9,7 +9,7 @@ namespace AI
 
 		public event VoidDelegate Tick;
 
-		public float TickDelta = 5f;
+		public float TickDelta = 2f;
 
 		protected override void PreSetup ()
 		{
