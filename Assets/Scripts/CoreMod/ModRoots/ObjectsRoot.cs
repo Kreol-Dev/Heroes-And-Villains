@@ -123,11 +123,11 @@ namespace CoreMod
 			return tags;
 		}
 
-		Dictionary<Type, List<Modifier>> GetModifiers (ITable repTable)
+		Dictionary<Type, List<CreationModifier>> GetModifiers (ITable repTable)
 		{
 			ObjectsCreator creator = Find.Root<ObjectsCreator> ();
 			TagsRoot tagsRoot = Find.Root<TagsRoot> ();
-			Dictionary<Type, List<Modifier>> modifiers = new Dictionary<Type, List<Modifier>> ();
+			Dictionary<Type, List<CreationModifier>> modifiers = new Dictionary<Type, List<CreationModifier>> ();
 			foreach (var cmpName in repTable.GetKeys())
 			{
 				if (cmpName.Equals ("creation"))
@@ -140,7 +140,7 @@ namespace CoreMod
 				{
 					
 					ITable namespaces = repTable.GetTable (cmpName).GetTable ("modifiers");
-					List<Modifier> modifiersList = new List<Modifier> ();
+					List<CreationModifier> modifiersList = new List<CreationModifier> ();
 					foreach (var namespaceKey in namespaces.GetKeys())
 					{
 						var tags = tagsRoot.GetTags (namespaceKey as string);
@@ -149,7 +149,7 @@ namespace CoreMod
 						{
 							ITable modifierTable = modifiersTable.GetTable (tagKey);
 							Tag tag = tagsRoot.GetTag (tagKey as string, tags);
-							Modifier mod = new Modifier (modifierTable, tag);
+							CreationModifier mod = new CreationModifier (modifierTable, tag);
 							modifiersList.Add (mod);
 						}
 

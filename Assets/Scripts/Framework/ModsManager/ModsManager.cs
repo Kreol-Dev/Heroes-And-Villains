@@ -20,7 +20,7 @@ public class ModsManager : Root
 {
 	public Definitions Defs { get; internal set; }
 
-	Converters converters;
+	public Converters Conv { get; internal set; }
 
 	Script globalContext = new Script ();
 	List<ModDesc> mods;
@@ -58,6 +58,11 @@ public class ModsManager : Root
 		}
 		return table;
 
+	}
+
+	public ITable GetGlobalTable ()
+	{
+		return new BindingTable (globalContext.Globals, "global_table");
 	}
 
 	public void SetTableAsGlobal (string name)
@@ -108,13 +113,13 @@ public class ModsManager : Root
 
 		allTypes = new List<Type> (globalMod.ModAssembly.GetTypes ());
 
-		converters = new Converters ();
+		Conv = new Converters ();
 		typesByName = new Dictionary<string, Type> ();
 		foreach (var type in allTypes)
 			typesByName.Add (type.FullName, type);
-		Defs = new Definitions (converters, typesByName);
-		converters.AttachDefinitions (Defs);
-		converters.ReceiveConverters (allTypes.Where (x => x.IsSubclassOf (typeof(IConverter))));
+		Defs = new Definitions (Conv, typesByName);
+		Conv.AttachDefinitions (Defs);
+		Conv.ReceiveConverters (allTypes.Where (x => x.IsSubclassOf (typeof(IConverter))));
 
 		typesByName = new Dictionary<string, Type> ();
 		foreach (var type in allTypes)

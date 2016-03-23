@@ -7,7 +7,7 @@ using UIO;
 
 namespace CoreMod
 {
-	public class Modifier
+	public class CreationModifier
 	{
 		Scribe scribe = Scribes.Find ("Objects root");
 
@@ -16,7 +16,7 @@ namespace CoreMod
 		ITable table;
 		ICallback callback;
 
-		public Modifier (ITable table, Tag tag)
+		public CreationModifier (ITable table, Tag tag)
 		{
 			Tag = tag;
 			this.table = table;

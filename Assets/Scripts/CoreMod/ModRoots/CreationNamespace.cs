@@ -108,7 +108,7 @@ namespace CoreMod
 	{
 		GameObject prototype;
 
-		Dictionary<Type, List<Modifier>> modifiers;
+		Dictionary<Type, List<CreationModifier>> modifiers;
 
 		TagsCollection availability;
 
@@ -128,7 +128,7 @@ namespace CoreMod
 		public PlotType Plot { get; internal set; }
 
 		public ObjectCreationHandle (GameObject go, IEnumerable<Tag> availabilityTags, 
-		                             Dictionary<Tag, int> similarity, Dictionary<Type, List<Modifier>> modifiers,
+		                             Dictionary<Tag, int> similarity, Dictionary<Type, List<CreationModifier>> modifiers,
 		                             int plotSize, PlotType plot)
 		{
 			this.PlotSize = plotSize;

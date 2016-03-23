@@ -13,7 +13,9 @@ shared_libraries =
 	interactors = "MapInteractors",
 	representations = "MapRepresentations",
 	defines = "Defines",
-	modifiers = { dir = "Modifiers", deps = {"expressions", "defines"}}
+	modifiers = { dir = "Modifiers", deps = {"expressions", "defines"}},
+	buildings = "Buildings",
+	entities_modifiers = "EntitiesModifiers"
 }
 
 dependencies =

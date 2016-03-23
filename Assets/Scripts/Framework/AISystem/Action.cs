@@ -13,7 +13,7 @@ namespace AI
 
 		protected void Done ()
 		{
-			Debug.Log ("Done " + this.GetType ());
+			//Debug.Log ("Done " + this.GetType ());
 			if (ActionDone != null)
 				ActionDone (this);
 		}

@@ -1,46 +1,28 @@
 ﻿using UnityEngine;
 using System.Collections;
 using System;
+using System.Collections.Generic;
+using UIO;
 
 namespace CoreMod
 {
-	public class Effects : ModRoot
-	{
-
-		protected override void CustomSetup ()
-		{
-			Fulfill.Dispatch ();
-		}
-
-		protected override void PreSetup ()
-		{
-			base.PreSetup ();
-		}
-
-		public Effect GetEffect<T> () where T : Effect
-		{
-			return null;
-		}
-
-		public Effect GetEffect (Type type)
-		{
-			return null;
-		}
-	}
-
-
 	public class Effect
 	{
-		
+		[Defined ("effects")]
+		List<EffectAspect> effects = new List<EffectAspect> ();
+
 		public void Apply (GameObject go)
 		{
-			
+			for (int i = 0; i < effects.Count; i++)
+				effects [i].ApplyTo (go);
 		}
 
 		public void Reverse (GameObject go)
 		{
-			
+			for (int i = 0; i < effects.Count; i++)
+				effects [i].Reverse (go);
 		}
+
 	}
 
 }

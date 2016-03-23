@@ -117,6 +117,44 @@ namespace CoreMod
 
 	}
 
+	[RootDependencies (typeof(ModsManager))]
+	public class Buildings : ModRoot
+	{
+		Dictionary<string, Building> buildings = new Dictionary<string, Building> ();
+
+		protected override void CustomSetup ()
+		{
+			var mm = Find.Root<ModsManager> ();
+			var conv = mm.Conv.GetConverter (typeof(Building));
+
+			var bTable = mm.GetTable ("buildings");
+			foreach (var bNamespace in bTable.GetKeys())
+			{
+				if (mm.IsTechnical (bTable, bNamespace))
+					continue;
+				var namespaceTable = bTable.GetTable (bNamespace);
+				foreach (var buildingTableName in namespaceTable.GetKeys())
+				{
+					var buildingTable = namespaceTable.GetTable (buildingTableName);
+					string buildingName = bNamespace.ToString () + '.' + buildingTableName.ToString ();
+
+				}
+			}
+
+			Fulfill.Dispatch ();
+		}
+	}
+
+	public class Building
+	{
+		[Defined ("modifier", true)]
+		public Modifier<Settlement> Modifier;
+		[Defined ("cost")]
+		public int Cost;
+		[Defined ("name")]
+		public string Name;
+	}
+
 	public class ProductionState : IntState<Settlement>
 	{
 		public override void Add (Settlement cmp, int value)
@@ -164,6 +202,51 @@ namespace CoreMod
 		}
 	}
 
+	public class FoodEffState : FloatState<Settlement>
+	{
+		public override float Get (Settlement cmp)
+		{
+			return cmp.FoodMod;
+		}
+
+		public override void Set (Settlement cmp, float value)
+		{
+			cmp.FoodMod = value;
+		}
+
+		public override void Add (Settlement cmp, float value)
+		{
+			cmp.FoodMod += value;
+		}
+
+		public override void Mul (Settlement cmp, float value)
+		{
+			cmp.FoodMod *= value;
+		}
+	}
+
+	public class ProdEffState : FloatState<Settlement>
+	{
+		public override float Get (Settlement cmp)
+		{
+			return cmp.ProductionMod;
+		}
+
+		public override void Set (Settlement cmp, float value)
+		{
+			cmp.ProductionMod = value;
+		}
+
+		public override void Add (Settlement cmp, float value)
+		{
+			cmp.ProductionMod += value;
+		}
+
+		public override void Mul (Settlement cmp, float value)
+		{
+			cmp.ProductionMod *= value;
+		}
+	}
 
 
 	public class SettlementPresenter : ObjectPresenter<Settlement>
