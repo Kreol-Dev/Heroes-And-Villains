@@ -12,3 +12,11 @@ OCEAN_SURFACE = 1
 BIOMES_GRAPHICS_LAYER = "graphics_layer"
 BIOMES_GO_LAYER = "biomes_layer"
 STATIC_OBJECTS_LAYER = "static_go_layer"
+
+
+Equal = 0
+NotEqual = 1
+More = 2
+Less = 3
+MoreOrEqual = 4
+LessOrEqual = 5

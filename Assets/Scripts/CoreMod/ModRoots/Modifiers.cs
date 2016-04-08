@@ -81,6 +81,7 @@ namespace CoreMod
 					Modifier mod = Activator.CreateInstance (modType) as Modifier;
 					mod.Setup (aspects);
 					modifiersByName.Add (modName, mod);
+					scribe.LogFormat ("Loaded modifier: {0}", modName);
 				}
 
 			}
@@ -189,23 +190,23 @@ namespace CoreMod
 			
 	}
 
-	public class ModifierConverter : IConverter<Modifier>
-	{
-		public override object Load (object key, ITable table, bool reference)
-		{
-			if (reference)
-			{
-				var modifierName = table.GetString (key);
-				return Find.Root<Modifiers> ().GetModifier (modifierName);
-			}
-			return null;
-		}
-
-		public override void Save (object key, ITable table, object obj, bool reference)
-		{
-			throw new NotImplementedException ();
-		}
-	}
+	//	public class ModifierConverter : IConverter<Modifier>
+	//	{
+	//		public override object Load (object key, ITable table, bool reference)
+	//		{
+	//			if (reference)
+	//			{
+	//				var modifierName = table.GetString (key);
+	//				return Find.Root<Modifiers> ().GetModifier (modifierName);
+	//			}
+	//			return null;
+	//		}
+	//
+	//		public override void Save (object key, ITable table, object obj, bool reference)
+	//		{
+	//			throw new NotImplementedException ();
+	//		}
+	//	}
 
 	public interface IDestroyable
 	{

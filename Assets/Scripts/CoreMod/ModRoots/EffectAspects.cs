@@ -75,7 +75,7 @@ namespace CoreMod
 		[Defined ("value", true)]
 		public T Value;
 
-		static protected EntityState<TS, C> State { get; private set; }
+		static protected S State { get; private set; }
 	}
 
 	public abstract class IntAddAspect<C, S> : StateEffectAspect<C, int, int, S>

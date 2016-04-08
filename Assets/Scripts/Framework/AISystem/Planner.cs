@@ -10,6 +10,8 @@ namespace AI
 	[ECompName ("planner")]
 	public class Planner : EntityComponent
 	{
+		Dictionary<Type, Decision> decisions = new Dictionary<Type, Decision> ();
+
 		public override void OnInitPrefab ()
 		{
 			//TODO: Написать код получения графа действий из общего графа
@@ -79,6 +81,9 @@ namespace AI
 			//if (condition.PlannedAction != null)
 			//condition.PlannedAction.ApproveAction ();
 		}
+
+
+
 
 	}
 

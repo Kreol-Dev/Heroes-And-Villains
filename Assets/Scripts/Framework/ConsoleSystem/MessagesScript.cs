@@ -105,6 +105,11 @@ public class MessagesScript : MonoBehaviour
 	{
         
 		SetActiveMessage ();
+		if (slider >= ShownMessages.Count)
+		{
+			slider = 0;
+			slide.SetValue (0f);
+		}
 		for (int i = slider, conMessage = 0; (i < slider + consolePoolSize) && i < ShownMessages.Count && conMessage < consolePoolSize; i++, conMessage++)
 		{
 			ShownMessages [i].ShowTo (messagesPool [conMessage]);

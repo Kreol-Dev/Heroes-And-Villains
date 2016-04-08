@@ -5,6 +5,7 @@ using MapRoot;
 using UnityEngine.UI;
 using System.Collections.Generic;
 using UIO;
+using AI;
 
 
 namespace CoreMod
@@ -99,7 +100,7 @@ namespace CoreMod
 
 			if (populationTarget.PlannedAction == null)
 			{
-				populationTarget.TargetPopulation = Population + 20;
+				populationTarget.TargetValue = Population + 20;
 				GetComponent<AI.Planner> ().Plan (populationTarget);
 //				Debug.LogWarning (populationTarget.PlannedAction);
 				//populationTarget.DePlan ();
@@ -121,9 +122,11 @@ namespace CoreMod
 	public class Buildings : ModRoot
 	{
 		Dictionary<string, Building> buildings = new Dictionary<string, Building> ();
+		Scribe scribe;
 
 		protected override void CustomSetup ()
 		{
+			scribe = Scribes.Find ("Buildings");
 			var mm = Find.Root<ModsManager> ();
 			var conv = mm.Conv.GetConverter (typeof(Building));
 
@@ -135,8 +138,18 @@ namespace CoreMod
 				var namespaceTable = bTable.GetTable (bNamespace);
 				foreach (var buildingTableName in namespaceTable.GetKeys())
 				{
-					var buildingTable = namespaceTable.GetTable (buildingTableName);
+					var building = new Building ();
+					try
+					{
+
+						mm.Defs.LoadObject<Building> (building, namespaceTable.GetTable (buildingTableName));
+					} catch (ITableTypesMismatch e)
+					{
+						scribe.LogWarning (e.ToString ());
+						continue;
+					}
 					string buildingName = bNamespace.ToString () + '.' + buildingTableName.ToString ();
+					buildings.Add (buildingName, building);
 
 				}
 			}
@@ -147,12 +160,61 @@ namespace CoreMod
 
 	public class Building
 	{
+		[Defined ("conditions")]
+		public List<Condition> Conditions;
 		[Defined ("modifier", true)]
 		public Modifier<Settlement> Modifier;
-		[Defined ("cost")]
-		public int Cost;
 		[Defined ("name")]
 		public string Name;
+		[Defined ("appearance")]
+		public string Apperance;
+
+	}
+
+	public class PopulationState : IntState<Settlement>
+	{
+		public override void Add (Settlement cmp, int value)
+		{
+			cmp.Population += value;
+		}
+
+		public override void Mul (Settlement cmp, float value)
+		{
+			cmp.Population = (int)((float)cmp.Population * value);
+		}
+
+		public override int Get (Settlement cmp)
+		{
+			return cmp.Population;
+		}
+
+		public override void Set (Settlement cmp, int value)
+		{
+			cmp.Population = value;
+		}
+	}
+
+	public class WealthState : IntState<Settlement>
+	{
+		public override void Add (Settlement cmp, int value)
+		{
+			cmp.Wealth += value;
+		}
+
+		public override void Mul (Settlement cmp, float value)
+		{
+			cmp.Wealth = (int)((float)cmp.Wealth * value);
+		}
+
+		public override int Get (Settlement cmp)
+		{
+			return cmp.Wealth;
+		}
+
+		public override void Set (Settlement cmp, int value)
+		{
+			cmp.Wealth = value;
+		}
 	}
 
 	public class ProductionState : IntState<Settlement>

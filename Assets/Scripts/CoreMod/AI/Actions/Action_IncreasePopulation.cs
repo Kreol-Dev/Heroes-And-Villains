@@ -18,11 +18,11 @@ namespace CoreMod
 
 		public override void OnTick ()
 		{
-			if (Food.CurFood > 0)
+			if (Food.CurValue > 0)
 			{
-				var food = Mathf.Min (Food.TargetFood, Food.CurFood);
-				Food.CurFood -= food;
-				PostCondition.CurPopulation += food / 2;
+				var food = Mathf.Min (Food.TargetValue, Food.CurValue);
+				Food.CurValue -= food;
+				PostCondition.CurValue += food / 2;
 				Done ();
 			} else
 				Fail ();
@@ -57,29 +57,18 @@ namespace CoreMod
 		protected override void PreparePreConditions ()
 		{
 			Food.Setup (PostCondition.Component);
-			Food.TargetFood = (PostCondition.TargetPopulation - PostCondition.CurPopulation) * 2;
-			if (Food.TargetFood <= Food.CurFood)
-				Food.Satisfied = true;
-			else
-				Food.Satisfied = false;
+			Food.TargetValue = (PostCondition.TargetValue - PostCondition.CurValue) * 2;
+			Food.Spec = NumericConditionSpec.MoreEqual;
 		}
 
 		protected override void BorrowStates ()
 		{
-//			if (Food.Satisfied)
-//			{
-			Food.CurFood -= Food.TargetFood;
-			Food.Borrowed = true;
-//			}
+			Food.Borrow (Food.TargetValue);
 		}
 
 		protected override void ReleaseStates ()
 		{
-			if (Food.Borrowed)
-			{
-				Food.CurFood += Food.TargetFood;
-				Food.Borrowed = false;
-			}
+			Food.Release ();
 		}
 
 		protected override void ReleaseConditions ()

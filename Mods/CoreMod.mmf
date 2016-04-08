@@ -14,7 +14,7 @@ shared_libraries =
 	representations = "MapRepresentations",
 	defines = "Defines",
 	modifiers = { dir = "Modifiers", deps = {"expressions", "defines"}},
-	buildings = "Buildings",
+	buildings = { dir=  "Buildings", deps = { "defines"}},
 	entities_modifiers = "EntitiesModifiers"
 }
 

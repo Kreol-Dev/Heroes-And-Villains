@@ -14,7 +14,7 @@ public class StatesRoot : Root
 	{
 		var types = Find.Root<ModsManager> ().GetAllTypes ();
 		var stateTypes = from type in types
-		                 where type.IsSubclassOf (typeof(EntityState<,>))
+		                 where type.IsSubclassOf (typeof(EntityState)) && !type.IsGenericType && !type.IsAbstract
 		                 select type;
 		foreach (var stateType in stateTypes)
 		{
@@ -41,7 +41,7 @@ public class StatesRoot : Root
 	{
 		var fields = obj.GetType ().GetFields (System.Reflection.BindingFlags.NonPublic);
 		var statesFields = from field in fields
-		                   where field.FieldType.IsSubclassOf (typeof(EntityState<,>))
+		                   where field.FieldType.IsSubclassOf (typeof(EntityState)) && !field.FieldType.IsGenericType && !field.FieldType.IsAbstract
 		                   select field.FieldType;
 		return statesFields;
 	}
@@ -62,7 +62,12 @@ public class StatesRoot : Root
 
 }
 
-public abstract class EntityState<T, C> where C : Component
+public class EntityState
+{
+	
+}
+
+public abstract class EntityState<T, C> : EntityState where C : Component
 {
 	public abstract T Get (C cmp);
 
@@ -82,7 +87,7 @@ public abstract class IntState<C> : EntityState<int, C> where C : Component
 	public abstract void Mul (C cmp, float value);
 }
 
-public abstract class FloatState<C> : EntityState<float, C> where C : MonoBehaviour
+public abstract class FloatState<C> : EntityState<float, C> where C : Component
 {
 	public abstract void Add (C cmp, float value);
 

@@ -22,6 +22,12 @@ public class FilterScript : MonoBehaviour
 		toggle.isOn = state;
 	}
 
+	void Start ()
+	{
+		GetComponentInChildren<Toggle> ().isOn = false;
+		ChangeFilter ();
+	}
+
 	public void ChangeFilter ()
 	{
 		if (cat != null)

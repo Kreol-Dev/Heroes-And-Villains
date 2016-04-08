@@ -82,22 +82,22 @@ namespace UIO.BasicConverters
 				return list;
 			}
 
-			if (reference)
+//			if (reference)
+//			{
+			var contentCon = Converters.GetConverter (args [0]);
+			foreach (var listKey in listTable.GetKeys())
 			{
-				var valueConverter = Converters.GetConverter (args [0]);
-				foreach (var listKey in listTable.GetKeys())
-				{
-					object value = valueConverter.Load (listKey, listTable, reference);
-					list.Add (value);
-				}
-			} else
-			{
-				foreach (var listKey in listTable.GetKeys())
-				{
-					object value = Definitions.LoadObject (args [0], listTable.GetTable (listKey));
-					list.Add (value);
-				}
+				object value = contentCon.Load (listKey, listTable, reference);
+				list.Add (value);
 			}
+//			} else
+//			{
+//				foreach (var listKey in listTable.GetKeys())
+//				{
+//					object value = Definitions.LoadObject (args [0], listTable.GetTable (listKey));
+//					list.Add (value);
+//				}
+//			}
 			return list;
 		}
 

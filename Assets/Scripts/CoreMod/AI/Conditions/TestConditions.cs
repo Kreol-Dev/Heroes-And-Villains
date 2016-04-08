@@ -1,38 +1,64 @@
 ﻿using UnityEngine;
 using System.Collections;
+using AI;
 
 namespace CoreMod
 {
-	[System.Serializable]
-	public class C_Population : AI.Condition<C_Population, Settlement>
-	{
-		public int CurPopulation { get { return Component.Population; } set { Component.Population = value; } }
 
-		public int TargetPopulation;
+	[Condition ("population")]
+	public class C_Population : AI.IntCondition<C_Population, Settlement, PopulationState>
+	{
+		public override void LoadFromTable (object key, UIO.ITable table)
+		{
+			TargetValue = table.GetInt (key);
+		}
 	}
 
-	[System.Serializable]
-	public class C_Wealth : AI.Condition<C_Wealth, Settlement>
-	{
-		public int CurWealth { get { return Component.Wealth; } set { Component.Wealth = value; } }
 
-		public int TargetWealth;
+	[Condition ("wealth")]
+	public class C_Wealth : AI.IntCondition<C_Wealth, Settlement, WealthState>
+	{
+		public override void LoadFromTable (object key, UIO.ITable table)
+		{
+			TargetValue = table.GetInt (key);
+		}
 	}
 
-	[System.Serializable]
-	public class C_Production : AI.Condition<C_Production, Settlement>
-	{
-		public int CurProduction { get { return Component.Production; } set { Component.Production = value; } }
 
-		public int TargetProduction;
+	[Condition ("production")]
+	public class C_Production : AI.IntCondition<C_Production, Settlement, ProductionState>
+	{
+		public override void LoadFromTable (object key, UIO.ITable table)
+		{
+			TargetValue = table.GetInt (key);
+		}
 	}
 
-	[System.Serializable]
-	public class C_Food : AI.Condition<C_Food, Settlement>
+	[Condition ("food")]
+	public class C_Food : AI.IntCondition<C_Food, Settlement, FoodState>
 	{
-		public int CurFood { get { return Component.Food; } set { Component.Food = value; } }
+		public override void LoadFromTable (object key, UIO.ITable table)
+		{
+			TargetValue = table.GetInt (key);
+		}
+	}
 
-		public int TargetFood;
+	[Condition ("prod_mod")]
+	public class C_ProdEfficiency : AI.FloatCondition<C_ProdEfficiency, Settlement, ProdEffState>
+	{
+		public override void LoadFromTable (object key, UIO.ITable table)
+		{
+			TargetValue = table.GetFloat (key);
+		}
+	}
+
+	[Condition ("food_mod")]
+	public class C_FoodEfficiency : AI.FloatCondition<C_FoodEfficiency, Settlement, FoodEffState>
+	{
+		public override void LoadFromTable (object key, UIO.ITable table)
+		{
+			TargetValue = table.GetFloat (key);
+		}
 	}
 }
 

@@ -23,11 +23,11 @@ namespace CoreMod
 
 		public override void OnTick ()
 		{
-			if (production.CurProduction > 0)
+			if (production.CurValue > 0)
 			{
-				var result = Mathf.Min (production.TargetProduction, production.CurProduction);
-				production.CurProduction -= result;
-				PostCondition.CurFood += result;
+				var result = Mathf.Min (production.TargetValue, production.CurValue);
+				production.CurValue -= result;
+				PostCondition.CurValue += result;
 				Done ();
 			} else
 				Fail ();
@@ -47,7 +47,7 @@ namespace CoreMod
 			difficulty = 1f;
 			if (!production.Satisfied)
 			{
-				var baseEffect = (float)production.CurProduction / (float)production.TargetProduction;
+				var baseEffect = (float)production.CurValue / (float)production.TargetValue;
 				var result = production.Plan (planner);
 				result.Effect += baseEffect;
 				return result;
@@ -59,26 +59,18 @@ namespace CoreMod
 		protected override void PreparePreConditions ()
 		{
 			production.Setup (PostCondition.Component);
-			production.TargetProduction = PostCondition.TargetFood;
-			if (production.TargetProduction < production.CurProduction)
-				production.Satisfied = true;
-			else
-				production.Satisfied = false;
+			production.TargetValue = PostCondition.TargetValue;
+			production.Spec = NumericConditionSpec.MoreEqual;
 		}
 
 		protected override void BorrowStates ()
 		{
-			production.CurProduction -= production.TargetProduction;
-			production.Borrowed = true;
+			production.Borrow (production.TargetValue);
 		}
 
 		protected override void ReleaseStates ()
 		{
-			if (production.Borrowed)
-			{
-				production.CurProduction += production.TargetProduction;
-				production.Borrowed = false;
-			}
+			production.Release ();
 		}
 
 		protected override void ReleaseConditions ()

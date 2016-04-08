@@ -70,7 +70,7 @@ namespace CoreMod
 				return tags [tagsNamespace];
 			else
 			{
-				scribe.LogError ("Can't find tags namespace: " + tagsNamespace);
+				scribe.LogWarning ("Can't find tags namespace: " + tagsNamespace);
 				return null;
 				//new Dictionary<string, Tag> ();
 			}

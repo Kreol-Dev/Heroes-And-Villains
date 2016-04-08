@@ -54,14 +54,22 @@ namespace UIO
 				if (converterType == typeof(DefinitionConverter) || converterType.IsGenericType)
 					continue;
 				IConverter converter = (Activator.CreateInstance (converterType) as IConverter);
-				if (genericConvertersType.IsAssignableFrom (converterType))
+				try
 				{
-					genericConverters.Add (converter.Type, converterType);
-				} else
+					if (genericConvertersType.IsAssignableFrom (converterType))
+					{
+						genericConverters.Add (converter.Type, converterType);
+					} else
+					{
+						converters.Add (converter.Type, converter);
+						converter.Setup (this, defs);
+					}
+				} catch (Exception e)
 				{
-					converters.Add (converter.Type, converter);
-					converter.Setup (this, defs);
+					Debug.Log (converter.Type);
+					Debug.LogWarningFormat ("{0} | {1} | ASASASAS", e.ToString (), converter.Type);
 				}
+
 			}
 		}
 

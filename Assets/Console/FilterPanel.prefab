@@ -252,7 +252,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   toggle: {fileID: 11424256}
   text: {fileID: 11412462}
-  custom_color: {r: 0.03379107, g: 0.113164954, b: 0.9191176, a: 0.047}
+  custom_color: {r: 0.03379107, g: 0.113164954, b: 0.9191176, a: 0}
   messages: {fileID: 0}
   type: 0
 --- !u!114 &11471120
@@ -492,7 +492,7 @@ Prefab:
       objectReference: {fileID: 0}
     - target: {fileID: 0}
       propertyPath: custom_color.a
-      value: 0.047
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 0}
       propertyPath: m_Sprite
