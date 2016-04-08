@@ -2,27 +2,76 @@
 using System.Collections;
 using System.Collections.Generic;
 using System;
+using System.Linq;
+using System.Reflection;
 
 namespace UAI
 {
+	[RootDependencies (typeof(ModsManager))]
+	public class AIRoot : Root
+	{
+		Dictionary<Type, UtilitySystem> systems = new Dictionary<Type, UtilitySystem> ();
+
+		protected override void CustomSetup ()
+		{
+			var mm = Find.Root<ModsManager> ();
+			var allTypes = mm.GetAllTypes ();
+			var usTypes = from type in allTypes
+			              where type.IsSubclassOf (typeof(UtilitySystem))
+			              select type;
+			foreach (var usType in usTypes)
+			{
+				var system = Activator.CreateInstance (usType) as UtilitySystem;
+				systems.Add (usType, system);
+			}
+			var aTypes = from type in allTypes
+			             where type.IsSubclassOf (typeof(Action))
+			             select type;
+			foreach (var usType in usTypes)
+			{
+				var field = usType.GetField ("allRelevantTypes", BindingFlags.NonPublic | BindingFlags.Static);
+				if (field == null)
+					continue;
+				var relType = usType.GetField ("relevantType", BindingFlags.NonPublic | BindingFlags.Static);
+				var relATypes = from type in aTypes
+				                where relType.FieldType.IsAssignableFrom (type)
+				                select type;
+				field.SetValue (null, new List<Type> (relATypes));
+			}
+			Fulfill.Dispatch ();
+		}
+
+		public List<UtilitySystem> GetSystemsForPrefab (GameObject go)
+		{
+			List<UtilitySystem> list = new List<UtilitySystem> ();
+			foreach (var system in systems)
+			{
+				var aTypes = system.Value.GetRelevantActions (go);
+				if (aTypes == null || aTypes.Count == 0)
+					continue;
+				list.Add (Activator.CreateInstance (system.Key) as UtilitySystem);
+				list [list.Count - 1].ReceiveRelevantActions (aTypes);
+			}
+			return list;
+		}
+
+
+	}
 
 	public class FullAgent : EntityComponent
 	{
-		List<UtilitySystem> systems = new List<UtilitySystem> ();
+		List<UtilitySystem> systems;
 		Utilities utilities;
 		int planningIteration = 0;
 
 		public override void OnInitPrefab ()
 		{
-			for (int i = 0; i < systems.Count; i++)
-				systems [i].GetRelevantActions (gameObject);
-
+			systems = Find.Root<AIRoot> ().GetSystemsForPrefab (gameObject);
 		}
 
 		public override EntityComponent CopyTo (GameObject go)
 		{
 			var agent = go.AddComponent<FullAgent> ();
-			agent.systems = systems;
 			return agent;
 		}
 
@@ -88,6 +137,8 @@ namespace UAI
 
 		public abstract bool IsPossible ();
 
+		public abstract bool IsPossibleAtAll (GameObject go);
+
 		public abstract void AssignUtility (float ut);
 
 		public abstract void Perform ();
@@ -119,6 +170,7 @@ namespace UAI
 
 	public abstract class UtilitySystem : IEnumerable<Action>
 	{
+		
 		public abstract IEnumerator<Action> GetEnumerator ();
 
 		IEnumerator IEnumerable.GetEnumerator ()
@@ -142,7 +194,10 @@ namespace UAI
 
 	public class MovementUS : UtilitySystem
 	{
-		
+
+		static List<Type> allRelevatActions;
+		static readonly Type relevantType = typeof(MovementAction);
+
 		public override IEnumerator<Action>  GetEnumerator ()
 		{
 			return actionsList.GetEnumerator ();
@@ -173,7 +228,14 @@ namespace UAI
 
 		public override List<Type> GetRelevantActions (GameObject gameObject)
 		{
-			return null;
+			List<Type> types = new List<Type> ();
+			foreach (var aType in allRelevatActions)
+			{
+				Action a = Activator.CreateInstance (aType) as Action;
+				if (a.IsPossibleAtAll (gameObject))
+					types.Add (aType);
+			}
+			return types;
 		}
 
 
@@ -235,7 +297,12 @@ namespace UAI
 
 		public override bool IsPossible ()
 		{
-			throw new NotImplementedException ();
+			return true;
+		}
+
+		public override bool IsPossibleAtAll (GameObject go)
+		{
+			return true;
 		}
 
 		public override void AssignUtility (float ut)
