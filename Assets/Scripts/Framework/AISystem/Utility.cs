@@ -58,11 +58,14 @@ namespace UAI
 
 	}
 
-	public class FullAgent : EntityComponent
+	public class Agent : EntityComponent
 	{
+		Action performedAction = null;
 		List<UtilitySystem> systems;
 		Utilities utilities;
 		int planningIteration = 0;
+		static float iterationUtilityMultiplier = 0.9f;
+		static float conditionalUtilityMultiplier = 0.7f;
 
 		public override void OnInitPrefab ()
 		{
@@ -71,7 +74,7 @@ namespace UAI
 
 		public override EntityComponent CopyTo (GameObject go)
 		{
-			var agent = go.AddComponent<FullAgent> ();
+			var agent = go.AddComponent<Agent> ();
 			return agent;
 		}
 
@@ -92,36 +95,55 @@ namespace UAI
 
 		void OnTick ()
 		{
-			Action maxUtAction = null;
-			float maxUt = float.MinValue;
-			bool anyUpdates = false;
-			for (int i = 0; i < systems.Count; i++)
+			if (performedAction == null)
 			{
-				var system = systems [i];
-				anyUpdates = system.PrepareActions (utilities, planningIteration) || anyUpdates;
-
-				foreach (var action in system)
+				Action maxUtAction = null;
+				float maxUt = float.MinValue;
+				Action maxUtPossibleAction = null;
+				bool anyUpdates = false;
+				for (int i = 0; i < systems.Count; i++)
 				{
-					if (action.Utility > maxUt)
+					var system = systems [i];
+					anyUpdates = system.PrepareActions (utilities, planningIteration, conditionalUtilityMultiplier, iterationUtilityMultiplier) || anyUpdates;
+
+					foreach (var action in system)
 					{
-						maxUtAction = action;
-						maxUt = action.Utility;
+						if (action.Utility > maxUt)
+						{
+							maxUtAction = action;
+							maxUt = action.Utility;
+							if (action.IsPossible ())
+								maxUtPossibleAction = action;
+						}
 					}
 				}
-			}
 
-			if (maxUtAction.IsPossible ())
-			{
-				maxUtAction.Perform ();
-				for (int i = 0; i < systems.Count; i++)
-					systems [i].ClearActions (utilities, maxUtAction);
-				planningIteration = 0;
-			} else if (!anyUpdates)
-			{
-				//TODO: If it is not possible at all to perform the most useful action, make utility of it smaller
-			} 
+				if (maxUtAction != null && maxUtAction == maxUtPossibleAction)
+				{
+					maxUtAction.Perform ();
+					for (int i = 0; i < systems.Count; i++)
+						systems [i].ClearActions (utilities, maxUtAction);
+					planningIteration = 0;
+				} else if (!anyUpdates)
+				{
+					if (maxUtPossibleAction != null)
+					{
+						maxUtPossibleAction.Perform ();
+						for (int i = 0; i < systems.Count; i++)
+							systems [i].ClearActions (utilities, maxUtAction);
+					}
+					planningIteration = 0;
+				}
+			} else
+				performedAction.Tick ();
+
+
 		}
 
+		void Update ()
+		{
+			performedAction.Update ();
+		}
 
 
 
@@ -133,13 +155,19 @@ namespace UAI
 
 		public bool Approved { get; set; }
 
-		public abstract float GetUtility (Utilities uts);
+		public float GetUtility (Utilities uts, float conditionalUtilityMultiplier, float iterationMultiplier, int iteration)
+		{
+			int unConditions;
+			int aIteration;
+			float utility = ComputeUtility (uts, out unConditions, out aIteration);
+			return utility * Mathf.Pow (conditionalUtilityMultiplier, unConditions) * Mathf.Pow (iterationMultiplier, iteration - aIteration);
+		}
+
+		public abstract float ComputeUtility (Utilities uts, out int notSatisfiedConditions, out int actionIteration);
 
 		public abstract bool IsPossible ();
 
 		public abstract bool IsPossibleAtAll (GameObject go);
-
-		public abstract void AssignUtility (float ut);
 
 		public abstract void Perform ();
 
@@ -147,11 +175,22 @@ namespace UAI
 
 		public abstract void Approve (Utilities uts, int iteration);
 
+		public virtual void Tick ()
+		{
+			
+		}
+
+		public virtual void Update ()
+		{
+			
+		}
 	}
 
 	public abstract class Promise
 	{
 		public abstract Type ConditionType { get; }
+
+		public int Iteration;
 
 		public abstract float CheckCondition (Condition condition);
 	}
@@ -160,9 +199,8 @@ namespace UAI
 	{
 		//Поколение для отслеживания нужно ли добавлять полезность
 		public int Generation;
-
+		public int Iteration;
 		public float Utility;
-		public object Target;
 
 		public abstract bool Satisfied { get; }
 
@@ -187,30 +225,21 @@ namespace UAI
 		//performedAction - не нужно удалять или очищать, но нужно убрать из списка заранее
 		public abstract void ClearActions (Utilities uts, Action performedAction);
 		//Возвращает true если были добавлены новые action'ы или изменены utility старых
-		public abstract bool PrepareActions (Utilities uts, int iteration);
+		public abstract bool PrepareActions (Utilities uts, int iteration, float conditionalUtilityMultiplier, float iterationMultiplier);
 
 		public abstract void ReceiveRelevantActions (List<Type> types);
 	}
 
-	public class MovementUS : UtilitySystem
+	public abstract class ProtoUtSystem<T, S> : UtilitySystem where S : ProtoUtSystem<T, S>
 	{
+		static protected readonly List<Type> allRelevatActions;
+		static readonly Type relevantType = typeof(T);
 
-		static List<Type> allRelevatActions;
-		static readonly Type relevantType = typeof(MovementAction);
-
-		public override IEnumerator<Action>  GetEnumerator ()
+		public override IEnumerator<Action> GetEnumerator ()
 		{
 			return actionsList.GetEnumerator ();
 		}
 
-
-		public interface MovementAction
-		{
-			void Setup (C_InRange targetCondition);
-		}
-
-
-		//HashSet<KeyValuePair<Condition, Action>
 		List<Type> relevantActions;
 
 		public override void ReceiveRelevantActions (List<Type> types)
@@ -239,20 +268,76 @@ namespace UAI
 		}
 
 
-		public override bool PrepareActions (Utilities uts, int iteration)
+		public override bool PrepareActions (Utilities uts, int iteration, float conditionalUtilityMultiplier, float iterationMultiplier)
 		{
 			var conditions = uts.GetConditions (typeof(C_InRange));
-			if (conditions == null)
-				return false; //FIXME: Find random traversable target and check if it has some utility via side effects
 			bool changed = false;
 			for (int i = 0; i < actionsList.Count; i++)
 			{
-				if (!actionsList [i].IsPossible () && !actionsList [i].Approved)
+				if (!actionsList [i].Approved && !actionsList [i].IsPossible ())
 				{
 					actionsList [i].Approved = true;
 					actionsList [i].Approve (uts, iteration);
 				}
 			}
+			changed |= CreateActions (conditions, iteration);			
+
+			for (int i = 0; i < actionsList.Count; i++)
+			{
+				float oldUtility = actionsList [i].Utility;
+				float newUtility = actionsList [i].GetUtility (uts, conditionalUtilityMultiplier, iterationMultiplier, iteration);
+				actionsList [i].Utility = newUtility;
+				changed |= Mathf.Abs (newUtility - oldUtility) > Mathf.Epsilon;
+			}
+			return changed;
+		}
+
+		protected abstract bool CreateActions (List<Condition> conditions, int iteration);
+	}
+
+	public interface MovementAction
+	{
+		void Setup (C_InRange targetCondition, int iteration);
+	}
+
+	public class MovementUS : ProtoUtSystem<MovementAction, MovementUS>
+	{
+		public override IEnumerator<Action> GetEnumerator ()
+		{
+			return actionsList.GetEnumerator ();
+		}
+
+		List<Type> relevantActions;
+
+		public override void ReceiveRelevantActions (List<Type> types)
+		{
+			relevantActions = types;
+		}
+
+		public override void ClearActions (Utilities uts, Action performedAction)
+		{
+			for (int i = 0; i < actionsList.Count; i++)
+				actionsList [i].Discard (uts);
+			usedActions.Clear ();
+			actionsList.Clear ();
+		}
+
+		public override List<Type> GetRelevantActions (GameObject gameObject)
+		{
+			List<Type> types = new List<Type> ();
+			foreach (var aType in allRelevatActions)
+			{
+				Action a = Activator.CreateInstance (aType) as Action;
+				if (a.IsPossibleAtAll (gameObject))
+					types.Add (aType);
+			}
+			return types;
+		}
+
+
+		protected override bool CreateActions (List<Condition> conditions, int iteration)
+		{
+			bool changed = false;
 			for (int i = 0; i < conditions.Count; i++)
 			{
 				for (int j = 0; j < relevantActions.Count; j++)
@@ -260,39 +345,33 @@ namespace UAI
 					if (usedActions.Add (new KeyValuePair<Condition, Type> (conditions [i], relevantActions [j])))
 					{
 						MovementAction action = Activator.CreateInstance (relevantActions [j]) as MovementAction;
-						action.Setup (conditions [i] as C_InRange);
+						action.Setup (conditions [i] as C_InRange, iteration);
 						actionsList.Add (action as Action);
 						changed = true;
 					}
 				}
 			}
-
-			for (int i = 0; i < actionsList.Count; i++)
-			{
-				float oldUtility = actionsList [i].Utility;
-				float newUtility = actionsList [i].GetUtility (uts);
-				actionsList [i].Utility = newUtility;
-				changed |= Mathf.Abs (newUtility - oldUtility) > Mathf.Epsilon;
-			}
 			return changed;
 		}
 	}
 
-	public class A_TeleportTo : Action, MovementUS.MovementAction
+	public class A_TeleportTo : Action, MovementAction
 	{
 		P_InRange promise = new P_InRange ();
 		float utility;
 
-		public void Setup (C_InRange targetCondition)
+		public void Setup (C_InRange targetCondition, int iteration)
 		{
+			promise.Iteration = iteration;
 			promise.PromisedPosition = targetCondition.TargetPosition;
 			promise.TargetTransform = targetCondition.TargetTransform;
 		}
 
-		public override float GetUtility (Utilities uts)
+		public override float ComputeUtility (Utilities uts, out int notSatisfiedConditions, out int actionIteration)
 		{
-			utility = uts.GetUtility (promise);
-			return utility;
+			notSatisfiedConditions = 0;
+			actionIteration = promise.Iteration;
+			return uts.GetUtility (promise);
 		}
 
 		public override bool IsPossible ()
@@ -305,10 +384,6 @@ namespace UAI
 			return true;
 		}
 
-		public override void AssignUtility (float ut)
-		{
-			throw new NotImplementedException ();
-		}
 
 		public override void Perform ()
 		{
@@ -369,7 +444,8 @@ namespace UAI
 			float sumUt = 0f;
 			for (int i = 0; i < promisedConditions.Count; i++)
 			{
-				sumUt += promise.CheckCondition (promisedConditions [i]);
+				if (promise.Iteration <= promisedConditions [i].Iteration)
+					sumUt += promise.CheckCondition (promisedConditions [i]);
 			}
 			return sumUt;
 		}
