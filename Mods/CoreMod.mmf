@@ -18,7 +18,8 @@ shared_libraries =
 	entities_modifiers = "EntitiesModifiers",
 	pops = "POPs",
 	buildings = "Buildings",
-	resources = "Resources"
+	resources = "Resources",
+	names = "Names"
 }
 
 dependencies =

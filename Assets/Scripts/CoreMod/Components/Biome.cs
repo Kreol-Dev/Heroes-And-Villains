@@ -3,6 +3,7 @@ using System.Collections;
 using System.Collections.Generic;
 using MapRoot;
 using UIO;
+using UnityEngine.UI;
 
 namespace CoreMod
 {
@@ -35,7 +36,7 @@ namespace CoreMod
 
 		public override void PostCreate ()
 		{
-
+			this.Name = this.Name + " of " + Find.Root<NamesRoot> ().GenerateBiomeName ();
 
 		}
 
@@ -150,7 +151,53 @@ namespace CoreMod
 		}
 	}
 
+	public class BiomePresenter : ObjectPresenter<GameObject>
+	{
+		Text selectionText;
+		Text hoverText;
 
+		public override void Setup (ITable definesTable)
+		{
+			selectionText = (Object.Instantiate (Resources.Load ("UI/Text")) as GameObject).GetComponent<Text> ();
+			var selectionLayout = selectionText.gameObject.AddComponent<LayoutElement> ();
+			selectionLayout.minHeight = 20;
+			selectionLayout.minWidth = 200;
+			hoverText = (Object.Instantiate (Resources.Load ("UI/Text")) as GameObject).GetComponent<Text> ();
+			var hoverLayout = hoverText.gameObject.AddComponent<LayoutElement> ();
+			hoverLayout.minHeight = 20;
+			hoverLayout.minWidth = 200;
+			hoverText.text = "";
+			hoverText.gameObject.SetActive (false);
+			selectionText.text = "";
+			selectionText.gameObject.SetActive (false);
+			Transform selectionGO = GameObject.Find ("SelectionPanel").transform;
+			Transform hoverGO = GameObject.Find ("HoverPanel").transform;
+			selectionText.transform.SetParent (selectionGO);
+			hoverText.transform.SetParent (hoverGO);
+		}
+
+		public override void ShowObjectDesc (GameObject obj)
+		{
+			selectionText.gameObject.SetActive (true);
+			selectionText.text = obj.GetComponent<Biome> ().Name;
+		}
+
+		public override void HideObjectDesc ()
+		{
+			selectionText.gameObject.SetActive (false);
+		}
+
+		public override void ShowObjectShortDesc (GameObject obj)
+		{
+			hoverText.gameObject.SetActive (true);
+			hoverText.text = obj.GetComponent<Biome> ().Name;
+		}
+
+		public override void HideObjectShortDesc ()
+		{
+			hoverText.gameObject.SetActive (false);
+		}
+	}
 	//	public class BiomeLayerPresentor : BaseMapLayerPresenter<BiomeTile, MapBiomesTilesLayer, TileMapLayerInteractor>
 	//	{
 	//		public override void ChangeState (RepresenterState state)

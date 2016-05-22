@@ -3,6 +3,10 @@ using System.Collections;
 using UIO;
 using System.Collections.Generic;
 using System.Linq;
+using System.Text;
+using MapRoot;
+using UnityEngine.UI;
+using System;
 
 namespace CoreMod
 {
@@ -18,6 +22,7 @@ namespace CoreMod
 		List<Resource> resources = new List<Resource> ();
 		static POPType[] popsTypes;
 		static System.Random random;
+		public string Name;
 
 		public override EntityComponent CopyTo (GameObject go)
 		{
@@ -30,7 +35,7 @@ namespace CoreMod
 			var resTypes = Find.Root<ResourcesRoot> ().Get ();
 			for (int i = 0; i < resTypes.Length; i++)
 				resources.Add (new Resource (){ Cost = resTypes [i].BaseCost, Count = 0, Type = resTypes [i] });
-			
+			this.Name = Find.Root<NamesRoot> ().GenerateCityName ();
 		}
 
 		public override void LoadFromTable (ITable table)
@@ -497,5 +502,149 @@ namespace CoreMod
 		}
 	}
 
+	public class NamesRoot : ModRoot
+	{
+		System.Random random;
+		StringBuilder nameBuilder = new StringBuilder ();
+
+		public string GenerateBiomeName ()
+		{
+			string sem1 = semantics [random.Next (semantics.Count)];
+			string sem2 = null;
+			if (random.Next (100) > 30)
+				sem2 = semantics [random.Next (adjectives.Count)];
+			string adjective = null;
+			if (random.Next (100) > 30)
+				adjective = adjectives [random.Next (adjectives.Count)];
+
+			nameBuilder.Length = 0;
+			if (adjective != null)
+			{
+				nameBuilder.Append (adjective);
+				nameBuilder.Append (" ");
+			}
+			nameBuilder.Append (sem1);
+			if (sem2 != null)
+			{
+				int mid = random.Next (3);
+				switch (mid)
+				{
+				case 0:
+					nameBuilder.Append ("'o'");
+					nameBuilder.Append (sem2);
+					break;
+				case 1:
+					nameBuilder.Append (Char.ToLower (sem2 [0]));
+					nameBuilder.Append (sem2.Substring (1));
+					break;
+				case 2:
+					nameBuilder.Append ("'");
+					nameBuilder.Append (sem2);
+					break;
+				case 3:
+					nameBuilder.Append ("-");
+					nameBuilder.Append (Char.ToLower (sem2 [0]));
+					nameBuilder.Append (sem2.Substring (1));
+					break;
+				}
+			}
+			return nameBuilder.ToString ();
+		}
+
+		public string GenerateCityName ()
+		{
+			string adjective = null;
+			if (random.Next (100) > 30)
+				adjective = adjectives [random.Next (adjectives.Count)];
+			string semantic = semantics [random.Next (semantics.Count)];
+			string type = types [random.Next (types.Count)];
+			nameBuilder.Length = 0;
+			if (adjective != null)
+			{
+				nameBuilder.Append (adjective);
+				nameBuilder.Append (" ");
+			}
+			nameBuilder.Append (semantic);
+			nameBuilder.Append (type);
+
+			return nameBuilder.ToString ();
+
+		}
+
+		List<string> adjectives = new List<string> ();
+		List<string> semantics = new List<string> ();
+		List<string> types = new List<string> ();
+
+		protected override void CustomSetup ()
+		{
+			var namesTable = Find.Root<ModsManager> ().GetTable ("names").GetTable ("cities");
+			random = new System.Random (Find.Root<ModsManager> ().GetTable ("defines").GetInt ("SEED"));
+			var adjectivesTable = namesTable.GetTable ("adjectives");
+			var semantic = namesTable.GetTable ("semantic");
+			var types = namesTable.GetTable ("types");
+
+			foreach (var key in adjectivesTable.GetKeys())
+			{
+				adjectives.Add (adjectivesTable.GetString (key));
+			}
+			foreach (var key in semantic.GetKeys())
+			{
+				semantics.Add (semantic.GetString (key));
+			}
+			foreach (var key in types.GetKeys())
+			{
+				this.types.Add (types.GetString (key));
+			}
+			Fulfill.Dispatch ();
+		}
+	}
+
+	public class CityPresenter : ObjectPresenter<GameObject>
+	{
+		Text selectionText;
+		Text hoverText;
+
+		public override void Setup (ITable definesTable)
+		{
+			selectionText = (UnityEngine.Object.Instantiate (Resources.Load ("UI/Text")) as GameObject).GetComponent<Text> ();
+			var selectionLayout = selectionText.gameObject.AddComponent<LayoutElement> ();
+			selectionLayout.minHeight = 20;
+			selectionLayout.minWidth = 200;
+			hoverText = (UnityEngine.Object.Instantiate (Resources.Load ("UI/Text")) as GameObject).GetComponent<Text> ();
+			var hoverLayout = hoverText.gameObject.AddComponent<LayoutElement> ();
+			hoverLayout.minHeight = 20;
+			hoverLayout.minWidth = 200;
+			hoverText.text = "";
+			hoverText.gameObject.SetActive (false);
+			selectionText.text = "";
+			selectionText.gameObject.SetActive (false);
+			Transform selectionGO = GameObject.Find ("SelectionPanel").transform;
+			Transform hoverGO = GameObject.Find ("HoverPanel").transform;
+			selectionText.transform.SetParent (selectionGO);
+			hoverText.transform.SetParent (hoverGO);
+		}
+
+		public override void ShowObjectDesc (GameObject obj)
+		{
+			selectionText.gameObject.SetActive (true);
+			selectionText.text = obj.GetComponent<City> ().Name;
+		}
+
+		public override void HideObjectDesc ()
+		{
+			selectionText.gameObject.SetActive (false);
+		}
+
+		public override void ShowObjectShortDesc (GameObject obj)
+		{
+			hoverText.gameObject.SetActive (true);
+			hoverText.text = obj.GetComponent<City> ().Name;
+		}
+
+		public override void HideObjectShortDesc ()
+		{
+			hoverText.gameObject.SetActive (false);
+		}
+	}
 }
 

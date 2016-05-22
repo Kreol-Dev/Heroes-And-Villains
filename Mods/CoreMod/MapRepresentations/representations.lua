@@ -37,7 +37,7 @@ biomes_renderer_map =
 		}
 	},
 	presenter = "CoreMod.ObjectsPresenter",
-	objectPresenter = "CoreMod.GOPresenter"
+	objectPresenter = "CoreMod.BiomePresenter"
 }
 cities_rep =
 {
@@ -50,7 +50,7 @@ cities_rep =
 	renderer = "MapRoot.NullRenderer",
 	renderer_data = {},
 	presenter = "CoreMod.ObjectsPresenter",
-	objectPresenter = "CoreMod.GOPresenter"
+	objectPresenter = "CoreMod.CityPresenter"
 }
 
 
