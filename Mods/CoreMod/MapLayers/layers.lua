@@ -17,3 +17,15 @@ cities_layer =
 	layer_type = "CoreMod.ObjectsLayer",
 	configs = {}
 }
+
+surfaces_layer = 
+{
+	layer_type = "CoreMod.IntTileLayer",
+	configs = {}
+}
+
+clearance_layer = 
+{
+	layer_type = "CoreMod.ClearanceLayer",
+	configs = {}
+}

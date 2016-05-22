@@ -45,29 +45,34 @@ namespace CoreMod
 						ITable repTable = namespaceTable.GetTable (replacerName);
 						GameObject prototypeGO = creator.CreateObject (replacerName as string, repTable);
 						prototypeGO.transform.SetParent (replacersFolder);
-
-
-						ITable creationTable = repTable.GetTable ("creation");
-						ITable availabilityTable = creationTable.GetTable ("availability");
-						ITable similarityTable = creationTable.GetTable ("similarity");
-						ITable fixedSpaceTable = creationTable.GetTable ("fixed_space", null);
-						int size = -1;
-						ObjectCreationHandle.PlotType plot = ObjectCreationHandle.PlotType.Nothing;
-						if (fixedSpaceTable != null)
+						ObjectCreationHandle handle = null;
+						ITable creationTable = repTable.GetTable ("creation", null);
+						if (creationTable == null)
 						{
-							size = fixedSpaceTable.GetInt ("size");
-							string enumStr = fixedSpaceTable.GetString ("form");
-							if (enumStr == "circle")
-								plot = ObjectCreationHandle.PlotType.Circle;
-							else
-								plot = ObjectCreationHandle.PlotType.Rect;
+							handle = new ObjectCreationHandle (prototypeGO);
+						} else
+						{
+							ITable availabilityTable = creationTable.GetTable ("availability");
+							ITable similarityTable = creationTable.GetTable ("similarity");
+							//ITable fixedSpaceTable = creationTable.GetTable ("structure", null);
+							var structure = prototypeGO.GetComponent<Structure> ();
+
+							int size = -1;
+							ObjectCreationHandle.PlotType plot = ObjectCreationHandle.PlotType.Nothing;
+							if (structure != null)
+							{
+								size = structure.Size;
+								plot = structure.PlotType;
+							}
+							handle = new ObjectCreationHandle (prototypeGO, 
+							                                   GetAvailableTags (availabilityTable),
+							                                   GetSimilarity (similarityTable),
+							                                   GetModifiers (repTable), 
+							                                   size, 
+							                                   plot);
 						}
-						ObjectCreationHandle handle = new ObjectCreationHandle (prototypeGO, 
-						                                                        GetAvailableTags (availabilityTable),
-						                                                        GetSimilarity (similarityTable),
-						                                                        GetModifiers (repTable), 
-						                                                        size, 
-						                                                        plot);
+
+
 						prototypeGO.SetActive (false);
 						repNamespace.AddProrotype (replacerName as string, handle);
 					}

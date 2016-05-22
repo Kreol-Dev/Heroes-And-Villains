@@ -46,6 +46,53 @@ namespace CoreMod
 	}
 
 
+	public class Climate : EntityComponent
+	{
+		
+		public float Height;
+		public float Temperature;
+		public float Humidity;
+		public float Radioactity;
+
+		public override EntityComponent CopyTo (GameObject go)
+		{
+			return go.AddComponent<Climate> ();
+		}
+
+		public override void PostCreate ()
+		{
+			
+		}
+
+		protected override void PostDestroy ()
+		{
+			
+		}
+	}
+
+	public class Diseases : EntityComponent
+	{
+		
+		public override EntityComponent CopyTo (GameObject go)
+		{
+			return go.AddComponent<Diseases> ();
+		}
+
+		public override void PostCreate ()
+		{
+
+		}
+
+		protected override void PostDestroy ()
+		{
+
+		}
+	}
+
+	public class Disease
+	{
+		
+	}
 
 
 	public class BiomesRenderer : SpriteMapRenderer<GameObject, RegionsLayer>

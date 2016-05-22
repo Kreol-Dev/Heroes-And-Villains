@@ -1,4 +1,4 @@
-desert =
+red =
 {
 	left_top_corner = { 0, 0},
 	right_bottom_corner = { 32, 32}
@@ -28,7 +28,7 @@ steppe =
 	right_bottom_corner = { 64, 96}
 }
 
-grassland =
+green =
 {
 	left_top_corner = { 32, 0 },
 	right_bottom_corner = { 64, 32}

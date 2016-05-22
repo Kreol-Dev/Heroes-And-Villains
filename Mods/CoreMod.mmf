@@ -7,7 +7,7 @@ shared_libraries =
 {
 	tags = { dir = "Tags", deps = {"expressions","defines"} },
 	expressions = {dir = "Expressions", deps = {"defines"} },
-	replacers = {dir = "Replacers", deps = {"modifiers"} },
+	replacers = {dir = "Replacers", deps = {"modifiers", "defines"} },
 	wiring = { dir = "Wiring", deps = {"defines"} },
 	map_layers = "MapLayers",
 	interactors = "MapInteractors",
@@ -15,7 +15,10 @@ shared_libraries =
 	defines = "Defines",
 	modifiers = { dir = "Modifiers", deps = {"expressions", "defines"}},
 	buildings = { dir=  "Buildings", deps = { "defines"}},
-	entities_modifiers = "EntitiesModifiers"
+	entities_modifiers = "EntitiesModifiers",
+	pops = "POPs",
+	buildings = "Buildings",
+	resources = "Resources"
 }
 
 dependencies =

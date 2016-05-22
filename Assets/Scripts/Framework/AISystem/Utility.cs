@@ -17,7 +17,7 @@ namespace UAI
 			var mm = Find.Root<ModsManager> ();
 			var allTypes = mm.GetAllTypes ();
 			var usTypes = from type in allTypes
-			              where type.IsSubclassOf (typeof(UtilitySystem))
+			              where type.IsSubclassOf (typeof(UtilitySystem)) && !type.IsGenericType && !type.IsAbstract
 			              select type;
 			foreach (var usType in usTypes)
 			{
@@ -25,18 +25,19 @@ namespace UAI
 				systems.Add (usType, system);
 			}
 			var aTypes = from type in allTypes
-			             where type.IsSubclassOf (typeof(Action))
+			             where type.IsSubclassOf (typeof(Action)) && !type.IsGenericType && !type.IsAbstract
 			             select type;
 			foreach (var usType in usTypes)
 			{
-				var field = usType.GetField ("allRelevantTypes", BindingFlags.NonPublic | BindingFlags.Static);
+				var field = usType.BaseType.GetField ("allRelevatActions", BindingFlags.NonPublic | BindingFlags.Static);
 				if (field == null)
 					continue;
-				var relType = usType.GetField ("relevantType", BindingFlags.NonPublic | BindingFlags.Static);
+				var relType = usType.BaseType.GetField ("relevantType", BindingFlags.NonPublic | BindingFlags.Static).GetValue (null) as Type;
 				var relATypes = from type in aTypes
-				                where relType.FieldType.IsAssignableFrom (type)
+				                where relType.IsAssignableFrom (type)
 				                select type;
-				field.SetValue (null, new List<Type> (relATypes));
+				var list = new List<Type> (relATypes);
+				field.SetValue (null, list);
 			}
 			Fulfill.Dispatch ();
 		}
@@ -58,8 +59,14 @@ namespace UAI
 
 	}
 
+	[ECompName ("utAgent")]
 	public class Agent : EntityComponent
 	{
+		public delegate void VoidDelegate ();
+
+		public event VoidDelegate OnActionPerformed;
+		public event VoidDelegate AgentHasNoActions;
+
 		Action performedAction = null;
 		List<UtilitySystem> systems;
 		Utilities utilities;
@@ -75,6 +82,10 @@ namespace UAI
 		public override EntityComponent CopyTo (GameObject go)
 		{
 			var agent = go.AddComponent<Agent> ();
+			List<UtilitySystem> systems = new List<UtilitySystem> ();
+			foreach (var system in this.systems)
+				systems.Add (Activator.CreateInstance (system.GetType ()) as UtilitySystem);
+			agent.systems = systems;
 			return agent;
 		}
 
@@ -120,7 +131,7 @@ namespace UAI
 
 				if (maxUtAction != null && maxUtAction == maxUtPossibleAction)
 				{
-					maxUtAction.Perform ();
+					maxUtAction.Perform (ActionFinished);
 					for (int i = 0; i < systems.Count; i++)
 						systems [i].ClearActions (utilities, maxUtAction);
 					planningIteration = 0;
@@ -128,10 +139,11 @@ namespace UAI
 				{
 					if (maxUtPossibleAction != null)
 					{
-						maxUtPossibleAction.Perform ();
+						maxUtPossibleAction.Perform (ActionFinished);
 						for (int i = 0; i < systems.Count; i++)
 							systems [i].ClearActions (utilities, maxUtAction);
-					}
+					} else if (AgentHasNoActions != null)
+						AgentHasNoActions ();
 					planningIteration = 0;
 				}
 			} else
@@ -140,9 +152,17 @@ namespace UAI
 
 		}
 
-		void Update ()
+		//		void Update ()
+		//		{
+		//			if (performedAction != null)
+		//				performedAction.Update ();
+		//		}
+
+		void ActionFinished ()
 		{
-			performedAction.Update ();
+			if (OnActionPerformed != null)
+				OnActionPerformed ();
+			performedAction = null;
 		}
 
 
@@ -169,7 +189,7 @@ namespace UAI
 
 		public abstract bool IsPossibleAtAll (GameObject go);
 
-		public abstract void Perform ();
+		public abstract void Perform (System.Action onPerformed);
 
 		public abstract void Discard (Utilities uts);
 
@@ -195,16 +215,72 @@ namespace UAI
 		public abstract float CheckCondition (Condition condition);
 	}
 
+	public interface IInstantPromise<C> where C : Condition
+	{
+		void Perform (C c);
+
+		void Reverse (C c);
+	}
+
+	public enum PromisedChange
+	{
+		Increase,
+		Decrease
+
+	}
+
+	public abstract class IntPromise<C> : Promise where C : Condition
+	{
+		public PromisedChange Change;
+		public int Delta;
+
+		public override Type ConditionType {
+			get
+			{
+				return typeof(C);
+			}
+		}
+
+		public override float CheckCondition (Condition condition)
+		{
+			C c = condition as C;
+			if (c != null)
+				return CheckCondition (c);
+			else
+				return 0f;
+		}
+
+		protected abstract float CheckCondition (C condition);
+	}
+
 	public abstract class Condition
 	{
 		//Поколение для отслеживания нужно ли добавлять полезность
 		public int Generation;
 		public int Iteration;
 		public float Utility;
+		public GameObject Actor;
+
+		public abstract bool IsValidFor (GameObject go);
+
+		public abstract void InitFor (GameObject go);
 
 		public abstract bool Satisfied { get; }
 
 	}
+
+	public enum ValueConditionType
+	{
+		More,
+		Less
+	}
+
+	public abstract class IntCondition : Condition
+	{
+		public int TargetValue;
+		public ValueConditionType Type;
+	}
+
 
 	public abstract class UtilitySystem : IEnumerable<Action>
 	{
@@ -216,7 +292,7 @@ namespace UAI
 			throw new NotImplementedException ();
 		}
 
-		protected readonly HashSet<KeyValuePair<Condition, Type>> usedActions = new HashSet<KeyValuePair<Condition, Type>> ();
+		protected readonly HashSet<KeyValuePair<object, Type>> usedActions = new HashSet<KeyValuePair<object, Type>> ();
 		protected readonly List<Action> actionsList = new List<Action> ();
 
 		public abstract List<Type> GetRelevantActions (GameObject gameObject);
@@ -232,7 +308,7 @@ namespace UAI
 
 	public abstract class ProtoUtSystem<T, S> : UtilitySystem where S : ProtoUtSystem<T, S>
 	{
-		static protected readonly List<Type> allRelevatActions;
+		static protected readonly List<Type> allRelevatActions = new List<Type> ();
 		static readonly Type relevantType = typeof(T);
 
 		public override IEnumerator<Action> GetEnumerator ()
@@ -270,7 +346,6 @@ namespace UAI
 
 		public override bool PrepareActions (Utilities uts, int iteration, float conditionalUtilityMultiplier, float iterationMultiplier)
 		{
-			var conditions = uts.GetConditions (typeof(C_InRange));
 			bool changed = false;
 			for (int i = 0; i < actionsList.Count; i++)
 			{
@@ -280,7 +355,7 @@ namespace UAI
 					actionsList [i].Approve (uts, iteration);
 				}
 			}
-			changed |= CreateActions (conditions, iteration);			
+			changed |= CreateActions (uts, iteration);			
 
 			for (int i = 0; i < actionsList.Count; i++)
 			{
@@ -292,144 +367,144 @@ namespace UAI
 			return changed;
 		}
 
-		protected abstract bool CreateActions (List<Condition> conditions, int iteration);
+		protected abstract bool CreateActions (Utilities uts, int iteration);
 	}
 
-	public interface MovementAction
-	{
-		void Setup (C_InRange targetCondition, int iteration);
-	}
-
-	public class MovementUS : ProtoUtSystem<MovementAction, MovementUS>
-	{
-		public override IEnumerator<Action> GetEnumerator ()
-		{
-			return actionsList.GetEnumerator ();
-		}
-
-		List<Type> relevantActions;
-
-		public override void ReceiveRelevantActions (List<Type> types)
-		{
-			relevantActions = types;
-		}
-
-		public override void ClearActions (Utilities uts, Action performedAction)
-		{
-			for (int i = 0; i < actionsList.Count; i++)
-				actionsList [i].Discard (uts);
-			usedActions.Clear ();
-			actionsList.Clear ();
-		}
-
-		public override List<Type> GetRelevantActions (GameObject gameObject)
-		{
-			List<Type> types = new List<Type> ();
-			foreach (var aType in allRelevatActions)
-			{
-				Action a = Activator.CreateInstance (aType) as Action;
-				if (a.IsPossibleAtAll (gameObject))
-					types.Add (aType);
-			}
-			return types;
-		}
-
-
-		protected override bool CreateActions (List<Condition> conditions, int iteration)
-		{
-			bool changed = false;
-			for (int i = 0; i < conditions.Count; i++)
-			{
-				for (int j = 0; j < relevantActions.Count; j++)
-				{
-					if (usedActions.Add (new KeyValuePair<Condition, Type> (conditions [i], relevantActions [j])))
-					{
-						MovementAction action = Activator.CreateInstance (relevantActions [j]) as MovementAction;
-						action.Setup (conditions [i] as C_InRange, iteration);
-						actionsList.Add (action as Action);
-						changed = true;
-					}
-				}
-			}
-			return changed;
-		}
-	}
-
-	public class A_TeleportTo : Action, MovementAction
-	{
-		P_InRange promise = new P_InRange ();
-		float utility;
-
-		public void Setup (C_InRange targetCondition, int iteration)
-		{
-			promise.Iteration = iteration;
-			promise.PromisedPosition = targetCondition.TargetPosition;
-			promise.TargetTransform = targetCondition.TargetTransform;
-		}
-
-		public override float ComputeUtility (Utilities uts, out int notSatisfiedConditions, out int actionIteration)
-		{
-			notSatisfiedConditions = 0;
-			actionIteration = promise.Iteration;
-			return uts.GetUtility (promise);
-		}
-
-		public override bool IsPossible ()
-		{
-			return true;
-		}
-
-		public override bool IsPossibleAtAll (GameObject go)
-		{
-			return true;
-		}
-
-
-		public override void Perform ()
-		{
-			promise.TargetTransform.position = promise.PromisedPosition;
-		}
-
-		public override void Discard (Utilities uts)
-		{
-			//throw new NotImplementedException ();
-		}
-
-		public override void Approve (Utilities uts, int iteration)
-		{
-			//throw new NotImplementedException ();
-		}
-		
-	}
-
-	public class P_InRange : Promise
-	{
-		public Vector3 PromisedPosition;
-		public Transform TargetTransform;
-
-		public override Type ConditionType {
-			get
-			{
-				return typeof(C_InRange);
-			}
-		}
-
-		public override float CheckCondition (Condition condition)
-		{
-			C_InRange c = condition as C_InRange;
-			return (c.TargetPosition - PromisedPosition).magnitude < c.Range ? 1f : 0f;
-		}
-	}
-
-	public class C_InRange : Condition
-	{
-		public float Range;
-		public Transform TargetTransform;
-		public Vector3 TargetPosition;
-
-		public override bool Satisfied { get { return (TargetPosition - TargetTransform.position).magnitude < Range; } }
-	}
-
+	//	public interface MovementAction
+	//	{
+	//		void Setup (C_InRange targetCondition, int iteration);
+	//	}
+	//
+	//	public class MovementUS : ProtoUtSystem<MovementAction, MovementUS>
+	//	{
+	//		public override IEnumerator<Action> GetEnumerator ()
+	//		{
+	//			return actionsList.GetEnumerator ();
+	//		}
+	//
+	//		List<Type> relevantActions;
+	//
+	//		public override void ReceiveRelevantActions (List<Type> types)
+	//		{
+	//			relevantActions = types;
+	//		}
+	//
+	//		public override void ClearActions (Utilities uts, Action performedAction)
+	//		{
+	//			for (int i = 0; i < actionsList.Count; i++)
+	//				actionsList [i].Discard (uts);
+	//			usedActions.Clear ();
+	//			actionsList.Clear ();
+	//		}
+	//
+	//		public override List<Type> GetRelevantActions (GameObject gameObject)
+	//		{
+	//			List<Type> types = new List<Type> ();
+	//			foreach (var aType in allRelevatActions)
+	//			{
+	//				Action a = Activator.CreateInstance (aType) as Action;
+	//				if (a.IsPossibleAtAll (gameObject))
+	//					types.Add (aType);
+	//			}
+	//			return types;
+	//		}
+	//
+	//
+	//		protected override bool CreateActions (Utilities uts, List<Condition> conditions, int iteration)
+	//		{
+	//			bool changed = false;
+	//			for (int i = 0; i < conditions.Count; i++)
+	//			{
+	//				for (int j = 0; j < relevantActions.Count; j++)
+	//				{
+	//					if (usedActions.Add (new KeyValuePair<object, Type> (conditions [i], relevantActions [j])))
+	//					{
+	//						MovementAction action = Activator.CreateInstance (relevantActions [j]) as MovementAction;
+	//						action.Setup (conditions [i] as C_InRange, iteration);
+	//						actionsList.Add (action as Action);
+	//						changed = true;
+	//					}
+	//				}
+	//			}
+	//			return changed;
+	//		}
+	//	}
+	//
+	//	public class A_TeleportTo : Action, MovementAction
+	//	{
+	//		P_InRange promise = new P_InRange ();
+	//		float utility;
+	//
+	//		public void Setup (C_InRange targetCondition, int iteration)
+	//		{
+	//			promise.Iteration = iteration;
+	//			promise.PromisedPosition = targetCondition.TargetPosition;
+	//			promise.TargetTransform = targetCondition.TargetTransform;
+	//		}
+	//
+	//		public override float ComputeUtility (Utilities uts, out int notSatisfiedConditions, out int actionIteration)
+	//		{
+	//			notSatisfiedConditions = 0;
+	//			actionIteration = promise.Iteration;
+	//			return uts.GetUtility (promise);
+	//		}
+	//
+	//		public override bool IsPossible ()
+	//		{
+	//			return true;
+	//		}
+	//
+	//		public override bool IsPossibleAtAll (GameObject go)
+	//		{
+	//			return !go.isStatic;
+	//		}
+	//
+	//
+	//		public override void Perform (System.Action onPerformed)
+	//		{
+	//			promise.TargetTransform.position = promise.PromisedPosition;
+	//			onPerformed ();
+	//		}
+	//
+	//		public override void Discard (Utilities uts)
+	//		{
+	//			//throw new NotImplementedException ();
+	//		}
+	//
+	//		public override void Approve (Utilities uts, int iteration)
+	//		{
+	//			//throw new NotImplementedException ();
+	//		}
+	//
+	//	}
+	//
+	//	public class P_InRange : Promise
+	//	{
+	//		public Vector3 PromisedPosition;
+	//		public Transform TargetTransform;
+	//
+	//		public override Type ConditionType {
+	//			get
+	//			{
+	//				return typeof(C_InRange);
+	//			}
+	//		}
+	//
+	//		public override float CheckCondition (Condition condition)
+	//		{
+	//			C_InRange c = condition as C_InRange;
+	//			return (c.TargetPosition - PromisedPosition).magnitude < c.Range ? 1f : 0f;
+	//		}
+	//	}
+	//
+	//	public class C_InRange : Condition
+	//	{
+	//		public float Range;
+	//		public Transform TargetTransform;
+	//		public Vector3 TargetPosition;
+	//
+	//		public override bool Satisfied { get { return (TargetPosition - TargetTransform.position).magnitude < Range; } }
+	//	}
 
 	public class Utilities : MonoBehaviour
 	{

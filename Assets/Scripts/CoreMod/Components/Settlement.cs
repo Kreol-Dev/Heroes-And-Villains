@@ -14,6 +14,7 @@ namespace CoreMod
 	[ECompName ("settlement")]
 	public class Settlement : EntityComponent
 	{
+		static Material spriteMaterial;
 
 		public override EntityComponent CopyTo (GameObject go)
 		{
@@ -26,6 +27,7 @@ namespace CoreMod
 			settlement.Population = this.Population;
 			settlement.Wealth = this.Wealth;
 			settlement.Race = this.Race;
+			settlement.CityImage = this.CityImage;
 			return settlement;
 		}
 
@@ -57,6 +59,8 @@ namespace CoreMod
 		[Defined ("population")]
 		public int Population;
 
+		public Sprite Image;
+		public Sprite CityImage;
 		public Sprite Race;
 
 		public override void LoadFromTable (ITable table)
@@ -64,6 +68,11 @@ namespace CoreMod
 			Find.Root<ModsManager> ().Defs.LoadObjectAs<Settlement> (this, table);
 			string spriteName = table.GetString ("race");
 			Race = Find.Root<Sprites> ().GetSprite ("races", spriteName);
+
+			CityImage = Find.Root<Sprites> ().GetSprite ("city_strip", table.GetString ("city_image"));
+			spriteMaterial = Resources.Load<Material> ("DefaultSpriteMaterial");
+			//CityImage.pivot = Vector2.zero;
+			//Race = Find.Root<Sprites> ().GetSprite ("races", spriteName);
 
 		}
 
@@ -74,102 +83,20 @@ namespace CoreMod
 		{
 			populationTarget = new C_Population ();
 			populationTarget.Setup (this);
-			Find.Root<AI.Ticker> ().Tick += OnTick;
+			var cmp = gameObject.AddComponent<SpriteRenderer> ();
+			cmp.sprite = CityImage;
+			cmp.material = spriteMaterial;
 		}
 
 
-		void OnTick ()
-		{
-			int deltaFood = ResultFood - Population;
-			int deltaProduction = ResultProduction - Population;
-			Food += deltaFood;
-			Production += deltaProduction;
-			if (Food < 0)
-			{
-				Food = 0;
-				Population += deltaFood / 3;
-				if (Population == 0)
-				{
-					gameObject.SetActive (false);
-					Find.Root<AI.Ticker> ().Tick -= OnTick;
-				}
-			}
-
-			if (Production < 0)
-				Production = 0;
-
-			if (populationTarget.PlannedAction == null)
-			{
-				populationTarget.TargetValue = Population + 20;
-				GetComponent<AI.Planner> ().Plan (populationTarget);
-//				Debug.LogWarning (populationTarget.PlannedAction);
-				//populationTarget.DePlan ();
-				if (populationTarget.PlannedAction != null)
-					GetComponent<AI.Agent> ().Do (populationTarget);
-			}
-			
-
-		}
 
 		protected override void PostDestroy ()
 		{
-			Find.Root<AI.Ticker> ().Tick -= OnTick;
 		}
 
 	}
 
-	[RootDependencies (typeof(ModsManager))]
-	public class Buildings : ModRoot
-	{
-		Dictionary<string, Building> buildings = new Dictionary<string, Building> ();
-		Scribe scribe;
 
-		protected override void CustomSetup ()
-		{
-			scribe = Scribes.Find ("Buildings");
-			var mm = Find.Root<ModsManager> ();
-			var conv = mm.Conv.GetConverter (typeof(Building));
-
-			var bTable = mm.GetTable ("buildings");
-			foreach (var bNamespace in bTable.GetKeys())
-			{
-				if (mm.IsTechnical (bTable, bNamespace))
-					continue;
-				var namespaceTable = bTable.GetTable (bNamespace);
-				foreach (var buildingTableName in namespaceTable.GetKeys())
-				{
-					var building = new Building ();
-					try
-					{
-
-						mm.Defs.LoadObject<Building> (building, namespaceTable.GetTable (buildingTableName));
-					} catch (ITableTypesMismatch e)
-					{
-						scribe.LogWarning (e.ToString ());
-						continue;
-					}
-					string buildingName = bNamespace.ToString () + '.' + buildingTableName.ToString ();
-					buildings.Add (buildingName, building);
-
-				}
-			}
-
-			Fulfill.Dispatch ();
-		}
-	}
-
-	public class Building
-	{
-		[Defined ("conditions")]
-		public List<Condition> Conditions;
-		[Defined ("modifier", true)]
-		public Modifier<Settlement> Modifier;
-		[Defined ("name")]
-		public string Name;
-		[Defined ("appearance")]
-		public string Apperance;
-
-	}
 
 	public class PopulationState : IntState<Settlement>
 	{

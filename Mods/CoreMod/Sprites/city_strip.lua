@@ -4,22 +4,22 @@ desert_city =
 	right_bottom_corner = { 32, 64}
 }
 
-plains_city =
+small_city =
 {
 	left_top_corner = { 0, 0},
 	right_bottom_corner = { 32, 32}
 }
 
-mountains_city =
+middle_city =
 {
-	left_top_corner = { 0, 64},
-	right_bottom_corner = { 32, 96}
+	left_top_corner = { 0, 32},
+	right_bottom_corner = { 64, 96}
 }
 
-oasis_city =
+large_city =
 {
-	left_top_corner = { 0, 128},
-	right_bottom_corner = { 32, 159}
+	left_top_corner = { 0, 32},
+	right_bottom_corner = { 96, 108}
 }
 
 encounter =

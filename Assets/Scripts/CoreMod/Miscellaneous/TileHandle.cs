@@ -1,7 +1,6 @@
 ﻿using UnityEngine;
 using System.Collections;
 using UIO;
-using UIO;
 
 namespace CoreMod
 {

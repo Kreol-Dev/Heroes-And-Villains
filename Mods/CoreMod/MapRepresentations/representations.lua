@@ -15,6 +15,10 @@ biomes_renderer_map =
 		tiles = 
 		{
 			wasteland_tile = { sprite = "wasteland", priority = 1},
+			red_tile = { sprite = "red", priority = 1},
+			green_tile = { sprite = "green", priority = 1},
+			mountains_tile = { sprite = "mountains", priority = 1},
+	
 			ocean_tile = { sprite = "ocean", priority = 0}
 		},
 		rules = 
@@ -22,6 +26,12 @@ biomes_renderer_map =
 			type_to_tile = 
 			{
 				wasteland = "wasteland_tile",
+
+				red = "red_tile",
+
+				green = "green_tile",
+
+				mountains = "mountains_tile",
 				ocean = "ocean_tile"
 			}
 		}

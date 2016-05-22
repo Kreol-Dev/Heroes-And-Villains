@@ -7,6 +7,7 @@ namespace CoreMod
 	[DisallowMultipleComponent]
 	public abstract class SpatialObject : EntityComponent
 	{
+		
 		public override void LoadFromTable (UIO.ITable table)
 		{
 			Find.Root<ModsManager> ().Defs.LoadObjectAs<SpatialObject> (this, table);

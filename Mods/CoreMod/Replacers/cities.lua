@@ -3,20 +3,18 @@ coremod.large_city =
 	creation =
 	{
 		availability = { groups = {"settlements"}, coremod = {"land"}},
-		similarity = {},
-		fixed_space = { size = 3, form = "circle" }
+		similarity = {}
+	},
+		structure = { size = 3, form = "Circle" },
+	unit = 
+	{
+		surface = defines.LAND_SURFACE,
+		creation_cost = 20
 	},
 	entity = 
 	{
 		layer_name = "cities_layer"
 	},
-	planner = 
-	{
-		risky = 0.5,
-		bold = 0.5,
-		concentrated_on_result = 0.5
-	},
-	agent = {},
 	settlement =
 	{
 		base_food = 10,
@@ -27,14 +25,19 @@ coremod.large_city =
 		food = 10,
 		production = 10,
 		wealth = 100,
-		race = "humans"
+		race = "humans",
+		city_image = "large_city"
+	},
+	city =
+	{
+
 	},
 	spatial_material = 
 	{
 		form = 
 		{
 			object_type = "CoreMod.CircleForm",
-			radius = 1.5,
+			radius = 3,
 			center = { 0, 0 }
 		}
 	}
@@ -45,19 +48,17 @@ coremod.middle_city =
 	creation =
 	{
 		availability = { groups = {"settlements"}, coremod = {"land"}},
-		similarity = {},
-		fixed_space = { size = 2, form = "circle" }
+		similarity = {}
+	},
+	structure = { size = 2, form = "Circle" },
+	unit = 
+	{
+		surface = defines.LAND_SURFACE,
+		creation_cost = 15
 	},
 	entity = 
 	{
 		layer_name = "cities_layer"
-	},
-	agent = {},
-	planner = 
-	{
-		risky = 0.5,
-		bold = 0.5,
-		concentrated_on_result = 0.5
 	},
 	settlement =
 	{
@@ -69,14 +70,19 @@ coremod.middle_city =
 		food = 10,
 		production = 10,
 		wealth = 100,
-		race = "humans"
+		race = "humans",
+		city_image = "middle_city"
+	},
+	city =
+	{
+
 	},
 	spatial_material = 
 	{
 		form = 
 		{
 			object_type = "CoreMod.CircleForm",
-			radius = 1,
+			radius = 2,
 			center = { 0, 0 }
 		}
 	}
@@ -88,19 +94,18 @@ coremod.small_city =
 	creation =
 	{
 		availability = { groups = {"settlements"}, coremod = {"land"}},
-		similarity = {},
-		fixed_space = { size = 1, form = "rect" }
+		similarity = {}
+	},
+
+		structure = { size = 1, form = "Rect" },
+	unit = 
+	{
+		surface = defines.LAND_SURFACE,
+		creation_cost = 10
 	},
 	entity = 
 	{
 		layer_name = "cities_layer"
-	},
-	agent = {},
-	planner = 
-	{
-		risky = 0.5,
-		bold = 0.5,
-		concentrated_on_result = 0.5
 	},
 	settlement =
 	{
@@ -112,7 +117,12 @@ coremod.small_city =
 		food = 10,
 		production = 10,
 		wealth = 5,
-		race = "humans"
+		race = "humans",
+		city_image = "small_city"
+	},
+	city =
+	{
+
 	},
 	spatial_material = 
 	{

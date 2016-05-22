@@ -47,6 +47,7 @@ namespace CoreMod
 				CircleCollider2D circleCollider = gameObject.AddComponent<CircleCollider2D> ();
 				circleCollider.offset = circle.Center;
 				circleCollider.radius = circle.Radius;
+				//circleCollider.transform.localScale = new Vector3 (circle.Radius, circle.Radius, circle.Radius);
 				circleCollider.isTrigger = true;
 				colliders.Add (thisForm, circleCollider);
 
@@ -56,6 +57,7 @@ namespace CoreMod
 				var rect = thisForm as RectForm;
 				BoxCollider2D rectCollider = gameObject.AddComponent<BoxCollider2D> ();
 				rectCollider.offset = rect.Center;
+				//rectCollider.transform.localScale = new Vector3 (rect.Size.x, 1, rect.Size.y);
 				rectCollider.size = rect.Size;
 				rectCollider.isTrigger = true;
 				colliders.Add (rect, rectCollider);
@@ -80,12 +82,14 @@ namespace CoreMod
 				CircleCollider2D circleCollider = colliders [thisForm] as CircleCollider2D;
 				circleCollider.offset = circle.Center;
 				circleCollider.radius = circle.Radius;
+				//circleCollider.transform.localScale = new Vector3 (circle.Radius, circle.Radius, circle.Radius);
 
 			} else if (thisForm is RectForm)
 			{
 				var rect = thisForm as RectForm;
 				BoxCollider2D rectCollider = colliders [thisForm] as BoxCollider2D;
 				rectCollider.offset = rect.Center;
+				//rectCollider.transform.localScale = new Vector3 (rect.Size.x, 1, rect.Size.y);
 				rectCollider.size = rect.Size;
 			}
 		}

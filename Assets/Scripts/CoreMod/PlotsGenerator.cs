@@ -56,7 +56,8 @@ namespace CoreMod
 				{
 					
 					Dictionary<int, int> sizes = null;
-
+					if (obj.Plot == ObjectCreationHandle.PlotType.Nothing)
+						continue;
 					if (sizeToCount.ContainsKey (obj.Plot))
 					{
 						sizes = sizeToCount [obj.Plot];
@@ -94,7 +95,7 @@ namespace CoreMod
 						CalculateClearance (i, j);
 			for (int i = 0; i < surfaces.GetLength (0); i++)
 				CalculateClearance (surfaces.GetLength (0) - i, surfaces.GetLength (1));
-			for (int i = 0; i < surfaces.GetLength (0); i++)
+			for (int i = 0; i < surfaces.GetLength (1); i++)
 				CalculateClearance (surfaces.GetLength (0), surfaces.GetLength (1) - i);
 			updatedTiles.Clear ();
 			for (int i = 0; i < surfaces.GetLength (0); i++)
@@ -110,7 +111,7 @@ namespace CoreMod
 				}
 
 			//plotsCount = 0;
-			var sprite = Resources.Load<Sprite> ("Default");
+			//var sprite = Resources.Load<Sprite> ("Default");
 			int id = 0;
 			for (int i = 0; i < plotsCount; i++)
 			{
@@ -147,7 +148,7 @@ namespace CoreMod
 				float offset = (float)(mask.Size - 1) / 2f;
 				plotCmp.Center = tile.Center + new Vector2 (offset, offset);
 				plotGO.transform.position = plotCmp.Center;
-				plotGO.AddComponent<SpriteRenderer> ().sprite = sprite;
+				//plotGO.AddComponent<SpriteRenderer> ().sprite = sprite;
 				for (int x = 0; x < mask.mask.GetLength (0); x++)
 					for (int y = 0; y < mask.mask.GetLength (1); y++)
 					{

@@ -39,6 +39,12 @@ namespace CoreMod
 			        select prototype.Value) as IEnumerable<ObjectCreationHandle>;
 		}
 
+		public IEnumerable<ObjectCreationHandle> GetAll ()
+		{
+			return from prototype in Prototypes
+			       select prototype.Value;
+		}
+
 		bool ConfirmFitness (int fitSize, ObjectCreationHandle.PlotType fitPlot, int size, ObjectCreationHandle.PlotType plot)
 		{
 			if (fitPlot == ObjectCreationHandle.PlotType.Nothing && plot == ObjectCreationHandle.PlotType.Nothing)
@@ -102,11 +108,20 @@ namespace CoreMod
 			return maxSimilar;
 		}
 
+		public ObjectCreationHandle GetByName (string name)
+		{
+			ObjectCreationHandle handle = null;
+			Prototypes.TryGetValue (name, out handle);
+			return handle;
+		}
+
 	}
 
 	public class ObjectCreationHandle
 	{
-		GameObject prototype;
+		public int Cost { get; set; }
+
+		public GameObject Prototype { get; internal set; }
 
 		Dictionary<Type, List<CreationModifier>> modifiers;
 
@@ -143,24 +158,41 @@ namespace CoreMod
 				availability.AddTag (tag);
 			weights = similarity;
 			this.modifiers = modifiers;
-			prototype = go;
+			Prototype = go;
+
+		}
+
+		public ObjectCreationHandle (GameObject go)
+		{
+			this.Plot = PlotType.Nothing;
+			availability = new TagsCollection ();
+			similarTags = new TagsCollection ();
+
+			go.AddComponent<TagsVisual> ().Setup (availability);
+			weights = new Dictionary<Tag, int> ();
+			modifiers = new Dictionary<Type, List<CreationModifier>> ();
+			Prototype = go;
 
 		}
 
 		public bool IsAvailable (TagsCollection tags)
 		{
+			if (availability.TagsCount () == 0)
+				return false;
 			return tags.Contains (availability);
 		}
 
 		public int HowSimilar (TagsCollection tags)
 		{
+			if (similarTags.TagsCount () == 0)
+				return int.MinValue;
 			return tags.ComputeSimilarity (similarTags, weights);
 		}
 
 		public GameObject CreateObject (TagsCollection tags)
 		{
-			GameObject newGO = new GameObject (prototype.name);
-			EntityComponent[] cmps = prototype.GetComponents<EntityComponent> ();
+			GameObject newGO = new GameObject (Prototype.name);
+			EntityComponent[] cmps = Prototype.GetComponents<EntityComponent> ();
 			foreach (var cmp in cmps)
 			{
 				var addedCmp = cmp.CopyTo (newGO);
@@ -170,6 +202,17 @@ namespace CoreMod
 						if (tags.Contains (mod.Tag))
 							mod.Apply (addedCmp);
 					}
+			}
+			return newGO;
+		}
+
+		public GameObject CreateObject ()
+		{
+			GameObject newGO = new GameObject (Prototype.name);
+			EntityComponent[] cmps = Prototype.GetComponents<EntityComponent> ();
+			foreach (var cmp in cmps)
+			{
+				var addedCmp = cmp.CopyTo (newGO);
 			}
 			return newGO;
 		}
