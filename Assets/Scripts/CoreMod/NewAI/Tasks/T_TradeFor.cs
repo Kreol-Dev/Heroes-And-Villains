@@ -1,19 +1,41 @@
 ﻿using UnityEngine;
 using System.Collections;
+using NewAI;
+using CoreMod;
 
-public class T_TradeFor : MonoBehaviour
+public class T_TradeFor : NewAI.Task<C_HasResource, J_TradeFor>
 {
+	ResourceType type;
+	int Amount;
+	Agent agent;
 
-	// Use this for initialization
-	void Start ()
+	protected override void OnActionSucceed ()
 	{
-	
+		PlannedAction = null;
 	}
-	
-	// Update is called once per frame
-	void Update ()
+
+	protected override void OnActionFailed ()
 	{
-	
+		PlannedAction = null;
 	}
+
+	protected override void InitAction (J_TradeFor jobAction)
+	{
+		//Debug.Log ("init " + jobAction);
+		jobAction.TradeFor (type, Amount);
+	}
+
+	protected override void Setup (Agent agent, C_HasResource condition)
+	{
+
+		//Debug.Log ("setup trade" + agent);
+		type = condition.Type;
+		Amount = condition.Resource;
+		this.agent = agent;
+
+	}
+
+
+
 }
 

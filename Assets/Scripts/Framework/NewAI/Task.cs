@@ -28,7 +28,6 @@ namespace NewAI
 
 		public sealed override bool Do (Agent agent, Condition c, Utilities uts)
 		{
-			agent.transform.GetComponentInChildren<Text> ().text += this.GetType ().ToString () + Environment.NewLine;
 			if (c.Satisfied)
 				return false;
 			var actions = agent.GetActions (typeof(J), PlannedAction);
@@ -56,7 +55,6 @@ namespace NewAI
 			if (PlannedAction != null)
 			{
 
-				agent.transform.GetComponentInChildren<Text> ().text += PlannedAction.ToString () + Environment.NewLine;
 				PlannedAction.Update (OnActionSucceed, OnActionFailed, uts);
 				return true;
 			}

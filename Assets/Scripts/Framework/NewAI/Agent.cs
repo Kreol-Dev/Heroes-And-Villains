@@ -20,7 +20,7 @@ namespace NewAI
 
 		public override void PostCreate ()
 		{
-			Uts = GetComponent<Utilities> ();
+			Uts = gameObject.AddComponent<Utilities> ();
 			Debug.Log (gameObject.name + " start");
 			//InvokeRepeating ("OnTick", 1f, 1f);
 			Find.Root<AI.Ticker> ().Tick += OnTick;
@@ -45,11 +45,7 @@ namespace NewAI
 
 		void OnTick ()
 		{
-			var txt = GetComponentInChildren<Text> ();
-			txt.text = "";
-			foreach (var c in conditions)
-				txt.text += c + Environment.NewLine;
-			Debug.Log (gameObject.name + " tick");
+			
 			if (curCondition == null)
 			{
 				if (conditions.Count == 0)
@@ -66,21 +62,21 @@ namespace NewAI
 				}
 
 
-				Debug.Log ("task please?");
+				//Debug.Log ("task please?");
 				if (maxUt.AssignedTask.Do (this, maxUt, Uts))
 				{
 
-					Debug.Log ("new task");
+					//Debug.Log ("new task");
 					curCondition = maxUt;
 				} else
 				{
 
-					Debug.Log ("no task");
+					//Debug.Log ("no task");
 					curCondition = null;
 				}
 			} else
 			{
-				Debug.Log ("do planned task");
+				//Debug.Log ("do planned task");
 				if (!curCondition.AssignedTask.Do (this, curCondition, Uts))
 					curCondition = null;
 				//curAction.Update (OnActionSuccess, OnActionFail);
@@ -116,7 +112,7 @@ namespace NewAI
 			var types = Find.Root<ModsManager> ().GetAllTypes ();
 			foreach (var type in types)
 			{
-				if (type.IsSubclassOf (typeof(AI.Action)) && !type.IsGenericType && !type.IsAbstract)
+				if (type.IsSubclassOf (typeof(NewAI.Action)) && !type.IsGenericType && !type.IsAbstract)
 				{
 					var jobs = type.GetInterfaces ();
 					foreach (var jobType in jobs)

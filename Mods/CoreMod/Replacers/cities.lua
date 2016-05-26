@@ -11,6 +11,7 @@ coremod.large_city =
 		surface = defines.LAND_SURFACE,
 		creation_cost = 20
 	},
+	new_agent = {},
 	entity = 
 	{
 		layer_name = "cities_layer"
@@ -56,6 +57,7 @@ coremod.middle_city =
 		surface = defines.LAND_SURFACE,
 		creation_cost = 15
 	},
+	new_agent = {},
 	entity = 
 	{
 		layer_name = "cities_layer"
@@ -103,6 +105,7 @@ coremod.small_city =
 		surface = defines.LAND_SURFACE,
 		creation_cost = 10
 	},
+	new_agent = {},
 	entity = 
 	{
 		layer_name = "cities_layer"

@@ -14,19 +14,20 @@ namespace CoreMod
 	[ECompName ("city")]
 	public class City : EntityComponent
 	{
-		[SerializeField]
-		List<POP> pops = new List<POP> ();
-		[SerializeField]
-		List<Building> buildings = new List<Building> ();
-		[SerializeField]
-		List<Resource> resources = new List<Resource> ();
+		public List<POP> pops = new List<POP> ();
+		public List<Building> buildings = new List<Building> ();
+		public List<Resource> resources = new List<Resource> ();
 		static POPType[] popsTypes;
 		static System.Random random;
 		public string Name;
+		static BuildingType[] buildingsTypes;
 
 		public override EntityComponent CopyTo (GameObject go)
 		{
-			return go.AddComponent<City> ();
+			var city = go.AddComponent<City> ();
+			//city.buildingsTypes = this.buildingsTypes;
+			//city.popsTypes = this.popsTypes;
+			return city;
 		}
 
 		public override void PostCreate ()
@@ -34,12 +35,14 @@ namespace CoreMod
 			Find.Root<AI.Ticker> ().Tick += OnTick;
 			var resTypes = Find.Root<ResourcesRoot> ().Get ();
 			for (int i = 0; i < resTypes.Length; i++)
-				resources.Add (new Resource (){ Cost = resTypes [i].BaseCost, Count = 0, Type = resTypes [i] });
+				resources.Add (new Resource (){ Cost = resTypes [i].BaseCost, Count = 10, Type = resTypes [i] });
 			this.Name = Find.Root<NamesRoot> ().GenerateCityName ();
+		
 		}
 
 		public override void LoadFromTable (ITable table)
 		{
+			buildingsTypes = Find.Root<BuildingsRoot> ().Get ();
 			popsTypes = Find.Root<POPsRoot> ().Get ();
 			random = new System.Random ((int)Find.Root<AI.Ticker> ().TickDelta);
 		}
@@ -49,7 +52,7 @@ namespace CoreMod
 			Find.Root<AI.Ticker> ().Tick -= OnTick;
 		}
 
-		Resource FindRes (ResourceType type)
+		public Resource FindRes (ResourceType type)
 		{
 			for (int i = 0; i < resources.Count; i++)
 				if (resources [i].Type == type)
@@ -182,11 +185,58 @@ namespace CoreMod
 				}
 
 			}
+			var agent = GetComponent<NewAI.Agent> ();
+			if (cb == null)
+			{
+				var maxRes = resources [0];
+				for (int i = 1; i < resources.Count; i++)
+				{
+					if (maxRes.Cost < resources [i].Cost)
+						maxRes = resources [i];
+				}
+
+				float maxUt = 0;
+				var maxBType = buildingsTypes [0];
+				for (int i = 1; i < buildingsTypes.Length; i++)
+				{
+					float ut = 0;
+					for (int j = 0; j < buildingsTypes [i].Produce.Length; j++)
+						if (buildingsTypes [i].Produce [j].Type == maxRes.Type)
+							ut += buildingsTypes [i].Produce [j].Amount;
+					if (ut > maxUt)
+					{
+						maxUt = ut;
+						maxBType = buildingsTypes [i];
+					}
+				}
+				int presentCount = 0;
+				for (int i = 0; i < buildings.Count; i++)
+					if (buildings [i].Type == maxBType)
+						presentCount++;
+				C_HasBuilding cBuilding = new C_HasBuilding ();
+				cBuilding.Setup (this.gameObject);
+				cBuilding.BuildingType = maxBType;
+				cBuilding.City = this;
+				cBuilding.Count = presentCount + 1;
+				cBuilding.AssignedTask = cBuilding.CreateTask (agent);
+				cb = cBuilding;
+				agent.AddCondition (cb);
+			} else
+			{
+				if (cb.Satisfied)
+				{
+
+					agent.RemoveCondition (cb);
+					cb = null;
+				}
+			}
+
+
 		}
 
 
+		C_HasBuilding cb = null;
 	}
-
 
 	[System.Serializable]
 	public class POP
@@ -306,6 +356,7 @@ namespace CoreMod
 		public string Name;
 		public Sprite Sprite;
 		public Resource[] Cost;
+		public float BuildTime;
 
 		public void LoadFromTable (ITable table, object key)
 		{
@@ -329,6 +380,7 @@ namespace CoreMod
 
 			Name = buildingTable.GetString ("name");
 			Sprite = Find.Root<Sprites> ().GetSprite ("buildings", buildingTable.GetString ("sprite"));
+			BuildTime = buildingTable.GetFloat ("time");
 		}
 	}
 

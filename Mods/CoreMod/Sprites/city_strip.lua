@@ -19,7 +19,7 @@ middle_city =
 large_city =
 {
 	left_top_corner = { 0, 32},
-	right_bottom_corner = { 96, 108}
+	right_bottom_corner = { 96, 128}
 }
 
 encounter =
