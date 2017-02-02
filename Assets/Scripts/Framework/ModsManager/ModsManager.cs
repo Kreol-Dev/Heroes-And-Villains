@@ -22,7 +22,7 @@ public class ModsManager : Root
 
 	public Converters Conv { get; internal set; }
 
-	Script globalContext = new Script ();
+	Script globalContext;
 	List<ModDesc> mods;
 	List<ModDesc> activeMods;
 	Mod globalMod;
@@ -94,6 +94,7 @@ public class ModsManager : Root
 	protected override void PreSetup ()
 	{
 		base.PreSetup ();
+		globalContext = new Script ();
 		scribe = Scribes.Find ("Mods manager");
 		globalContext.Options.ScriptLoader = new FileSystemScriptLoader ();
 		mods = SearchForMods ();

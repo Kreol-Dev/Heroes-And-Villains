@@ -9,7 +9,7 @@ using System.Text;
 public class Sprites : Root
 {
 	Dictionary<string, Dictionary<string, Sprite>> tree = new Dictionary<string, Dictionary<string, Sprite>> ();
-	Sprite error = Sprite.Create (new Texture2D (2, 2), Rect.MinMaxRect (0, 0, 2, 2), Vector2.zero);
+	Sprite error;
 
 	public Sprite GetSprite (string packName, string spriteName)
 	{
@@ -26,6 +26,7 @@ public class Sprites : Root
 
 	protected override void PreSetup ()
 	{
+		error  = Sprite.Create (new Texture2D (2, 2), Rect.MinMaxRect (0, 0, 2, 2), Vector2.zero);
 		string[] paths = Directory.GetFiles ("Mods\\CoreMod\\Sprites");
 		for (int i = 0; i < paths.Length; i++)
 		{
